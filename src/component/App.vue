@@ -3,7 +3,12 @@
     <div class="regist">
       <span>新用户注册</span>
       <div class="input-container"><input v-model="userInfo.phone" placeholder="手机号" autofocus /><span>*</span></div>
-      <div class="input-container"><input v-model="userInfo.checkCode" placeholder="验证码" /><span>*</span></div>
+      <div class="input-container">
+        <input v-model="userInfo.checkCode" placeholder="验证码" />
+        <button class="check-butotn"
+          @click="getCertificationCode">{{checkStr}}</button>
+        <span>*</span>
+      </div>
       <div class="input-container"><input v-model="userInfo.name" placeholder="用户姓名" /><span>*</span></div>
       <div class="input-container"><input v-model="userInfo.company" placeholder="公司名称" /><span>*</span></div>
       <div class="input-container">
@@ -59,6 +64,9 @@ export default {
         children: 'cities'
       },
       code: 0, // 初始值为 0，后面根据返回值赋值
+      checkLoop: null, // interval 获取验证码
+      checkStr: '获取验证码',
+      loopTime: 60, // 验证码倒计时时间
     }
   },
   mounted() {
@@ -72,6 +80,21 @@ export default {
   methods: {
     showDelegate() {
       alert('showDelegate')
+    },
+    getCertificationCode() {
+      if(this.isLoop) return
+      else this.isLoop = true
+
+      this.checkStr = this.loopTime + 's'
+      this.checkLoop = setInterval(() => {
+        this.checkStr = --this.loopTime + 's'
+        if(this.loopTime < 1) {
+          this.loopTime = 60
+          this.checkStr = '获取验证码'
+          this.isLoop = false
+          clearInterval(this.checkLoop)
+        }
+      }, 1000)
     },
     regist() {
       var userInfo = this.userInfo
@@ -273,6 +296,17 @@ html {
 
     ::-webkit-input-placeholder {
       color: #999;
+    }
+
+    .check-butotn {
+      .normalSize;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 98px;
+      color: @eColor;
+      border: 0;
+      background: transparent;
     }
 
     &>span:not(.el-cascader) {
