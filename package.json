@@ -1,0 +1,28 @@
+{
+  "scripts": {
+    "start": "cnpm i;webpack;open index.html"
+  },
+  "dependencies": {
+    "babel-core": "",
+    "babel-loader": "",
+    "babel-plugin-component": "",
+    "babel-preset-env": "",
+    "babel-preset-stage-0": "",
+    "babel-runtime": "",
+    "body-parser": "^1.18.2",
+    "css-loader": "",
+    "element-theme": "",
+    "element-theme-chalk": "",
+    "element-ui": "",
+    "express": "^4.16.2",
+    "file-loader": "",
+    "less": "",
+    "less-loader": "",
+    "style-loader": "",
+    "superagent": "^3.8.1",
+    "url-loader": "",
+    "vue-loader": "",
+    "vue-template-compiler": "",
+    "webpack": ""
+  }
+}
