@@ -8,5 +8,5 @@ new Vue({
       <App />
     </div>
   `,
-  components: { App, rHeader, Bottom }
+  components: { App }
 })

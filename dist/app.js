@@ -974,7 +974,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app',
   template: '\n    <div>\n      <App />\n    </div>\n  ',
-  components: { App: __WEBPACK_IMPORTED_MODULE_1__component_App_vue__["a" /* default */], rHeader: rHeader, Bottom: Bottom }
+  components: { App: __WEBPACK_IMPORTED_MODULE_1__component_App_vue__["a" /* default */] }
 });
 
 /***/ }),
@@ -6599,10 +6599,10 @@ Vue.use(__WEBPACK_IMPORTED_MODULE_2_element_ui_lib_cascader___default.a);
         name: '',
         company: '',
         area: '',
-        type: '汽配商'
+        type: 'a'
       }, // 用户信息
       checked: false,
-      types: ['汽配商', '修理厂', '4S店', '其他'], // 是否阅读同意协议
+      types: ['a', 'b', 'c', 'd'], // 是否阅读同意协议
       options: [], // 联级地区数据
       areaProps: { // 联级组件结构 key
         label: 'name',
@@ -6838,25 +6838,6 @@ var render = function() {
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "input-container" },
-        [
-          _c("el-cascader", {
-            attrs: {
-              placeholder: "选择城市",
-              options: _vm.options,
-              "change-on-select": "",
-              props: _vm.areaProps
-            },
-            on: { change: _vm.handleAreaClick }
-          }),
-          _vm._v(" "),
-          _c("span", [_vm._v("*")])
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
         { staticClass: "types" },
         [
           _vm._l(_vm.types, function(type) {
@@ -6921,7 +6902,7 @@ var render = function() {
         _c(
           "span",
           { staticClass: "delegate", on: { click: _vm.showDelegate } },
-          [_vm._v("《萤火虫™注册协议》")]
+          [_vm._v("《xxx™注册协议》")]
         ),
         _vm._v(" "),
         _c("div", { staticClass: "show-box" })

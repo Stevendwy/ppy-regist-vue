@@ -11,7 +11,7 @@
       </div>
       <div class="input-container"><input v-model="userInfo.name" placeholder="用户姓名" /><span>*</span></div>
       <div class="input-container"><input v-model="userInfo.company" placeholder="公司名称" /><span>*</span></div>
-      <div class="input-container">
+      <!-- <div class="input-container">
         <el-cascader
           placeholder="选择城市"
           :options="options"
@@ -19,7 +19,7 @@
           @change="handleAreaClick"
           :props="areaProps"/>
         <span>*</span>
-      </div>
+      </div> -->
       <div class="types">
         <button :type="type"
           v-for="type in types" :key="type"
@@ -29,7 +29,7 @@
       </div>
       <label>
         <input type="checkbox" v-model="checked" />
-        我已阅读并同意<span class="delegate" @click="showDelegate">《萤火虫™注册协议》</span>
+        我已阅读并同意<span class="delegate" @click="showDelegate">《xxx™注册协议》</span>
         <div class="show-box" />
       </label>
       <button @click="regist">登录<img id="little-mum" src="https://007vin.com/img/load.gif" /></button>
@@ -53,10 +53,10 @@ export default {
         name: '',
         company: '',
         area: '',
-        type: '汽配商'
+        type: 'a'
       }, // 用户信息
       checked: false,
-      types: ['汽配商', '修理厂', '4S店', '其他'], // 是否阅读同意协议
+      types: ['a', 'b', 'c', 'd'], // 是否阅读同意协议
       options: [], // 联级地区数据
       areaProps: { // 联级组件结构 key
         label: 'name',
