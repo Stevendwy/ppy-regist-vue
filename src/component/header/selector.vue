@@ -4,7 +4,7 @@
     span.language {{currentLanguage.name}}
     canvas.triangle(ref="triangle", width=12, height=6)
     ul.list
-      li.item(v-for="language of languages", :key="language.name" @click="updateLanguageType(language.type)")
+      li.item(v-for="language of languages", :key="language.name" @click="updateLanguageType({languageType: language.type})")
         img.icon(:src="language.img", alt="img")
         span.language {{language.name}}
 </template>

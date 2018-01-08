@@ -536,6 +536,9 @@ module.exports = g;
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__selector_vue__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(36);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 //
 //
 //
@@ -545,13 +548,15 @@ module.exports = g;
 //
 //
 //
+
 
 
 
 /* harmony default export */ __webpack_exports__["a"] = ({
   components: {
     lSelector: __WEBPACK_IMPORTED_MODULE_0__selector_vue__["a" /* default */]
-  }
+  },
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].mapGetters(["languageData"]))
 });
 
 /***/ }),
@@ -603,12 +608,97 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__selector_vue__ = __webpack_require__(41);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
 //
 
-/* harmony default export */ __webpack_exports__["a"] = ({});
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  components: {
+    cSelector: __WEBPACK_IMPORTED_MODULE_1__selector_vue__["a" /* default */]
+  },
+  data: function data() {
+    return {};
+  },
+
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "area", 'isChina']), {
+    content: function content() {
+      return this.languageData.content;
+    },
+    placeholders: function placeholders() {
+      return this.content.placeholders;
+    },
+    registRemind: function registRemind() {
+      return this.content.registRemind;
+    },
+
+    registType: {
+      get: function get() {
+        return this.$store.state.registType;
+      },
+      set: function set(registType) {
+        this.updateRegistType({ registType: registType });
+      }
+    },
+    isPhone: function isPhone() {
+      return this.registType === "phone";
+    }
+  }),
+  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType"]))
+});
 
 /***/ }),
 /* 8 */
@@ -10956,7 +11046,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
+exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app input,\nbody .app input,\nhtml .app button,\nbody .app button {\n  outline: none;\n  padding: 0;\n}\nhtml .app input[type=\"text\"],\nbody .app input[type=\"text\"] {\n  padding-left: 8px;\n}\nhtml .app button,\nbody .app button {\n  cursor: pointer;\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
 
 // exports
 
@@ -11218,7 +11308,7 @@ var render = function() {
             staticClass: "item",
             on: {
               click: function($event) {
-                _vm.updateLanguageType(language.type)
+                _vm.updateLanguageType({ languageType: language.type })
               }
             }
           },
@@ -11257,24 +11347,17 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "header" }, [
-    _vm._m(0),
-    _c("div", { staticClass: "right" }, [_c("l-selector")], 1)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "left" }, [
+    _c("div", { staticClass: "left" }, [
       _c("img", {
         staticClass: "logo",
         attrs: { src: __webpack_require__(26), alt: "logo" }
       }),
-      _c("span", [_vm._v("sign up")])
-    ])
-  }
-]
+      _c("span", [_vm._v(_vm._s(_vm.languageData.signUp))])
+    ]),
+    _c("div", { staticClass: "right" }, [_c("l-selector")], 1)
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -11382,7 +11465,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 12px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 12px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
 
 // exports
 
@@ -11396,7 +11479,149 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div")
+  return _c("div", { staticClass: "content" }, [
+    _c("div", { staticClass: "account" }, [
+      _c("div", { staticClass: "title" }, [_vm._v(_vm._s(_vm.content.title))]),
+      _c("div", { staticClass: "remindPersonal" }, [
+        _vm._v(_vm._s(_vm.content.remindPersonal))
+      ]),
+      _c("div", { staticClass: "selectType" }, [
+        _vm._v(_vm._s(_vm.content.selectType))
+      ]),
+      _c("div", { staticClass: "radios" }, [
+        _c("label", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.registType,
+                expression: "registType"
+              }
+            ],
+            attrs: { type: "radio", value: "phone" },
+            domProps: { checked: _vm._q(_vm.registType, "phone") },
+            on: {
+              change: function($event) {
+                _vm.registType = "phone"
+              }
+            }
+          }),
+          _vm._v(_vm._s(_vm.content.types[0]))
+        ]),
+        _c("label", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.registType,
+                expression: "registType"
+              }
+            ],
+            attrs: { type: "radio", value: "email" },
+            domProps: { checked: _vm._q(_vm.registType, "email") },
+            on: {
+              change: function($event) {
+                _vm.registType = "email"
+              }
+            }
+          }),
+          _vm._v(" " + _vm._s(_vm.content.types[1]))
+        ])
+      ]),
+      _vm.isPhone
+        ? _c(
+            "div",
+            { staticClass: "phone" },
+            [
+              _c("c-selector", {
+                attrs: { items: _vm.areas, currentItem: _vm.area }
+              }),
+              _c("input", {
+                staticClass: "number",
+                attrs: { type: "text", placeholder: _vm.placeholders.mobile }
+              })
+            ],
+            1
+          )
+        : _c("div", { staticClass: "email" }, [
+            _c("input", {
+              attrs: { type: "text", placeholder: _vm.placeholders.email }
+            })
+          ]),
+      _c("div", { staticClass: "code" }, [
+        _c("input", {
+          attrs: { type: "text", placeholder: _vm.placeholders.code }
+        })
+      ]),
+      _vm.isChina
+        ? _c("div", { staticClass: "name" }, [
+            _c("input", {
+              attrs: { type: "text", placeholder: _vm.placeholders.name }
+            })
+          ])
+        : _vm._e(),
+      _c("div", { staticClass: "foreign-name" }, [
+        _c("input", {
+          staticClass: "first-name",
+          attrs: { type: "text", placeholder: _vm.placeholders.firstName }
+        }),
+        _c("input", {
+          staticClass: "last-name",
+          attrs: { type: "text", placeholder: _vm.placeholders.lastName }
+        })
+      ]),
+      _c("div", { staticClass: "password" }, [
+        _c("input", {
+          attrs: { type: "text", placeholder: _vm.placeholders.password }
+        })
+      ]),
+      _c("div", { staticClass: "password" }, [
+        _c("input", {
+          attrs: { type: "text", placeholder: _vm.placeholders.confirmPassword }
+        })
+      ]),
+      _c("div", { staticClass: "remindCompany" }, [
+        _vm._v(_vm._s(_vm.content.remindCompany))
+      ]),
+      _c("div", { staticClass: "company" }, [
+        _c("input", {
+          attrs: { type: "text", placeholder: _vm.placeholders.company }
+        })
+      ]),
+      _c("div", { staticClass: "company" }, [
+        _c("input", {
+          attrs: { type: "text", placeholder: _vm.placeholders.companyLocation }
+        })
+      ]),
+      _c("div", { staticClass: "company" }, [
+        _c("input", {
+          attrs: { type: "text", placeholder: _vm.placeholders.companyType }
+        })
+      ]),
+      _c("div", { staticClass: "regist-remind" }, [
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.l1))]),
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.t1))]),
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.l2))]),
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.t2))]),
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.l3))]),
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.t3))]),
+        _c("span", [_vm._v(_vm._s(_vm.registRemind.l4))])
+      ]),
+      _c("button", { staticClass: "regist" }, [
+        _vm._v(_vm._s(_vm.content.signUp))
+      ]),
+      _c("div", { staticClass: "login" }, [
+        _c("span", [_vm._v(_vm._s(_vm.content.loginRemind))]),
+        _c("span", [_vm._v(_vm._s(_vm.content.login))])
+      ])
+    ]),
+    _c("div", { staticClass: "brand-title" }, [
+      _vm._v(_vm._s(_vm.languageData.brand.title))
+    ]),
+    _c("img", { staticClass: "brands", attrs: { src: "#", alt: "brands" } })
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -12524,6 +12749,10 @@ var index_esm = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__language_cn__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__language_en__ = __webpack_require__(39);
+
+
 
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
@@ -12531,7 +12760,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
   state: {
     // 0 表示中文， 1 表示英语，与 languages 索引对应
-    languageType: 0,
+    languageType: 1,
     languages: [{
       type: 0,
       img: "../../../static/img/icon_cn.png",
@@ -12540,19 +12769,295 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       type: 1,
       img: "../../../static/img/icon_en.png",
       name: "English"
+    }],
+    registType: 'phone',
+    areas: [{
+      title: 'China',
+      summary: '+86'
+    }, {
+      title: 'Taiwan',
+      summary: '+886'
+    }, {
+      title: 'Hong Kong',
+      summary: '+852'
+    }, {
+      title: 'Malaysia',
+      summary: '+60'
     }]
   },
   getters: {
     currentLanguage: function currentLanguage(state) {
       return state.languages[state.languageType];
+    },
+    languageData: function languageData(state) {
+      return state.languageType === 0 ? __WEBPACK_IMPORTED_MODULE_2__language_cn__["a" /* default */] : __WEBPACK_IMPORTED_MODULE_3__language_en__["a" /* default */];
+    },
+    area: function area(state) {
+      return state.areas[0];
+    },
+    registRequest: function registRequest(state) {
+      return {
+        area: state.areas[0],
+        type: 'phone'
+      };
+    },
+    isChina: function isChina(state) {
+      return state.languageType === 0;
     }
   },
   mutations: {
-    updateLanguageType: function updateLanguageType(state, type) {
-      state.languageType = type;
+    updateLanguageType: function updateLanguageType(state, _ref) {
+      var languageType = _ref.languageType;
+
+      state.languageType = languageType;
+    },
+    updateRegistType: function updateRegistType(state, _ref2) {
+      var registType = _ref2.registType;
+
+      state.registType = registType;
     }
   }
 }));
+
+/***/ }),
+/* 38 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  logo: 'https://cdns.007vin.com/img/p_007.png',
+  signUp: "注册",
+  content: {
+    title: '创建新账户',
+    remindPersonal: '·Enter your Phone or Email & Create a Password',
+    remindCompany: '·Select your Business Location & Account Type',
+    selectType: 'Select Phone or Email',
+    types: ['Phone', 'Email'],
+    placeholders: {
+      mobile: 'Mobile phone number',
+      code: 'Code',
+      firstName: 'First name',
+      lastName: 'Last name',
+      name: '姓名',
+      password: 'New Password',
+      confirmPassword: ' Repeat new password',
+      company: 'Company Name',
+      companyLocation: 'Business Location',
+      companyType: 'Select a role'
+    },
+    registRemind: {
+      l1: 'By signing up, you agree to our ',
+      t1: 'Terms ',
+      l2: 'and that you have read our ',
+      t2: 'Data Policy',
+      l3: ', including our ',
+      t3: 'Cookie Use',
+      l4: '. You may receive SMS Notifications from Facebook and can opt out at any time.'
+    },
+    signUp: 'Sign up',
+    loginRemind: 'Already has account.',
+    login: 'Log In now'
+  },
+  brand: {
+    title: '007 Current Covering Brand'
+  }
+});
+
+/***/ }),
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  logo: 'https://cdns.007vin.com/img/p_007.png',
+  signUp: "Sign up",
+  content: {
+    title: 'Create a New Account',
+    remindPersonal: '·Enter your Phone or Email & Create a Password',
+    remindCompany: '·Select your Business Location & Account Type',
+    selectType: 'Select Phone or Email',
+    types: ['Phone', 'Email'],
+    placeholders: {
+      mobile: 'Mobile phone number',
+      email: 'Email address',
+      code: 'Code',
+      firstName: 'First name',
+      lastName: 'Last name',
+      name: '姓名',
+      password: 'New Password',
+      confirmPassword: ' Repeat new password',
+      company: 'Company Name',
+      companyLocation: 'Business Location',
+      companyType: 'Select a role'
+    },
+    registRemind: {
+      l1: 'By signing up, you agree to our ',
+      t1: 'Terms ',
+      l2: 'and that you have read our ',
+      t2: 'Data Policy',
+      l3: ', including our ',
+      t3: 'Cookie Use',
+      l4: '. You may receive SMS Notifications from Facebook and can opt out at any time.'
+    },
+    signUp: 'Sign up',
+    loginRemind: 'Already has account.',
+    login: 'Log In now'
+  },
+  brand: {
+    title: '007 Current Covering Brand'
+  }
+});
+
+/***/ }),
+/* 40 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  props: ["items", "currentItem"]
+});
+
+/***/ }),
+/* 41 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_selector_vue__ = __webpack_require__(40);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_111ab2c0_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_selector_vue__ = __webpack_require__(44);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(42)
+}
+var normalizeComponent = __webpack_require__(2)
+/* script */
+
+
+/* template */
+
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-111ab2c0"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_selector_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_111ab2c0_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_selector_vue__["a" /* default */],
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "src/component/content/selector.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-111ab2c0", Component.options)
+  } else {
+    hotAPI.reload("data-v-111ab2c0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(43);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("5d7d62b1", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-111ab2c0\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./selector.vue", function() {
+     var newContent = require("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-111ab2c0\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./selector.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 40px;\n  left: 0;\n  display: none;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076FF;\n  color: white;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "selector" }, [
+    _c("span", [_vm._v(_vm._s(_vm.currentItem.title || _vm.currentItem))]),
+    _c("span", [_vm._v(_vm._s(_vm.currentItem.summary))]),
+    _c(
+      "div",
+      { staticClass: "items" },
+      _vm._l(_vm.items, function(item, index) {
+        return _c("div", { key: index, staticClass: "item" }, [
+          _c("span", [_vm._v(_vm._s(item.title || item))]),
+          _c("span", [_vm._v(_vm._s(item.summary))])
+        ])
+      })
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ __webpack_exports__["a"] = (esExports);
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-111ab2c0", esExports)
+  }
+}
 
 /***/ })
 /******/ ]);

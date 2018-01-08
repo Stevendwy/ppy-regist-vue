@@ -48,6 +48,19 @@ html,body {
       }
     }
 
+    input, button {
+      outline: none;
+      padding: 0;
+    }
+
+    input[type="text"] {
+      padding-left: 8px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
     ul {
       padding: 0;
       margin: 0;

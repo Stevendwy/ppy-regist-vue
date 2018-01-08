@@ -2,17 +2,21 @@
   .header
     .left
       img.logo(src="../../../static/img/p_007vin.png", alt="logo")
-      span sign up
+      span {{languageData.signUp}}
     .right
       l-selector
 </template>
 
 <script>
 import lSelector from './selector.vue'
+import Vuex from "vuex";
 
 export default {
   components: {
     lSelector
+  },
+  computed: {
+    ...Vuex.mapGetters(["languageData"]),
   }
 }
 </script>
