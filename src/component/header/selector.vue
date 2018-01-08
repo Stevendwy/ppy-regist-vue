@@ -4,35 +4,29 @@
     span.language {{currentLanguage.name}}
     canvas.triangle(ref="triangle", width=12, height=6)
     ul.list
-      li.item(v-for="language of languages", :key="language.name" @click="currentLanguage = language")
+      li.item(v-for="language of languages", :key="language.name" @click="updateLanguageType(language.type)")
         img.icon(:src="language.img", alt="img")
         span.language {{language.name}}
 </template>
 
 <script>
+import Vuex from 'vuex'
+
 export default {
   data() {
     return {
-      currentLanguage: {
-        img: "../../../static/img/icon_cn.png",
-        name: "中文"
-      },
-      languages: [
-        {
-          img: "../../../static/img/icon_cn.png",
-          name: "中文"
-        },
-        {
-          img: "../../../static/img/icon_en.png",
-          name: "English"
-        }
-      ]
+      
     };
+  },
+  computed: {
+    ...Vuex.mapState(['languages']),
+    ...Vuex.mapGetters(['currentLanguage']),
   },
   mounted() {
     this.buildTriangle()
   },
   methods: {
+    ...Vuex.mapMutations(['updateLanguageType']),
     buildTriangle() {
       let ctx = this.$refs.triangle.getContext('2d')
       ctx.moveTo(0, 0)
