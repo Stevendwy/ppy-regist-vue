@@ -60,20 +60,599 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function (useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if (item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function (modules, mediaQuery) {
+		if (typeof modules === "string") modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for (var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if (typeof id === "number") alreadyImportedModules[id] = true;
+		}
+		for (i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if (typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if (mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if (mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */';
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global, setImmediate) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(17)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction) {
+  isProduction = _isProduction
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[data-vue-ssr-id~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var g;
+
+// This works in non-strict mode
+g = function () {
+	return this;
+}();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__component_header_header_vue__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__component_content_content_vue__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__component_footer_footer_vue__ = __webpack_require__(31);
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  components: {
+    pHeader: __WEBPACK_IMPORTED_MODULE_0__component_header_header_vue__["a" /* default */],
+    pContent: __WEBPACK_IMPORTED_MODULE_1__component_content_content_vue__["a" /* default */],
+    pFooter: __WEBPACK_IMPORTED_MODULE_2__component_footer_footer_vue__["a" /* default */]
+  },
+  data: function data() {
+    return {};
+  }
+});
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__selector_vue__ = __webpack_require__(21);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  components: {
+    lSelector: __WEBPACK_IMPORTED_MODULE_0__selector_vue__["a" /* default */]
+  }
+});
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  data: function data() {
+    return {
+      currentLanguage: {
+        img: "../../../static/img/icon_cn.png",
+        name: "中文"
+      },
+      languages: [{
+        img: "../../../static/img/icon_cn.png",
+        name: "中文"
+      }, {
+        img: "../../../static/img/icon_en.png",
+        name: "English"
+      }]
+    };
+  },
+  mounted: function mounted() {
+    this.buildTriangle();
+  },
+
+  methods: {
+    buildTriangle: function buildTriangle() {
+      var ctx = this.$refs.triangle.getContext('2d');
+      ctx.moveTo(0, 0);
+      ctx.lineTo(6, 6);
+      ctx.lineTo(12, 0);
+      ctx.strokeColor = "#d8d8d8";
+      ctx.stroke();
+    }
+  }
+});
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["a"] = ({});
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["a"] = ({});
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__App_vue__ = __webpack_require__(14);
+
+
+
+new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
+  el: '#app',
+  template: '<App />',
+  components: { App: __WEBPACK_IMPORTED_MODULE_1__App_vue__["a" /* default */] }
+});
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global, setImmediate) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 /*!
- * Vue.js v2.5.2
+ * Vue.js v2.5.13
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -83,14 +662,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
 				__WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)) : global.Vue = factory();
-})(undefined, function () {
+})(this, function () {
   'use strict';
 
   /*  */
 
+  var emptyObject = Object.freeze({});
+
   // these helpers produces better vm code in JS engines due to their
   // explicitness and function inlining
-
   function isUndef(v) {
     return v === undefined || v === null;
   }
@@ -111,7 +691,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    * Check if value is primitive
    */
   function isPrimitive(value) {
-    return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+    return typeof value === 'string' || typeof value === 'number' ||
+    // $flow-disable-line
+    (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'symbol' || typeof value === 'boolean';
   }
 
   /**
@@ -403,6 +985,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     /**
      * Option merge strategies (used in core/util/options)
      */
+    // $flow-disable-line
     optionMergeStrategies: Object.create(null),
 
     /**
@@ -443,6 +1026,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     /**
      * Custom user key aliases for v-on
      */
+    // $flow-disable-line
     keyCodes: Object.create(null),
 
     /**
@@ -486,8 +1070,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   };
 
   /*  */
-
-  var emptyObject = Object.freeze({});
 
   /**
    * Check if a string starts with $ or _
@@ -536,12 +1118,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   // Browser environment sniffing
   var inBrowser = typeof window !== 'undefined';
+  var inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform;
+  var weexPlatform = inWeex && WXEnvironment.platform.toLowerCase();
   var UA = inBrowser && window.navigator.userAgent.toLowerCase();
   var isIE = UA && /msie|trident/.test(UA);
   var isIE9 = UA && UA.indexOf('msie 9.0') > 0;
   var isEdge = UA && UA.indexOf('edge/') > 0;
-  var isAndroid = UA && UA.indexOf('android') > 0;
-  var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA);
+  var isAndroid = UA && UA.indexOf('android') > 0 || weexPlatform === 'android';
+  var isIOS = UA && /iphone|ipad|ipod|ios/.test(UA) || weexPlatform === 'ios';
   var isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
 
   // Firefox has a "watch" function on Object.prototype...
@@ -764,9 +1348,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     this.elm = elm;
     this.ns = undefined;
     this.context = context;
-    this.functionalContext = undefined;
-    this.functionalOptions = undefined;
-    this.functionalScopeId = undefined;
+    this.fnContext = undefined;
+    this.fnOptions = undefined;
+    this.fnScopeId = undefined;
     this.key = data && data.key;
     this.componentOptions = componentOptions;
     this.componentInstance = undefined;
@@ -810,14 +1394,23 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   // multiple renders, cloning them avoids errors when DOM manipulations rely
   // on their elm reference.
   function cloneVNode(vnode, deep) {
-    var cloned = new VNode(vnode.tag, vnode.data, vnode.children, vnode.text, vnode.elm, vnode.context, vnode.componentOptions, vnode.asyncFactory);
+    var componentOptions = vnode.componentOptions;
+    var cloned = new VNode(vnode.tag, vnode.data, vnode.children, vnode.text, vnode.elm, vnode.context, componentOptions, vnode.asyncFactory);
     cloned.ns = vnode.ns;
     cloned.isStatic = vnode.isStatic;
     cloned.key = vnode.key;
     cloned.isComment = vnode.isComment;
+    cloned.fnContext = vnode.fnContext;
+    cloned.fnOptions = vnode.fnOptions;
+    cloned.fnScopeId = vnode.fnScopeId;
     cloned.isCloned = true;
-    if (deep && vnode.children) {
-      cloned.children = cloneVNodes(vnode.children);
+    if (deep) {
+      if (vnode.children) {
+        cloned.children = cloneVNodes(vnode.children, true);
+      }
+      if (componentOptions && componentOptions.children) {
+        componentOptions.children = cloneVNodes(componentOptions.children, true);
+      }
     }
     return cloned;
   }
@@ -1030,7 +1623,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       target.splice(key, 1, val);
       return val;
     }
-    if (hasOwn(target, key)) {
+    if (key in target && !(key in Object.prototype)) {
       target[key] = val;
       return val;
     }
@@ -1146,13 +1739,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       // check if parentVal is a function here because
       // it has to be a function to pass previous merges.
       return function mergedDataFn() {
-        return mergeData(typeof childVal === 'function' ? childVal.call(this) : childVal, typeof parentVal === 'function' ? parentVal.call(this) : parentVal);
+        return mergeData(typeof childVal === 'function' ? childVal.call(this, this) : childVal, typeof parentVal === 'function' ? parentVal.call(this, this) : parentVal);
       };
-    } else if (parentVal || childVal) {
+    } else {
       return function mergedInstanceDataFn() {
         // instance merge
-        var instanceData = typeof childVal === 'function' ? childVal.call(vm) : childVal;
-        var defaultData = typeof parentVal === 'function' ? parentVal.call(vm) : parentVal;
+        var instanceData = typeof childVal === 'function' ? childVal.call(vm, vm) : childVal;
+        var defaultData = typeof parentVal === 'function' ? parentVal.call(vm, vm) : parentVal;
         if (instanceData) {
           return mergeData(instanceData, defaultData);
         } else {
@@ -1169,7 +1762,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         return parentVal;
       }
-      return mergeDataOrFn.call(this, parentVal, childVal);
+      return mergeDataOrFn(parentVal, childVal);
     }
 
     return mergeDataOrFn(parentVal, childVal, vm);
@@ -1275,10 +1868,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    */
   function checkComponents(options) {
     for (var key in options.components) {
-      var lower = key.toLowerCase();
-      if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
-        warn('Do not use built-in or reserved HTML elements as component ' + 'id: ' + key);
-      }
+      validateComponentName(key);
+    }
+  }
+
+  function validateComponentName(name) {
+    if (!/^[a-zA-Z][\w-]*$/.test(name)) {
+      warn('Invalid component name: "' + name + '". Component names ' + 'can only contain alphanumeric characters and the hyphen, ' + 'and must start with a letter.');
+    }
+    if (isBuiltInTag(name) || config.isReservedTag(name)) {
+      warn('Do not use built-in or reserved HTML elements as component ' + 'id: ' + name);
     }
   }
 
@@ -1321,6 +1920,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    */
   function normalizeInject(options, vm) {
     var inject = options.inject;
+    if (!inject) {
+      return;
+    }
     var normalized = options.inject = {};
     if (Array.isArray(inject)) {
       for (var i = 0; i < inject.length; i++) {
@@ -1331,7 +1933,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var val = inject[key];
         normalized[key] = isPlainObject(val) ? extend({ from: key }, val) : { from: val };
       }
-    } else if ("development" !== 'production' && inject) {
+    } else {
       warn("Invalid value for option \"inject\": expected an Array or an Object, " + "but got " + toRawType(inject) + ".", vm);
     }
   }
@@ -1607,7 +2209,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       warn("Error in " + info + ": \"" + err.toString() + "\"", vm);
     }
     /* istanbul ignore else */
-    if (inBrowser && typeof console !== 'undefined') {
+    if ((inBrowser || inWeex) && typeof console !== 'undefined') {
       console.error(err);
     } else {
       throw err;
@@ -1812,6 +2414,47 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   /*  */
 
+  var seenObjects = new _Set();
+
+  /**
+   * Recursively traverse an object to evoke all converted
+   * getters, so that every nested property inside the object
+   * is collected as a "deep" dependency.
+   */
+  function traverse(val) {
+    _traverse(val, seenObjects);
+    seenObjects.clear();
+  }
+
+  function _traverse(val, seen) {
+    var i, keys;
+    var isA = Array.isArray(val);
+    if (!isA && !isObject(val) || Object.isFrozen(val)) {
+      return;
+    }
+    if (val.__ob__) {
+      var depId = val.__ob__.dep.id;
+      if (seen.has(depId)) {
+        return;
+      }
+      seen.add(depId);
+    }
+    if (isA) {
+      i = val.length;
+      while (i--) {
+        _traverse(val[i], seen);
+      }
+    } else {
+      keys = Object.keys(val);
+      i = keys.length;
+      while (i--) {
+        _traverse(val[keys[i]], seen);
+      }
+    }
+  }
+
+  /*  */
+
   var normalizeEvent = cached(function (name) {
     var passive = name.charAt(0) === '&';
     name = passive ? name.slice(1) : name;
@@ -1847,18 +2490,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   function updateListeners(on, oldOn, add, remove$$1, vm) {
-    var name, cur, old, event;
+    var name, def, cur, old, event;
     for (name in on) {
-      cur = on[name];
+      def = cur = on[name];
       old = oldOn[name];
       event = normalizeEvent(name);
+      /* istanbul ignore if */
       if (isUndef(cur)) {
         "development" !== 'production' && warn("Invalid handler for event \"" + event.name + "\": got " + String(cur), vm);
       } else if (isUndef(old)) {
         if (isUndef(cur.fns)) {
           cur = on[name] = createFnInvoker(cur);
         }
-        add(event.name, cur, event.once, event.capture, event.passive);
+        add(event.name, cur, event.once, event.capture, event.passive, event.params);
       } else if (cur !== old) {
         old.fns = cur;
         on[name] = old;
@@ -1875,6 +2519,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   /*  */
 
   function mergeVNodeHook(def, hookKey, hook) {
+    if (def instanceof VNode) {
+      def = def.data.hook || (def.data.hook = {});
+    }
     var invoker;
     var oldHook = def[hookKey];
 
@@ -2188,6 +2835,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   function updateComponentListeners(vm, listeners, oldListeners) {
     target = vm;
     updateListeners(listeners, oldListeners || {}, add, remove$1, vm);
+    target = undefined;
   }
 
   function eventsMixin(Vue) {
@@ -2243,7 +2891,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       if (!cbs) {
         return vm;
       }
-      if (arguments.length === 1) {
+      if (!fn) {
         vm._events[event] = null;
         return vm;
       }
@@ -2296,7 +2944,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     if (!children) {
       return slots;
     }
-    var defaultSlot = [];
     for (var i = 0, l = children.length; i < l; i++) {
       var child = children[i];
       var data = child.data;
@@ -2306,27 +2953,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
       // named slots should only be respected if the vnode was rendered in the
       // same context.
-      if ((child.context === context || child.functionalContext === context) && data && data.slot != null) {
-        var name = child.data.slot;
+      if ((child.context === context || child.fnContext === context) && data && data.slot != null) {
+        var name = data.slot;
         var slot = slots[name] || (slots[name] = []);
         if (child.tag === 'template') {
-          slot.push.apply(slot, child.children);
+          slot.push.apply(slot, child.children || []);
         } else {
           slot.push(child);
         }
       } else {
-        defaultSlot.push(child);
+        (slots.default || (slots.default = [])).push(child);
       }
     }
-    // ignore whitespace
-    if (!defaultSlot.every(isWhitespace)) {
-      slots.default = defaultSlot;
+    // ignore slots that contains only whitespace
+    for (var name$1 in slots) {
+      if (slots[name$1].every(isWhitespace)) {
+        delete slots[name$1];
+      }
     }
     return slots;
   }
 
   function isWhitespace(node) {
-    return node.isComment || node.text === ' ';
+    return node.isComment && !node.asyncFactory || node.text === ' ';
   }
 
   function resolveScopedSlots(fns, // see flow/vnode
@@ -2504,7 +3153,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       };
     }
 
-    vm._watcher = new Watcher(vm, updateComponent, noop);
+    // we set this to vm._watcher inside the watcher's constructor
+    // since the watcher's initial patch may call $forceUpdate (e.g. inside child
+    // component's mounted hook), which relies on vm._watcher being already defined
+    new Watcher(vm, updateComponent, noop, null, true /* isRenderWatcher */);
     hydrating = false;
 
     // manually mounted instance, call mounted on self
@@ -2777,8 +3429,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    * and fires callback when the expression value changes.
    * This is used for both the $watch() api and directives.
    */
-  var Watcher = function Watcher(vm, expOrFn, cb, options) {
+  var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
     this.vm = vm;
+    if (isRenderWatcher) {
+      vm._watcher = this;
+    }
     vm._watchers.push(this);
     // options
     if (options) {
@@ -2960,44 +3615,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
   };
 
-  /**
-   * Recursively traverse an object to evoke all converted
-   * getters, so that every nested property inside the object
-   * is collected as a "deep" dependency.
-   */
-  var seenObjects = new _Set();
-  function traverse(val) {
-    seenObjects.clear();
-    _traverse(val, seenObjects);
-  }
-
-  function _traverse(val, seen) {
-    var i, keys;
-    var isA = Array.isArray(val);
-    if (!isA && !isObject(val) || !Object.isExtensible(val)) {
-      return;
-    }
-    if (val.__ob__) {
-      var depId = val.__ob__.dep.id;
-      if (seen.has(depId)) {
-        return;
-      }
-      seen.add(depId);
-    }
-    if (isA) {
-      i = val.length;
-      while (i--) {
-        _traverse(val[i], seen);
-      }
-    } else {
-      keys = Object.keys(val);
-      i = keys.length;
-      while (i--) {
-        _traverse(val[keys[i]], seen);
-      }
-    }
-  }
-
   /*  */
 
   var sharedPropertyDefinition = {
@@ -3117,6 +3734,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   var computedWatcherOptions = { lazy: true };
 
   function initComputed(vm, computed) {
+    // $flow-disable-line
     var watchers = vm._computedWatchers = Object.create(null);
     // computed properties are just getters during SSR
     var isSSR = isServerRendering();
@@ -3361,6 +3979,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    */
   function renderSlot(name, fallback, props, bindObject) {
     var scopedSlotFn = this.$scopedSlots[name];
+    var nodes;
     if (scopedSlotFn) {
       // scoped slot
       props = props || {};
@@ -3370,15 +3989,24 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
         props = extend(extend({}, bindObject), props);
       }
-      return scopedSlotFn(props) || fallback;
+      nodes = scopedSlotFn(props) || fallback;
     } else {
       var slotNodes = this.$slots[name];
       // warn duplicate slot usage
-      if (slotNodes && "development" !== 'production') {
-        slotNodes._rendered && warn("Duplicate presence of slot \"" + name + "\" found in the same render tree " + "- this will likely cause render errors.", this);
+      if (slotNodes) {
+        if ("development" !== 'production' && slotNodes._rendered) {
+          warn("Duplicate presence of slot \"" + name + "\" found in the same render tree " + "- this will likely cause render errors.", this);
+        }
         slotNodes._rendered = true;
       }
-      return slotNodes || fallback;
+      nodes = slotNodes || fallback;
+    }
+
+    var target = props && props.slot;
+    if (target) {
+      return this.$createElement('template', { slot: target }, nodes);
+    } else {
+      return nodes;
     }
   }
 
@@ -3458,10 +4086,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
    * Runtime helper for rendering static trees.
    */
   function renderStatic(index, isInFor) {
-    // static trees can be rendered once and cached on the contructor options
-    // so every instance shares the same cached trees
-    var renderFns = this.$options.staticRenderFns;
-    var cached = renderFns.cached || (renderFns.cached = []);
+    var cached = this._staticTrees || (this._staticTrees = []);
     var tree = cached[index];
     // if has already-rendered static tree and not inside v-for,
     // we can reuse the same tree by doing a shallow clone.
@@ -3469,7 +4094,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       return Array.isArray(tree) ? cloneVNodes(tree) : cloneVNode(tree);
     }
     // otherwise, render a fresh tree.
-    tree = cached[index] = renderFns[index].call(this._renderProxy, null, this);
+    tree = cached[index] = this.$options.staticRenderFns[index].call(this._renderProxy, null, this // for render fns generated for functional component templates
+    );
     markStatic(tree, "__static__" + index, false);
     return tree;
   }
@@ -3572,8 +4198,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       this._c = function (a, b, c, d) {
         var vnode = createElement(contextVm, a, b, c, d, needNormalization);
         if (vnode) {
-          vnode.functionalScopeId = options._scopeId;
-          vnode.functionalContext = parent;
+          vnode.fnScopeId = options._scopeId;
+          vnode.fnContext = parent;
         }
         return vnode;
       };
@@ -3608,8 +4234,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var vnode = options.render.call(null, renderContext._c, renderContext);
 
     if (vnode instanceof VNode) {
-      vnode.functionalContext = contextVm;
-      vnode.functionalOptions = options;
+      vnode.fnContext = contextVm;
+      vnode.fnOptions = options;
       if (data.slot) {
         (vnode.data || (vnode.data = {})).slot = data.slot;
       }
@@ -3623,6 +4249,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       to[camelize(key)] = from[key];
     }
   }
+
+  /*  */
+
+  // Register the component hook to weex native render engine.
+  // The hook will be triggered by native, not javascript.
+
+
+  // Updates the state of the component to weex native render engine.
+
+  /*  */
+
+  // https://github.com/Hanks10100/weex-native-directive/tree/master/component
+
+  // listening on native callback
+
+  /*  */
 
   /*  */
 
@@ -3762,21 +4404,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // return a placeholder vnode
     var name = Ctor.options.name || tag;
     var vnode = new VNode("vue-component-" + Ctor.cid + (name ? "-" + name : ''), data, undefined, undefined, undefined, context, { Ctor: Ctor, propsData: propsData, listeners: listeners, tag: tag, children: children }, asyncFactory);
+
+    // Weex specific: invoke recycle-list optimized @render function for
+    // extracting cell-slot template.
+    // https://github.com/Hanks10100/weex-native-directive/tree/master/component
+    /* istanbul ignore if */
     return vnode;
   }
 
   function createComponentInstanceForVnode(vnode, // we know it's MountedComponentVNode but flow doesn't
   parent, // activeInstance in lifecycle state
   parentElm, refElm) {
-    var vnodeComponentOptions = vnode.componentOptions;
     var options = {
       _isComponent: true,
       parent: parent,
-      propsData: vnodeComponentOptions.propsData,
-      _componentTag: vnodeComponentOptions.tag,
       _parentVnode: vnode,
-      _parentListeners: vnodeComponentOptions.listeners,
-      _renderChildren: vnodeComponentOptions.children,
       _parentElm: parentElm || null,
       _refElm: refElm || null
     };
@@ -3786,7 +4428,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       options.render = inlineTemplate.render;
       options.staticRenderFns = inlineTemplate.staticRenderFns;
     }
-    return new vnodeComponentOptions.Ctor(options);
+    return new vnode.componentOptions.Ctor(options);
   }
 
   function mergeHooks(data) {
@@ -3855,7 +4497,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
     // warn against non-primitive key
     if ("development" !== 'production' && isDef(data) && isDef(data.key) && !isPrimitive(data.key)) {
-      warn('Avoid using non-primitive value as key, ' + 'use string/number value instead.', context);
+      {
+        warn('Avoid using non-primitive value as key, ' + 'use string/number value instead.', context);
+      }
     }
     // support single function children as default scoped slot
     if (Array.isArray(children) && typeof children[0] === 'function') {
@@ -3919,6 +4563,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   function initRender(vm) {
     vm._vnode = null; // the root of the child tree
+    vm._staticTrees = null; // v-once cached trees
     var options = vm.$options;
     var parentVnode = vm.$vnode = options._parentVnode; // the placeholder node in parent tree
     var renderContext = parentVnode && parentVnode.context;
@@ -3971,7 +4616,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // last render. They need to be cloned to ensure "freshness" for this render.
         for (var key in vm.$slots) {
           var slot = vm.$slots[key];
-          if (slot._rendered) {
+          // _rendered is a flag added by renderSlot, but may not be present
+          // if the slot is passed from manually written render functions
+          if (slot._rendered || slot[0] && slot[0].elm) {
             vm.$slots[key] = cloneVNodes(slot, true /* deep */);
           }
         }
@@ -4077,14 +4724,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   function initInternalComponent(vm, options) {
     var opts = vm.$options = Object.create(vm.constructor.options);
     // doing this because it's faster than dynamic enumeration.
+    var parentVnode = options._parentVnode;
     opts.parent = options.parent;
-    opts.propsData = options.propsData;
-    opts._parentVnode = options._parentVnode;
-    opts._parentListeners = options._parentListeners;
-    opts._renderChildren = options._renderChildren;
-    opts._componentTag = options._componentTag;
+    opts._parentVnode = parentVnode;
     opts._parentElm = options._parentElm;
     opts._refElm = options._refElm;
+
+    var vnodeComponentOptions = parentVnode.componentOptions;
+    opts.propsData = vnodeComponentOptions.propsData;
+    opts._parentListeners = vnodeComponentOptions.listeners;
+    opts._renderChildren = vnodeComponentOptions.children;
+    opts._componentTag = vnodeComponentOptions.tag;
+
     if (options.render) {
       opts.render = options.render;
       opts.staticRenderFns = options.staticRenderFns;
@@ -4218,10 +4869,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
 
       var name = extendOptions.name || Super.options.name;
-      {
-        if (!/^[a-zA-Z][\w-]*$/.test(name)) {
-          warn('Invalid component name: "' + name + '". Component names ' + 'can only contain alphanumeric characters and the hyphen, ' + 'and must start with a letter.');
-        }
+      if ("development" !== 'production' && name) {
+        validateComponentName(name);
       }
 
       var Sub = function VueComponent(options) {
@@ -4297,10 +4946,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           return this.options[type + 's'][id];
         } else {
           /* istanbul ignore if */
-          {
-            if (type === 'component' && config.isReservedTag(id)) {
-              warn('Do not use built-in or reserved HTML elements as component ' + 'id: ' + id);
-            }
+          if ("development" !== 'production' && type === 'component') {
+            validateComponentName(id);
           }
           if (type === 'component' && isPlainObject(definition)) {
             definition.name = definition.name || id;
@@ -4351,7 +4998,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   function pruneCacheEntry(cache, key, keys, current) {
     var cached$$1 = cache[key];
-    if (cached$$1 && cached$$1 !== current) {
+    if (cached$$1 && (!current || cached$$1.tag !== current.tag)) {
       cached$$1.componentInstance.$destroy();
     }
     cache[key] = null;
@@ -4397,18 +5044,26 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     },
 
     render: function render() {
-      var vnode = getFirstComponentChild(this.$slots.default);
+      var slot = this.$slots.default;
+      var vnode = getFirstComponentChild(slot);
       var componentOptions = vnode && vnode.componentOptions;
       if (componentOptions) {
         // check pattern
         var name = getComponentName(componentOptions);
-        if (name && (this.include && !matches(this.include, name) || this.exclude && matches(this.exclude, name))) {
+        var ref = this;
+        var include = ref.include;
+        var exclude = ref.exclude;
+        if (
+        // not included
+        include && (!name || !matches(include, name)) ||
+        // excluded
+        exclude && name && matches(exclude, name)) {
           return vnode;
         }
 
-        var ref = this;
-        var cache = ref.cache;
-        var keys = ref.keys;
+        var ref$1 = this;
+        var cache = ref$1.cache;
+        var keys = ref$1.keys;
         var key = vnode.key == null
         // same constructor may get registered as different local components
         // so cid alone is not enough (#3269)
@@ -4429,7 +5084,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         vnode.data.keepAlive = true;
       }
-      return vnode;
+      return vnode || slot && slot[0];
     }
   };
 
@@ -4496,7 +5151,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
   });
 
-  Vue$3.version = '2.5.2';
+  Vue$3.version = '2.5.13';
 
   /*  */
 
@@ -4536,12 +5191,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var childNode = vnode;
     while (isDef(childNode.componentInstance)) {
       childNode = childNode.componentInstance._vnode;
-      if (childNode.data) {
+      if (childNode && childNode.data) {
         data = mergeClassData(childNode.data, data);
       }
     }
     while (isDef(parentNode = parentNode.parent)) {
-      if (parentNode.data) {
+      if (parentNode && parentNode.data) {
         data = mergeClassData(data, parentNode.data);
       }
     }
@@ -4882,7 +5537,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
     }
 
-    var inPre = 0;
+    function isUnknownElement$$1(vnode, inVPre) {
+      return !inVPre && !vnode.ns && !(config.ignoredElements.length && config.ignoredElements.some(function (ignore) {
+        return isRegExp(ignore) ? ignore.test(vnode.tag) : ignore === vnode.tag;
+      })) && config.isUnknownElement(vnode.tag);
+    }
+
+    var creatingElmInVPre = 0;
     function createElm(vnode, insertedVnodeQueue, parentElm, refElm, nested) {
       vnode.isRootInsert = !nested; // for transition enter check
       if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
@@ -4895,11 +5556,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       if (isDef(tag)) {
         {
           if (data && data.pre) {
-            inPre++;
+            creatingElmInVPre++;
           }
-          if (!inPre && !vnode.ns && !(config.ignoredElements.length && config.ignoredElements.some(function (ignore) {
-            return isRegExp(ignore) ? ignore.test(tag) : ignore === tag;
-          })) && config.isUnknownElement(tag)) {
+          if (isUnknownElement$$1(vnode, creatingElmInVPre)) {
             warn('Unknown custom element: <' + tag + '> - did you ' + 'register the component correctly? For recursive components, ' + 'make sure to provide the "name" option.', vnode.context);
           }
         }
@@ -4916,7 +5575,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
 
         if ("development" !== 'production' && data && data.pre) {
-          inPre--;
+          creatingElmInVPre--;
         }
       } else if (isTrue(vnode.isComment)) {
         vnode.elm = nodeOps.createComment(vnode.text);
@@ -5002,11 +5661,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     function createChildren(vnode, children, insertedVnodeQueue) {
       if (Array.isArray(children)) {
+        {
+          checkDuplicateKeys(children);
+        }
         for (var i = 0; i < children.length; ++i) {
           createElm(children[i], insertedVnodeQueue, vnode.elm, null, true);
         }
       } else if (isPrimitive(vnode.text)) {
-        nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(vnode.text));
+        nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)));
       }
     }
 
@@ -5037,7 +5699,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // of going through the normal attribute patching process.
     function setScope(vnode) {
       var i;
-      if (isDef(i = vnode.functionalScopeId)) {
+      if (isDef(i = vnode.fnScopeId)) {
         nodeOps.setAttribute(vnode.elm, i, '');
       } else {
         var ancestor = vnode;
@@ -5049,7 +5711,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
       }
       // for slot content they should also get the scopeId from the host instance.
-      if (isDef(i = activeInstance) && i !== vnode.context && i !== vnode.functionalContext && isDef(i = i.$options._scopeId)) {
+      if (isDef(i = activeInstance) && i !== vnode.context && i !== vnode.fnContext && isDef(i = i.$options._scopeId)) {
         nodeOps.setAttribute(vnode.elm, i, '');
       }
     }
@@ -5138,6 +5800,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       // during leaving transitions
       var canMove = !removeOnly;
 
+      {
+        checkDuplicateKeys(newCh);
+      }
+
       while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
         if (isUndef(oldStartVnode)) {
           oldStartVnode = oldCh[++oldStartIdx]; // Vnode has been moved left
@@ -5173,10 +5839,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             createElm(newStartVnode, insertedVnodeQueue, parentElm, oldStartVnode.elm);
           } else {
             vnodeToMove = oldCh[idxInOld];
-            /* istanbul ignore if */
-            if ("development" !== 'production' && !vnodeToMove) {
-              warn('It seems there are duplicate keys that is causing an update error. ' + 'Make sure each v-for item has a unique key.');
-            }
             if (sameVnode(vnodeToMove, newStartVnode)) {
               patchVnode(vnodeToMove, newStartVnode, insertedVnodeQueue);
               oldCh[idxInOld] = undefined;
@@ -5194,6 +5856,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
       } else if (newStartIdx > newEndIdx) {
         removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
+      }
+    }
+
+    function checkDuplicateKeys(children) {
+      var seenKeys = {};
+      for (var i = 0; i < children.length; i++) {
+        var vnode = children[i];
+        var key = vnode.key;
+        if (isDef(key)) {
+          if (seenKeys[key]) {
+            warn("Duplicate keys detected: '" + key + "'. This may cause an update error.", vnode.context);
+          } else {
+            seenKeys[key] = true;
+          }
+        }
       }
     }
 
@@ -5284,27 +5961,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
     }
 
-    var bailed = false;
+    var hydrationBailed = false;
     // list of modules that can skip create hook during hydration because they
     // are already rendered on the client or has no need for initialization
-    var isRenderedModule = makeMap('attrs,style,class,staticClass,staticStyle,key');
+    // Note: style is excluded because it relies on initial clone for future
+    // deep updates (#7063).
+    var isRenderedModule = makeMap('attrs,class,staticClass,staticStyle,key');
 
     // Note: this is a browser-only function so we can assume elms are DOM nodes.
-    function hydrate(elm, vnode, insertedVnodeQueue) {
-      if (isTrue(vnode.isComment) && isDef(vnode.asyncFactory)) {
-        vnode.elm = elm;
-        vnode.isAsyncPlaceholder = true;
-        return true;
-      }
-      {
-        if (!assertNodeMatch(elm, vnode)) {
-          return false;
-        }
-      }
-      vnode.elm = elm;
+    function hydrate(elm, vnode, insertedVnodeQueue, inVPre) {
+      var i;
       var tag = vnode.tag;
       var data = vnode.data;
       var children = vnode.children;
+      inVPre = inVPre || data && data.pre;
+      vnode.elm = elm;
+
+      if (isTrue(vnode.isComment) && isDef(vnode.asyncFactory)) {
+        vnode.isAsyncPlaceholder = true;
+        return true;
+      }
+      // assert node match
+      {
+        if (!assertNodeMatch(elm, vnode, inVPre)) {
+          return false;
+        }
+      }
       if (isDef(data)) {
         if (isDef(i = data.hook) && isDef(i = i.init)) {
           i(vnode, true /* hydrating */);
@@ -5325,8 +6007,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             if (isDef(i = data) && isDef(i = i.domProps) && isDef(i = i.innerHTML)) {
               if (i !== elm.innerHTML) {
                 /* istanbul ignore if */
-                if ("development" !== 'production' && typeof console !== 'undefined' && !bailed) {
-                  bailed = true;
+                if ("development" !== 'production' && typeof console !== 'undefined' && !hydrationBailed) {
+                  hydrationBailed = true;
                   console.warn('Parent: ', elm);
                   console.warn('server innerHTML: ', i);
                   console.warn('client innerHTML: ', elm.innerHTML);
@@ -5338,7 +6020,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               var childrenMatch = true;
               var childNode = elm.firstChild;
               for (var i$1 = 0; i$1 < children.length; i$1++) {
-                if (!childNode || !hydrate(childNode, children[i$1], insertedVnodeQueue)) {
+                if (!childNode || !hydrate(childNode, children[i$1], insertedVnodeQueue, inVPre)) {
                   childrenMatch = false;
                   break;
                 }
@@ -5348,8 +6030,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
               // longer than the virtual children list.
               if (!childrenMatch || childNode) {
                 /* istanbul ignore if */
-                if ("development" !== 'production' && typeof console !== 'undefined' && !bailed) {
-                  bailed = true;
+                if ("development" !== 'production' && typeof console !== 'undefined' && !hydrationBailed) {
+                  hydrationBailed = true;
                   console.warn('Parent: ', elm);
                   console.warn('Mismatching childNodes vs. VNodes: ', elm.childNodes, children);
                 }
@@ -5359,11 +6041,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }
         if (isDef(data)) {
+          var fullInvoke = false;
           for (var key in data) {
             if (!isRenderedModule(key)) {
+              fullInvoke = true;
               invokeCreateHooks(vnode, insertedVnodeQueue);
               break;
             }
+          }
+          if (!fullInvoke && data['class']) {
+            // ensure collecting deps for deep class bindings for future updates
+            traverse(data['class']);
           }
         }
       } else if (elm.data !== vnode.text) {
@@ -5372,9 +6060,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       return true;
     }
 
-    function assertNodeMatch(node, vnode) {
+    function assertNodeMatch(node, vnode, inVPre) {
       if (isDef(vnode.tag)) {
-        return vnode.tag.indexOf('vue-component') === 0 || vnode.tag.toLowerCase() === (node.tagName && node.tagName.toLowerCase());
+        return vnode.tag.indexOf('vue-component') === 0 || !isUnknownElement$$1(vnode, inVPre) && vnode.tag.toLowerCase() === (node.tagName && node.tagName.toLowerCase());
       } else {
         return node.nodeType === (vnode.isComment ? 8 : 3);
       }
@@ -5421,18 +6109,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             // create an empty node and replace it
             oldVnode = emptyNodeAt(oldVnode);
           }
+
           // replacing existing element
           var oldElm = oldVnode.elm;
           var parentElm$1 = nodeOps.parentNode(oldElm);
+
+          // create new node
           createElm(vnode, insertedVnodeQueue,
           // extremely rare edge case: do not insert if old element is in a
           // leaving transition. Only happens when combining transition +
           // keep-alive + HOCs. (#4590)
           oldElm._leaveCb ? null : parentElm$1, nodeOps.nextSibling(oldElm));
 
+          // update parent placeholder node element, recursively
           if (isDef(vnode.parent)) {
-            // component root element replaced.
-            // update parent placeholder node element, recursively
             var ancestor = vnode.parent;
             var patchable = isPatchable(vnode);
             while (ancestor) {
@@ -5461,6 +6151,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             }
           }
 
+          // destroy old node
           if (isDef(parentElm$1)) {
             removeVnodes(parentElm$1, [oldVnode], 0, 0);
           } else if (isDef(oldVnode.tag)) {
@@ -5526,14 +6217,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
       };
       if (isCreate) {
-        mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'insert', callInsert);
+        mergeVNodeHook(vnode, 'insert', callInsert);
       } else {
         callInsert();
       }
     }
 
     if (dirsWithPostpatch.length) {
-      mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'postpatch', function () {
+      mergeVNodeHook(vnode, 'postpatch', function () {
         for (var i = 0; i < dirsWithPostpatch.length; i++) {
           callHook$1(dirsWithPostpatch[i], 'componentUpdated', vnode, oldVnode);
         }
@@ -5555,17 +6246,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   function normalizeDirectives$1(dirs, vm) {
     var res = Object.create(null);
     if (!dirs) {
+      // $flow-disable-line
       return res;
     }
     var i, dir;
     for (i = 0; i < dirs.length; i++) {
       dir = dirs[i];
       if (!dir.modifiers) {
+        // $flow-disable-line
         dir.modifiers = emptyModifiers;
       }
       res[getRawDirName(dir)] = dir;
       dir.def = resolveAsset(vm.$options, 'directives', dir.name, true);
     }
+    // $flow-disable-line
     return res;
   }
 
@@ -5615,7 +6309,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     // #4391: in IE9, setting type can reset value for input[type=radio]
     // #6666: IE/Edge forces progress value down to 1 before setting a max
     /* istanbul ignore if */
-    if ((isIE9 || isEdge) && attrs.value !== oldAttrs.value) {
+    if ((isIE || isEdge) && attrs.value !== oldAttrs.value) {
       setAttr(elm, 'value', attrs.value);
     }
     for (key in oldAttrs) {
@@ -5653,6 +6347,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       if (isFalsyAttrValue(value)) {
         el.removeAttribute(key);
       } else {
+        // #7138: IE10 & 11 fires input event when setting placeholder on
+        // <textarea>... block the first input event and remove the blocker
+        // immediately.
+        /* istanbul ignore if */
+        if (isIE && !isIE9 && el.tagName === 'TEXTAREA' && key === 'placeholder' && !el.__ieph) {
+          var blocker = function blocker(e) {
+            e.stopImmediatePropagation();
+            el.removeEventListener('input', blocker);
+          };
+          el.addEventListener('input', blocker);
+          // $flow-disable-line
+          el.__ieph = true; /* IE placeholder patched */
+        }
         el.setAttribute(key, value);
       }
     }
@@ -5823,44 +6530,73 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   function addProp(el, name, value) {
     (el.props || (el.props = [])).push({ name: name, value: value });
+    el.plain = false;
   }
 
   function addAttr(el, name, value) {
     (el.attrs || (el.attrs = [])).push({ name: name, value: value });
+    el.plain = false;
+  }
+
+  // add a raw attr (use this in preTransforms)
+  function addRawAttr(el, name, value) {
+    el.attrsMap[name] = value;
+    el.attrsList.push({ name: name, value: value });
   }
 
   function addDirective(el, name, rawName, value, arg, modifiers) {
     (el.directives || (el.directives = [])).push({ name: name, rawName: rawName, value: value, arg: arg, modifiers: modifiers });
+    el.plain = false;
   }
 
   function addHandler(el, name, value, modifiers, important, warn) {
+    modifiers = modifiers || emptyObject;
     // warn prevent and passive modifier
     /* istanbul ignore if */
-    if ("development" !== 'production' && warn && modifiers && modifiers.prevent && modifiers.passive) {
+    if ("development" !== 'production' && warn && modifiers.prevent && modifiers.passive) {
       warn('passive and prevent can\'t be used together. ' + 'Passive handler can\'t prevent default event.');
     }
+
     // check capture modifier
-    if (modifiers && modifiers.capture) {
+    if (modifiers.capture) {
       delete modifiers.capture;
       name = '!' + name; // mark the event as captured
     }
-    if (modifiers && modifiers.once) {
+    if (modifiers.once) {
       delete modifiers.once;
       name = '~' + name; // mark the event as once
     }
     /* istanbul ignore if */
-    if (modifiers && modifiers.passive) {
+    if (modifiers.passive) {
       delete modifiers.passive;
       name = '&' + name; // mark the event as passive
     }
+
+    // normalize click.right and click.middle since they don't actually fire
+    // this is technically browser-specific, but at least for now browsers are
+    // the only target envs that have right/middle clicks.
+    if (name === 'click') {
+      if (modifiers.right) {
+        name = 'contextmenu';
+        delete modifiers.right;
+      } else if (modifiers.middle) {
+        name = 'mouseup';
+      }
+    }
+
     var events;
-    if (modifiers && modifiers.native) {
+    if (modifiers.native) {
       delete modifiers.native;
       events = el.nativeEvents || (el.nativeEvents = {});
     } else {
       events = el.events || (el.events = {});
     }
-    var newHandler = { value: value, modifiers: modifiers };
+
+    var newHandler = { value: value };
+    if (modifiers !== emptyObject) {
+      newHandler.modifiers = modifiers;
+    }
+
     var handlers = events[name];
     /* istanbul ignore if */
     if (Array.isArray(handlers)) {
@@ -5870,6 +6606,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     } else {
       events[name] = newHandler;
     }
+
+    el.plain = false;
   }
 
   function getBindingAttr(el, name, getStatic) {
@@ -6124,6 +6862,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   function genDefaultModel(el, value, modifiers) {
     var type = el.attrsMap.type;
+
+    // warn if v-bind:value conflicts with v-model
+    {
+      var value$1 = el.attrsMap['v-bind:value'] || el.attrsMap[':value'];
+      if (value$1) {
+        var binding = el.attrsMap['v-bind:value'] ? 'v-bind:value' : ':value';
+        warn$1(binding + "=\"" + value$1 + "\" conflicts with v-model on the same element " + 'because the latter already expands to a value binding internally');
+      }
+    }
+
     var ref = modifiers || {};
     var lazy = ref.lazy;
     var number = ref.number;
@@ -6207,6 +6955,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     target$1 = vnode.elm;
     normalizeEvents(on);
     updateListeners(on, oldOn, add$1, remove$2, vnode.context);
+    target$1 = undefined;
   }
 
   var events = {
@@ -6272,10 +7021,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
   function shouldUpdateValue(elm, checkVal) {
-    return !elm.composing && (elm.tagName === 'OPTION' || isDirty(elm, checkVal) || isInputChanged(elm, checkVal));
+    return !elm.composing && (elm.tagName === 'OPTION' || isNotInFocusAndDirty(elm, checkVal) || isDirtyWithModifiers(elm, checkVal));
   }
 
-  function isDirty(elm, checkVal) {
+  function isNotInFocusAndDirty(elm, checkVal) {
     // return true when textbox (.number and .trim) loses focus and its value is
     // not equal to the updated value
     var notInFocus = true;
@@ -6287,14 +7036,20 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     return notInFocus && elm.value !== checkVal;
   }
 
-  function isInputChanged(elm, newVal) {
+  function isDirtyWithModifiers(elm, newVal) {
     var value = elm.value;
     var modifiers = elm._vModifiers; // injected by v-model runtime
-    if (isDef(modifiers) && modifiers.number) {
-      return toNumber(value) !== toNumber(newVal);
-    }
-    if (isDef(modifiers) && modifiers.trim) {
-      return value.trim() !== newVal.trim();
+    if (isDef(modifiers)) {
+      if (modifiers.lazy) {
+        // inputs with lazy should only be updated when not in focus
+        return false;
+      }
+      if (modifiers.number) {
+        return toNumber(value) !== toNumber(newVal);
+      }
+      if (modifiers.trim) {
+        return value.trim() !== newVal.trim();
+      }
     }
     return value !== newVal;
   }
@@ -6350,7 +7105,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       var childNode = vnode;
       while (childNode.componentInstance) {
         childNode = childNode.componentInstance._vnode;
-        if (childNode.data && (styleData = normalizeStyleData(childNode.data))) {
+        if (childNode && childNode.data && (styleData = normalizeStyleData(childNode.data))) {
           extend(res, styleData);
         }
       }
@@ -6776,7 +7531,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     if (!vnode.data.show) {
       // remove pending leave element on enter by injecting an insert hook
-      mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'insert', function () {
+      mergeVNodeHook(vnode, 'insert', function () {
         var parent = el.parentNode;
         var pendingNode = parent && parent._pending && parent._pending[vnode.key];
         if (pendingNode && pendingNode.tag === vnode.tag && pendingNode.elm._leaveCb) {
@@ -6824,12 +7579,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
 
     var data = resolveTransition(vnode.data.transition);
-    if (isUndef(data)) {
+    if (isUndef(data) || el.nodeType !== 1) {
       return rm();
     }
 
     /* istanbul ignore if */
-    if (isDef(el._leaveCb) || el.nodeType !== 1) {
+    if (isDef(el._leaveCb)) {
       return;
     }
 
@@ -6989,10 +7744,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     });
   }
 
-  var model$1 = {
-    inserted: function inserted(el, binding, vnode) {
+  var directive = {
+    inserted: function inserted(el, binding, vnode, oldVnode) {
       if (vnode.tag === 'select') {
-        setSelected(el, binding, vnode.context);
+        // #6903
+        if (oldVnode.elm && !oldVnode.elm._vOptions) {
+          mergeVNodeHook(vnode, 'postpatch', function () {
+            directive.componentUpdated(el, binding, vnode);
+          });
+        } else {
+          setSelected(el, binding, vnode.context);
+        }
         el._vOptions = [].map.call(el.options, getValue);
       } else if (vnode.tag === 'textarea' || isTextInputType(el.type)) {
         el._vModifiers = binding.modifiers;
@@ -7013,6 +7775,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
       }
     },
+
     componentUpdated: function componentUpdated(el, binding, vnode) {
       if (vnode.tag === 'select') {
         setSelected(el, binding, vnode.context);
@@ -7164,7 +7927,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   };
 
   var platformDirectives = {
-    model: model$1,
+    model: directive,
     show: show
   };
 
@@ -7246,7 +8009,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     render: function render(h) {
       var this$1 = this;
 
-      var children = this.$options._renderChildren;
+      var children = this.$slots.default;
       if (!children) {
         return;
       }
@@ -7310,7 +8073,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         child.data.show = true;
       }
 
-      if (oldChild && oldChild.data && !isSameChild(child, oldChild) && !isAsyncPlaceholder(oldChild)) {
+      if (oldChild && oldChild.data && !isSameChild(child, oldChild) && !isAsyncPlaceholder(oldChild) &&
+      // #6687 component root is a comment node
+      !(oldChild.componentInstance && oldChild.componentInstance._vnode.isComment)) {
         // replace old child transition data with fresh one
         // important for dynamic transitions!
         var oldData = oldChild.data.transition = extend({}, data);
@@ -7411,7 +8176,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     beforeUpdate: function beforeUpdate() {
       // force removing pass
       this.__patch__(this._vnode, this.kept, false, // hydrating
-      true // removeOnly (!important, avoids unnecessary moves)
+      true // removeOnly (!important avoids unnecessary moves)
       );
       this._vnode = this.kept;
     },
@@ -7554,19 +8319,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   /*  */
 
-  // check whether current browser encodes a char inside attribute values
-  function shouldDecode(content, encoded) {
-    var div = document.createElement('div');
-    div.innerHTML = "<div a=\"" + content + "\"/>";
-    return div.innerHTML.indexOf(encoded) > 0;
-  }
-
-  // #3663
-  // IE encodes newlines inside attribute values while other browsers don't
-  var shouldDecodeNewlines = inBrowser ? shouldDecode('\n', '&#10;') : false;
-
-  /*  */
-
   var defaultTagRE = /\{\{((?:.|\n)+?)\}\}/g;
   var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
 
@@ -7582,23 +8334,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       return;
     }
     var tokens = [];
+    var rawTokens = [];
     var lastIndex = tagRE.lastIndex = 0;
-    var match, index;
+    var match, index, tokenValue;
     while (match = tagRE.exec(text)) {
       index = match.index;
       // push text token
       if (index > lastIndex) {
-        tokens.push(JSON.stringify(text.slice(lastIndex, index)));
+        rawTokens.push(tokenValue = text.slice(lastIndex, index));
+        tokens.push(JSON.stringify(tokenValue));
       }
       // tag token
       var exp = parseFilters(match[1].trim());
       tokens.push("_s(" + exp + ")");
+      rawTokens.push({ '@binding': exp });
       lastIndex = index + match[0].length;
     }
     if (lastIndex < text.length) {
-      tokens.push(JSON.stringify(text.slice(lastIndex)));
+      rawTokens.push(tokenValue = text.slice(lastIndex));
+      tokens.push(JSON.stringify(tokenValue));
     }
-    return tokens.join('+');
+    return {
+      expression: tokens.join('+'),
+      tokens: rawTokens
+    };
   }
 
   /*  */
@@ -7607,8 +8366,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var warn = options.warn || baseWarn;
     var staticClass = getAndRemoveAttr(el, 'class');
     if ("development" !== 'production' && staticClass) {
-      var expression = parseText(staticClass, options.delimiters);
-      if (expression) {
+      var res = parseText(staticClass, options.delimiters);
+      if (res) {
         warn("class=\"" + staticClass + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div class="{{ val }}">, use <div :class="val">.');
       }
     }
@@ -7646,8 +8405,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     if (staticStyle) {
       /* istanbul ignore if */
       {
-        var expression = parseText(staticStyle, options.delimiters);
-        if (expression) {
+        var res = parseText(staticStyle, options.delimiters);
+        if (res) {
           warn("style=\"" + staticStyle + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div style="{{ val }}">, use <div :style="val">.');
         }
       }
@@ -7739,10 +8498,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     '&gt;': '>',
     '&quot;': '"',
     '&amp;': '&',
-    '&#10;': '\n'
+    '&#10;': '\n',
+    '&#9;': '\t'
   };
   var encodedAttr = /&(?:lt|gt|quot|amp);/g;
-  var encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#10);/g;
+  var encodedAttrWithNewLines = /&(?:lt|gt|quot|amp|#10|#9);/g;
 
   // #5992
   var isIgnoreNewlineTag = makeMap('pre,textarea', true);
@@ -7940,9 +8700,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
         }
         var value = args[3] || args[4] || args[5] || '';
+        var shouldDecodeNewlines = tagName === 'a' && args[1] === 'href' ? options.shouldDecodeNewlinesForHref : options.shouldDecodeNewlines;
         attrs[i] = {
           name: args[1],
-          value: decodeAttr(value, options.shouldDecodeNewlines)
+          value: decodeAttr(value, shouldDecodeNewlines)
         };
       }
 
@@ -8015,7 +8776,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   var onRE = /^@|^v-on:/;
   var dirRE = /^v-|^@|^:/;
   var forAliasRE = /(.*?)\s+(?:in|of)\s+(.*)/;
-  var forIteratorRE = /\((\{[^}]*\}|[^,]*),([^,]*)(?:,([^,]*))?\)/;
+  var forIteratorRE = /,([^,\}\]]*)(?:,([^,\}\]]*))?$/;
+  var stripParensRE = /^\(|\)$/g;
 
   var argRE = /:(.*)$/;
   var bindRE = /^:|^v-bind:/;
@@ -8075,13 +8837,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       }
     }
 
-    function endPre(element) {
+    function closeElement(element) {
       // check pre state
       if (element.pre) {
         inVPre = false;
       }
       if (platformIsPreTag(element.tag)) {
         inPre = false;
+      }
+      // apply post-transforms
+      for (var i = 0; i < postTransforms.length; i++) {
+        postTransforms[i](element, options);
       }
     }
 
@@ -8091,6 +8857,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       isUnaryTag: options.isUnaryTag,
       canBeLeftOpenTag: options.canBeLeftOpenTag,
       shouldDecodeNewlines: options.shouldDecodeNewlines,
+      shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
       shouldKeepComment: options.comments,
       start: function start(tag, attrs, unary) {
         // check namespace.
@@ -8181,11 +8948,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           currentParent = element;
           stack.push(element);
         } else {
-          endPre(element);
-        }
-        // apply post-transforms
-        for (var i$1 = 0; i$1 < postTransforms.length; i$1++) {
-          postTransforms[i$1](element, options);
+          closeElement(element);
         }
       },
 
@@ -8199,7 +8962,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // pop stack
         stack.length -= 1;
         currentParent = stack[stack.length - 1];
-        endPre(element);
+        closeElement(element);
       },
 
       chars: function chars(text) {
@@ -8223,11 +8986,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         // only preserve whitespace if its not right after a starting tag
         : preserveWhitespace && children.length ? ' ' : '';
         if (text) {
-          var expression;
-          if (!inVPre && text !== ' ' && (expression = parseText(text, delimiters))) {
+          var res;
+          if (!inVPre && text !== ' ' && (res = parseText(text, delimiters))) {
             children.push({
               type: 2,
-              expression: expression,
+              expression: res.expression,
+              tokens: res.tokens,
               text: text
             });
           } else if (text !== ' ' || !children.length || children[children.length - 1].text !== ' ') {
@@ -8308,24 +9072,34 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   function processFor(el) {
     var exp;
     if (exp = getAndRemoveAttr(el, 'v-for')) {
-      var inMatch = exp.match(forAliasRE);
-      if (!inMatch) {
-        "development" !== 'production' && warn$2("Invalid v-for expression: " + exp);
-        return;
-      }
-      el.for = inMatch[2].trim();
-      var alias = inMatch[1].trim();
-      var iteratorMatch = alias.match(forIteratorRE);
-      if (iteratorMatch) {
-        el.alias = iteratorMatch[1].trim();
-        el.iterator1 = iteratorMatch[2].trim();
-        if (iteratorMatch[3]) {
-          el.iterator2 = iteratorMatch[3].trim();
-        }
+      var res = parseFor(exp);
+      if (res) {
+        extend(el, res);
       } else {
-        el.alias = alias;
+        warn$2("Invalid v-for expression: " + exp);
       }
     }
+  }
+
+  function parseFor(exp) {
+    var inMatch = exp.match(forAliasRE);
+    if (!inMatch) {
+      return;
+    }
+    var res = {};
+    res.for = inMatch[2].trim();
+    var alias = inMatch[1].trim().replace(stripParensRE, '');
+    var iteratorMatch = alias.match(forIteratorRE);
+    if (iteratorMatch) {
+      res.alias = alias.replace(forIteratorRE, '');
+      res.iterator1 = iteratorMatch[1].trim();
+      if (iteratorMatch[2]) {
+        res.iterator2 = iteratorMatch[2].trim();
+      }
+    } else {
+      res.alias = alias;
+    }
+    return res;
   }
 
   function processIf(el) {
@@ -8403,6 +9177,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         }
         el.slotScope = slotScope || getAndRemoveAttr(el, 'slot-scope');
       } else if (slotScope = getAndRemoveAttr(el, 'slot-scope')) {
+        /* istanbul ignore if */
+        if ("development" !== 'production' && el.attrsMap['v-for']) {
+          warn$2("Ambiguous combined usage of slot-scope and v-for on <" + el.tag + "> " + "(v-for takes higher priority). Use a wrapper <template> for the " + "scoped slot to make it clearer.", true);
+        }
         el.slotScope = slotScope;
       }
       var slotTarget = getBindingAttr(el, 'slot');
@@ -8410,7 +9188,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         el.slotTarget = slotTarget === '""' ? '"default"' : slotTarget;
         // preserve slot as an attribute for native shadow DOM compat
         // only for non-scoped slots.
-        if (!el.slotScope) {
+        if (el.tag !== 'template' && !el.slotScope) {
           addAttr(el, 'slot', slotTarget);
         }
       }
@@ -8487,12 +9265,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       } else {
         // literal attribute
         {
-          var expression = parseText(value, delimiters);
-          if (expression) {
+          var res = parseText(value, delimiters);
+          if (res) {
             warn$2(name + "=\"" + value + "\": " + 'Interpolation inside attributes has been removed. ' + 'Use v-bind or the colon shorthand instead. For example, ' + 'instead of <div id="{{ val }}">, use <div :id="val">.');
           }
         }
         addAttr(el, name, JSON.stringify(value));
+        // #6887 firefox doesn't update muted state if set via attribute
+        // even immediately after element creation
+        if (!el.component && name === 'muted' && platformMustUseProp(el.tag, el.attrsMap.type, name)) {
+          addProp(el, name, 'true');
+        }
       }
     }
   }
@@ -8584,6 +9367,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         var typeBinding = getBindingAttr(el, 'type');
         var ifCondition = getAndRemoveAttr(el, 'v-if', true);
         var ifConditionExtra = ifCondition ? "&&(" + ifCondition + ")" : "";
+        var hasElse = getAndRemoveAttr(el, 'v-else', true) != null;
+        var elseIfCondition = getAndRemoveAttr(el, 'v-else-if', true);
         // 1. checkbox
         var branch0 = cloneASTElement(el);
         // process for on the main node
@@ -8614,6 +9399,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           exp: ifCondition,
           block: branch2
         });
+
+        if (hasElse) {
+          branch0.else = true;
+        } else if (elseIfCondition) {
+          branch0.elseif = elseIfCondition;
+        }
+
         return branch0;
       }
     }
@@ -8621,11 +9413,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   function cloneASTElement(el) {
     return createASTElement(el.tag, el.attrsList.slice(), el.parent);
-  }
-
-  function addRawAttr(el, name, value) {
-    el.attrsMap[name] = value;
-    el.attrsList.push({ name: name, value: value });
   }
 
   var model$2 = {
@@ -8830,12 +9617,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   function genHandlers(events, isNative, warn) {
     var res = isNative ? 'nativeOn:{' : 'on:{';
     for (var name in events) {
-      var handler = events[name];
-      // #5330: warn click.right, since right clicks do not actually fire click events.
-      if ("development" !== 'production' && name === 'click' && handler && handler.modifiers && handler.modifiers.right) {
-        warn("Use \"contextmenu\" instead of \"click.right\" since right clicks " + "do not actually fire \"click\" events.");
-      }
-      res += "\"" + name + "\":" + genHandler(name, handler) + ",";
+      res += "\"" + name + "\":" + genHandler(name, events[name]) + ",";
     }
     return res.slice(0, -1) + '}';
   }
@@ -8855,7 +9637,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var isFunctionExpression = fnExpRE.test(handler.value);
 
     if (!handler.modifiers) {
-      return isMethodPath || isFunctionExpression ? handler.value : "function($event){" + handler.value + "}"; // inline statement
+      if (isMethodPath || isFunctionExpression) {
+        return handler.value;
+      }
+      /* istanbul ignore if */
+      return "function($event){" + handler.value + "}"; // inline statement
     } else {
       var code = '';
       var genModifierCode = '';
@@ -8886,6 +9672,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         code += genModifierCode;
       }
       var handlerCode = isMethodPath ? handler.value + '($event)' : isFunctionExpression ? "(" + handler.value + ")($event)" : handler.value;
+      /* istanbul ignore if */
       return "function($event){" + code + handlerCode + "}";
     }
   }
@@ -9295,7 +10082,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var res = '';
     for (var i = 0; i < props.length; i++) {
       var prop = props[i];
-      res += "\"" + prop.name + "\":" + transformSpecialNewlines(prop.value) + ",";
+      /* istanbul ignore if */
+      {
+        res += "\"" + prop.name + "\":" + transformSpecialNewlines(prop.value) + ",";
+      }
     }
     return res.slice(0, -1);
   }
@@ -9313,9 +10103,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   // these unary operators should not be used as property/method names
   var unaryOperatorsRE = new RegExp('\\b' + 'delete,typeof,void'.split(',').join('\\s*\\([^\\)]*\\)|\\b') + '\\s*\\([^\\)]*\\)');
-
-  // check valid identifier for v-for
-  var identRE = /[A-Za-z_$][\w$]*/;
 
   // strip strings in expressions
   var stripStringRE = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*\$\{|\}(?:[^`\\]|\\.)*`|`(?:[^`\\]|\\.)*`/g;
@@ -9372,8 +10159,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   function checkIdentifier(ident, type, text, errors) {
-    if (typeof ident === 'string' && !identRE.test(ident)) {
-      errors.push("invalid " + type + " \"" + ident + "\" in expression: " + text.trim());
+    if (typeof ident === 'string') {
+      try {
+        new Function("var " + ident + "=_");
+      } catch (e) {
+        errors.push("invalid " + type + " \"" + ident + "\" in expression: " + text.trim());
+      }
     }
   }
 
@@ -9490,7 +10281,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           }
           // merge custom directives
           if (options.directives) {
-            finalOptions.directives = extend(Object.create(baseOptions.directives), options.directives);
+            finalOptions.directives = extend(Object.create(baseOptions.directives || null), options.directives);
           }
           // copy other options
           for (var key in options) {
@@ -9523,7 +10314,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   // Here we just export a default compiler using the default parts.
   var createCompiler = createCompilerCreator(function baseCompile(template, options) {
     var ast = parse(template.trim(), options);
-    optimize(ast, options);
+    if (options.optimize !== false) {
+      optimize(ast, options);
+    }
     var code = generate(ast, options);
     return {
       ast: ast,
@@ -9536,6 +10329,21 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   var ref$1 = createCompiler(baseOptions);
   var compileToFunctions = ref$1.compileToFunctions;
+
+  /*  */
+
+  // check whether current browser encodes a char inside attribute values
+  var div;
+  function getShouldDecode(href) {
+    div = div || document.createElement('div');
+    div.innerHTML = href ? "<a href=\"\n\"/>" : "<div a=\"\n\"/>";
+    return div.innerHTML.indexOf('&#10;') > 0;
+  }
+
+  // #3663: IE encodes newlines inside attribute values while other browsers don't
+  var shouldDecodeNewlines = inBrowser ? getShouldDecode(false) : false;
+  // #6828: chrome encodes content in a[href]
+  var shouldDecodeNewlinesForHref = inBrowser ? getShouldDecode(true) : false;
 
   /*  */
 
@@ -9586,6 +10394,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
         var ref = compileToFunctions(template, {
           shouldDecodeNewlines: shouldDecodeNewlines,
+          shouldDecodeNewlinesForHref: shouldDecodeNewlinesForHref,
           delimiters: options.delimiters,
           comments: options.comments
         }, this);
@@ -9622,73 +10431,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   return Vue$3;
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(3).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(11).setImmediate))
 
 /***/ }),
-/* 1 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var g;
-
-// This works in non-strict mode
-g = function () {
-	return this;
-}();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _vue = __webpack_require__(0);
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _closeDev = __webpack_require__(6);
-
-var _closeDev2 = _interopRequireDefault(_closeDev);
-
-var _App = __webpack_require__(7);
-
-var _App2 = _interopRequireDefault(_App);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-(0, _closeDev2.default)(); // 关闭开发模式的提示
-
-new _vue2.default({
-  el: '#app',
-  template: '<app />',
-  components: { app: _App2.default }
-});
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
 
 var apply = Function.prototype.apply;
 
@@ -9738,18 +10485,15 @@ exports._unrefActive = exports.active = function (item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(4);
+__webpack_require__(12);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 /***/ }),
-/* 4 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global, process) {
-
-(function (global, undefined) {
+/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
     "use strict";
 
     if (global.setImmediate) {
@@ -9930,15 +10674,12 @@ exports.clearImmediate = clearImmediate;
 
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
-})(typeof self === "undefined" ? typeof global === "undefined" ? undefined : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(5)))
+})(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(13)))
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/* 13 */
+/***/ (function(module, exports) {
 
 // shim for using process in browser
 var process = module.exports = {};
@@ -10127,67 +10868,41 @@ process.umask = function () {
 };
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-exports.default = function () {
-    var isDebug = false;
-
-    _vue2.default.config.debug = isDebug;
-    _vue2.default.config.devtools = isDebug;
-    _vue2.default.config.productionTip = isDebug;
-};
-
-var _vue = __webpack_require__(0);
-
-var _vue2 = _interopRequireDefault(_vue);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/***/ }),
-/* 7 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_3_0_vue_loader_lib_selector_type_script_index_0_bustCache_App_vue__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_3_0_vue_loader_lib_selector_type_script_index_0_bustCache_App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_3_0_vue_loader_lib_selector_type_script_index_0_bustCache_App_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_3_0_vue_loader_lib_template_compiler_index_id_data_v_1e78ef71_hasScoped_true_buble_transforms_node_modules_vue_loader_13_3_0_vue_loader_lib_selector_type_template_index_0_bustCache_App_vue__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_App_vue__ = __webpack_require__(4);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_7ba5bd90_hasScoped_false_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_App_vue__ = __webpack_require__(35);
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(8)
+  __webpack_require__(15)
 }
-var normalizeComponent = __webpack_require__(13)
+var normalizeComponent = __webpack_require__(2)
 /* script */
+
 
 /* template */
 
 /* template functional */
-  var __vue_template_functional__ = false
+var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-1e78ef71"
+var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
-  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_3_0_vue_loader_lib_selector_type_script_index_0_bustCache_App_vue___default.a,
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_3_0_vue_loader_lib_template_compiler_index_id_data_v_1e78ef71_hasScoped_true_buble_transforms_node_modules_vue_loader_13_3_0_vue_loader_lib_selector_type_template_index_0_bustCache_App_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_App_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_7ba5bd90_hasScoped_false_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_App_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "src\\App.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
+Component.options.__file = "src/App.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -10196,36 +10911,36 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1e78ef71", Component.options)
+    hotAPI.createRecord("data-v-7ba5bd90", Component.options)
   } else {
-    hotAPI.reload("data-v-1e78ef71", Component.options)
-' + '  }
+    hotAPI.reload("data-v-7ba5bd90", Component.options)
+  }
   module.hot.dispose(function (data) {
     disposed = true
   })
 })()}
 
-/* harmony default export */ __webpack_exports__["default"] = (Component.exports);
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
 
 
 /***/ }),
-/* 8 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(9);
+var content = __webpack_require__(16);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(11)("50e232e7", content, false);
+var update = __webpack_require__(1)("5b3ace8f", content, false);
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../node_modules/_css-loader@0.28.7@css-loader/index.js!../node_modules/_vue-loader@13.3.0@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1e78ef71\",\"scoped\":true,\"hasInlineConfig\":false}!../node_modules/_less-loader@4.0.5@less-loader/dist/cjs.js!../node_modules/_vue-loader@13.3.0@vue-loader/lib/selector.js?type=styles&index=0&bustCache!./App.vue", function() {
-     var newContent = require("!!../node_modules/_css-loader@0.28.7@css-loader/index.js!../node_modules/_vue-loader@13.3.0@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1e78ef71\",\"scoped\":true,\"hasInlineConfig\":false}!../node_modules/_less-loader@4.0.5@less-loader/dist/cjs.js!../node_modules/_vue-loader@13.3.0@vue-loader/lib/selector.js?type=styles&index=0&bustCache!./App.vue");
+   module.hot.accept("!!../node_modules/._css-loader@0.28.8@css-loader/index.js!../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7ba5bd90\",\"scoped\":false,\"hasInlineConfig\":false}!../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
+     var newContent = require("!!../node_modules/._css-loader@0.28.8@css-loader/index.js!../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7ba5bd90\",\"scoped\":false,\"hasInlineConfig\":false}!../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -10235,328 +10950,22 @@ if(false) {
 }
 
 /***/ }),
-/* 9 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(10)(undefined);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
 // module
-exports.push([module.i, "\nspan[data-v-1e78ef71] {\n  color: red;\n}\n", ""]);
+exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function (useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if (item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function (modules, mediaQuery) {
-		if (typeof modules === "string") modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for (var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if (typeof id === "number") alreadyImportedModules[id] = true;
-		}
-		for (i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if (typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if (mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if (mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */';
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-  Modified by Evan You @yyx990803
-*/
-
-var hasDocument = typeof document !== 'undefined'
-
-if (typeof DEBUG !== 'undefined' && DEBUG) {
-  if (!hasDocument) {
-    throw new Error(
-    'vue-style-loader cannot be used in a non-browser environment. ' +
-    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
-  ) }
-}
-
-var listToStyles = __webpack_require__(12)
-
-/*
-type StyleObject = {
-  id: number;
-  parts: Array<StyleObjectPart>
-}
-
-type StyleObjectPart = {
-  css: string;
-  media: string;
-  sourceMap: ?string
-}
-*/
-
-var stylesInDom = {/*
-  [id: number]: {
-    id: number,
-    refs: number,
-    parts: Array<(obj?: StyleObjectPart) => void>
-  }
-*/}
-
-var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
-var singletonElement = null
-var singletonCounter = 0
-var isProduction = false
-var noop = function () {}
-
-// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-// tags it will allow on a page
-var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
-
-module.exports = function (parentId, list, _isProduction) {
-  isProduction = _isProduction
-
-  var styles = listToStyles(parentId, list)
-  addStylesToDom(styles)
-
-  return function update (newList) {
-    var mayRemove = []
-    for (var i = 0; i < styles.length; i++) {
-      var item = styles[i]
-      var domStyle = stylesInDom[item.id]
-      domStyle.refs--
-      mayRemove.push(domStyle)
-    }
-    if (newList) {
-      styles = listToStyles(parentId, newList)
-      addStylesToDom(styles)
-    } else {
-      styles = []
-    }
-    for (var i = 0; i < mayRemove.length; i++) {
-      var domStyle = mayRemove[i]
-      if (domStyle.refs === 0) {
-        for (var j = 0; j < domStyle.parts.length; j++) {
-          domStyle.parts[j]()
-        }
-        delete stylesInDom[domStyle.id]
-      }
-    }
-  }
-}
-
-function addStylesToDom (styles /* Array<StyleObject> */) {
-  for (var i = 0; i < styles.length; i++) {
-    var item = styles[i]
-    var domStyle = stylesInDom[item.id]
-    if (domStyle) {
-      domStyle.refs++
-      for (var j = 0; j < domStyle.parts.length; j++) {
-        domStyle.parts[j](item.parts[j])
-      }
-      for (; j < item.parts.length; j++) {
-        domStyle.parts.push(addStyle(item.parts[j]))
-      }
-      if (domStyle.parts.length > item.parts.length) {
-        domStyle.parts.length = item.parts.length
-      }
-    } else {
-      var parts = []
-      for (var j = 0; j < item.parts.length; j++) {
-        parts.push(addStyle(item.parts[j]))
-      }
-      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
-    }
-  }
-}
-
-function createStyleElement () {
-  var styleElement = document.createElement('style')
-  styleElement.type = 'text/css'
-  head.appendChild(styleElement)
-  return styleElement
-}
-
-function addStyle (obj /* StyleObjectPart */) {
-  var update, remove
-  var styleElement = document.querySelector('style[data-vue-ssr-id~="' + obj.id + '"]')
-
-  if (styleElement) {
-    if (isProduction) {
-      // has SSR styles and in production mode.
-      // simply do nothing.
-      return noop
-    } else {
-      // has SSR styles but in dev mode.
-      // for some reason Chrome can't handle source map in server-rendered
-      // style tags - source maps in <style> only works if the style tag is
-      // created and inserted dynamically. So we remove the server rendered
-      // styles and inject new ones.
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  if (isOldIE) {
-    // use singleton mode for IE9.
-    var styleIndex = singletonCounter++
-    styleElement = singletonElement || (singletonElement = createStyleElement())
-    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
-    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
-  } else {
-    // use multi-style-tag mode in all other cases
-    styleElement = createStyleElement()
-    update = applyToTag.bind(null, styleElement)
-    remove = function () {
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  update(obj)
-
-  return function updateStyle (newObj /* StyleObjectPart */) {
-    if (newObj) {
-      if (newObj.css === obj.css &&
-          newObj.media === obj.media &&
-          newObj.sourceMap === obj.sourceMap) {
-        return
-      }
-      update(obj = newObj)
-    } else {
-      remove()
-    }
-  }
-}
-
-var replaceText = (function () {
-  var textStore = []
-
-  return function (index, replacement) {
-    textStore[index] = replacement
-    return textStore.filter(Boolean).join('\n')
-  }
-})()
-
-function applyToSingletonTag (styleElement, index, remove, obj) {
-  var css = remove ? '' : obj.css
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = replaceText(index, css)
-  } else {
-    var cssNode = document.createTextNode(css)
-    var childNodes = styleElement.childNodes
-    if (childNodes[index]) styleElement.removeChild(childNodes[index])
-    if (childNodes.length) {
-      styleElement.insertBefore(cssNode, childNodes[index])
-    } else {
-      styleElement.appendChild(cssNode)
-    }
-  }
-}
-
-function applyToTag (styleElement, obj) {
-  var css = obj.css
-  var media = obj.media
-  var sourceMap = obj.sourceMap
-
-  if (media) {
-    styleElement.setAttribute('media', media)
-  }
-
-  if (sourceMap) {
-    // https://developer.chrome.com/devtools/docs/javascript-debugging
-    // this makes source maps inside style tags work properly in Chrome
-    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
-    // http://stackoverflow.com/a/26603875
-    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
-  }
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild)
-    }
-    styleElement.appendChild(document.createTextNode(css))
-  }
-}
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+/* 17 */
+/***/ (function(module, exports) {
 
 /**
  * Translates the list format produced by css-loader into something
@@ -10587,141 +10996,199 @@ module.exports = function listToStyles(parentId, list) {
 };
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_header_vue__ = __webpack_require__(5);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_3e0dd318_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_header_vue__ = __webpack_require__(25);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(19)
+}
+var normalizeComponent = __webpack_require__(2)
+/* script */
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-//
-//
-//
-//
-//
-//
+/* template */
 
-exports.default = {
-  data: function data() {
-    return {
-      content: 'hello vue'
-    };
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-3e0dd318"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_header_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_3e0dd318_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_header_vue__["a" /* default */],
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "src/component/header/header.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3e0dd318", Component.options)
+  } else {
+    hotAPI.reload("data-v-3e0dd318", Component.options)
   }
-};
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
+
 
 /***/ }),
-/* 15 */
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(20);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("a6fa875c", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3e0dd318\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./header.vue", function() {
+     var newContent = require("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3e0dd318\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./header.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.header[data-v-3e0dd318] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 44px;\n  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);\n}\n.header .left[data-v-3e0dd318],\n.header .right[data-v-3e0dd318] {\n  height: 100%;\n}\n.header .left[data-v-3e0dd318] {\n  display: flex;\n  align-items: center;\n}\n.header .left .logo[data-v-3e0dd318] {\n  height: 28px;\n  margin-right: 20px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_selector_vue__ = __webpack_require__(6);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_108f11f4_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_selector_vue__ = __webpack_require__(24);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(22)
+}
+var normalizeComponent = __webpack_require__(2)
+/* script */
+
+
+/* template */
+
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-108f11f4"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_selector_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_108f11f4_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_selector_vue__["a" /* default */],
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "src/component/header/selector.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-108f11f4", Component.options)
+  } else {
+    hotAPI.reload("data-v-108f11f4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(23);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("f30fb482", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-108f11f4\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./selector.vue", function() {
+     var newContent = require("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-108f11f4\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./selector.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.selector[data-v-108f11f4] {\n  position: relative;\n  width: 100px;\n  line-height: 44px;\n  cursor: pointer;\n  font-size: 14px;\n  color: #666;\n}\n.selector .icon[data-v-108f11f4] {\n  position: relative;\n  top: 5px;\n  width: 20px;\n  margin-left: 4px;\n}\n.selector .language[data-v-108f11f4] {\n  margin-left: 4px;\n}\n.selector .triangle[data-v-108f11f4] {\n  margin-left: 4px;\n  transition: transform .3s;\n}\n.selector:hover .list[data-v-108f11f4] {\n  display: block;\n}\n.selector:hover .triangle[data-v-108f11f4] {\n  transform: rotateZ(180deg);\n}\n.selector .list[data-v-108f11f4] {\n  position: absolute;\n  top: 44px;\n  display: none;\n  width: 100%;\n  border: 1px solid #d8d8d8;\n  border-top: none;\n}\n.selector .list .item[data-v-108f11f4] {\n  height: 44px;\n}\n.selector .list .item[data-v-108f11f4]:hover {\n  background: #d8d8d8;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10729,14 +11196,85 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "selector" }, [
+    _c("img", {
+      staticClass: "icon",
+      attrs: { src: _vm.currentLanguage.img, alt: "img" }
+    }),
+    _c("span", { staticClass: "language" }, [
+      _vm._v(_vm._s(_vm.currentLanguage.name))
+    ]),
+    _c("canvas", {
+      ref: "triangle",
+      staticClass: "triangle",
+      attrs: { width: "12", height: "6" }
+    }),
+    _c(
+      "ul",
+      { staticClass: "list" },
+      _vm._l(_vm.languages, function(language) {
+        return _c(
+          "li",
+          {
+            key: language.name,
+            staticClass: "item",
+            on: {
+              click: function($event) {
+                _vm.currentLanguage = language
+              }
+            }
+          },
+          [
+            _c("img", {
+              staticClass: "icon",
+              attrs: { src: language.img, alt: "img" }
+            }),
+            _c("span", { staticClass: "language" }, [
+              _vm._v(_vm._s(language.name))
+            ])
+          ]
+        )
+      })
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ __webpack_exports__["a"] = (esExports);
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-108f11f4", esExports)
+  }
+}
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "header" }, [
+    _vm._m(0),
+    _c("div", { staticClass: "right" }, [_c("l-selector")], 1)
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("p", [_c("span", [_vm._v("Start App")])])
+    return _c("div", { staticClass: "left" }, [
+      _c("img", {
+        staticClass: "logo",
+        attrs: { src: __webpack_require__(26), alt: "logo" }
+      }),
+      _c("span", [_vm._v("sign up")])
+    ])
   }
 ]
 render._withStripped = true
@@ -10745,7 +11283,276 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-1e78ef71", esExports)
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-3e0dd318", esExports)
+  }
+}
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAATYAAAAmCAMAAAB5w0e0AAAAolBMVEUAAAAAd/8Adv8Ad/8Adv8Adv8Ad/8Afv8Ad/8Ak/8AeP8Ad/8Adv8AeP8Ag/8AhP8Adv8Ad/8AeP8Ad/8AeP8Adv8AfP8Ad/8Aef8Adv8Ad/8AeP8Adv8Ad/8Ad/8Ad/8Adv8Ad/8Ad/8Ae/8Ad/8Ad/8AeP8Ad/8AeP8Ae/8Ad/8Ad/8Adv8Aef8Ad/8Ad/8Ad/8Ad/8Adv8Ad/8Aev8Adv/TRY6PAAAANXRSTlMAhcDV5pteEHYDIvt5OgoH7+KRqEzzGWoxxLJA961xoc24jBV+U0/rKybdvJYdY1rYRtLJIB3gg2kAAAahSURBVGje5VrZlqIwEA0KIuKGiCiCG+67o/n/X5tjmxTZW47z0Gf6Ps2EYMKt5VbVacSgUXMOsyDy7eooWfRdpEOn1cxGVduPgtkhnAwRh3H1G8B+A9Zk7wn9dAwsG3Pw7/U2UuA29/mNm7CFCvTxN4DNBtTI3gb62Rg4PpZhxx4SsPqDFUiGv5K2lo3VqA4QC6+HNVj+QtrOPtZh/0AF3BHWYvHraGv5WI+A4S3EBix+GW15wKT33vk2ri3vuMAcNsbM6qh+Ga/j6YZZGhuVNPrfaHMwRbdGJeDESMSKykZaULkDibjC4rXzjkcf0BvYTl5w0Y9FDmzMTmz9FUF6IytLIKjJqsQUlmOkhRtQcR6g/wNN8LUHX7cK0deBgHQQhwRoR1rMaTF4Qz8F7cdHvgyZrYZ4gBtNX+EIIiFUwQ9w1+23prGe/plUXuC3n8nqMyfcyL+Ja14qHA5JaF3yb0hpxb1pdoB3uMNO5yx4XtrfVJYtKE3lk6RjjzHdfgI2xNJ2R59EX0+gZKtrk+MSqTH2qZB8/dIRtJfF/rWY5rIkNLGM1HENudGJ9AK+C/nStI8K1PF3CCa8Ex2RiBl99CUAoK4Qy1I4J5oWxKZp4JU8hzTPsYa6gWuraZMR7JAa3tI31D2W9PDgCrSZkTyjbVEIJkDUgMsztfmgECK8iPKg/ooKJli/FsACrJ0zsjZ8mza8d9XnhYZysaN6+GfwLm1g2UPhUiLWbCU7NLgUNA9KmQTD9CCNkYWQ8UifhDF6jza4l4yeqcrO1D1kpwxtuM9EIpvohbQXspF4VF4UXEVP/qwD+Zq4Z+pKnr0qQ1ukcrebqTmJiyozPIbFWKJXirYKZGLcVXg72yisVUWbeNgYSXh06Tcy7nwUKz0vAF0y0DZwn8iH8abIHvqM3D1etqfcJfC4ir0yfKlDIhi8Die9YJOw/Dq2VqW7c0RvUEUyIlxETk1dp/A2XMsjzZnqvSH8MEEfbGKirQPv6z2/DyHi6vNF4okGnAJtXOjZXKXqzeE7fXA8GTZNmQihSRHYPMyUOpBHlS6x40vmNH+PNnTXXvoIESIBksMmLyKKeJCfG2kTzFUHj7ojGV2m/I/1iovOILlaQq9t5RsWyaI+XO892kKwp4gr86quUloobnJ5hzbPp9e26XchGdB+swScEQ+TJ26pUdKh2u4BqaWgzXiTNgdeF5BD+CtgKYYwLsT7G7ShiCrIVS8JLibIWElY6q4jD4XaV22X77Ai4tkQc+Vos+X+wFSbZCQg24ru5P4WbV1K211fcw3Z3r0lJyl5fLnTrGfa356yncr6c9rGEBMKVOAteXFfjrapvniosWVlbphzQP2TqwU2cLV1QtQuSu699zltKynLyve8qgY43XK0TTTBJ/ZdMCnxJQ7aKaWHdyifvtFCMuJCfBugT5/T1ldouqi/e9VMKy1H2xjrKhDPpo9O3Fitr/XKUJxMAh0y3AjkZgE1/+e0tQxnAkOqzjAoRRtoGvYfui4l4OUyRAKgrZ0op5dz4yzeP3U2oGWf09aQLynnWi5eyOmzcrShqa7ZzHieBhBzO81cDg9Vk0kbEp7aL5oXqD4+pw1Y6HYM09K+ovEOS9J2w+rWaCIOD+YwZ+EE3IVO7S5NJmEMbkrQI4jWD2iTjN00WCpT9NPnkrR5Re/Lys8F82yw/B4GjB6MYHklTyahD9CKAqD/CW3yq6nCXJ1I0iiXXnRQkjbUwoDs5pGqcerLbGSw1K0/iGzUrrC49xSTyREsakRBfrs8bdnoiexFTUB5swba2sDeUiLn4IClaKPdLxByCHvOHOKOG0ueuuxENHEW4WiDAf6Yux6MwXWArCrKSXnaXkwFYnJJw3pt1SdwufycLh/PSFlVIV+Xp82bYj2ujOxsgSWA8rv7Yro0igJUH5/TBp4uoyWOITd/9kVEWag8bchzsA4bTja3tnajI08mYWhqFgXY+TltkFdltEx/xhKisrS9MOliJeYDoSxK1PvSszyZhDH4O6Kw+3e0ocZeT1tH5SFZpzRtBK6VYglBjCSM7/I+P9nyg0IYg5vhpoqS+HPaUJ6oaCOII9Hk8JUlaAMM4oxzuWi+Uqvg2Jr5nAb2GkisXOS+0CwKt39DG2CYbXS0odxiv7MLgluWNoA3PNcXTjIPHSseeiY3WcfLXjhPpr3lOhc62aZFEKNvsSVbl+JYiay71FAvFFdavxbq5GPhPwwa6/NkaQFO7B1by2x0DaqjrNnq8CoFJ7G/bIGykR/s/wUZ6ZZQYYjYaAAAAABJRU5ErkJggg=="
+
+/***/ }),
+/* 27 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_content_vue__ = __webpack_require__(7);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_3dd7e1c8_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_content_vue__ = __webpack_require__(30);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(28)
+}
+var normalizeComponent = __webpack_require__(2)
+/* script */
+
+
+/* template */
+
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-3dd7e1c8"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_content_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_3dd7e1c8_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_content_vue__["a" /* default */],
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "src/component/content/content.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3dd7e1c8", Component.options)
+  } else {
+    hotAPI.reload("data-v-3dd7e1c8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(29);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("4cf5e7b3", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3dd7e1c8\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./content.vue", function() {
+     var newContent = require("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3dd7e1c8\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./content.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div")
+}
+var staticRenderFns = []
+render._withStripped = true
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ __webpack_exports__["a"] = (esExports);
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-3dd7e1c8", esExports)
+  }
+}
+
+/***/ }),
+/* 31 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_footer_vue__ = __webpack_require__(8);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_13fbea98_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_footer_vue__ = __webpack_require__(34);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(32)
+}
+var normalizeComponent = __webpack_require__(2)
+/* script */
+
+
+/* template */
+
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-13fbea98"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_footer_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_13fbea98_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_footer_vue__["a" /* default */],
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "src/component/footer/footer.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-13fbea98", Component.options)
+  } else {
+    hotAPI.reload("data-v-13fbea98", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(33);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(1)("72097e61", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-13fbea98\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./footer.vue", function() {
+     var newContent = require("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-13fbea98\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./footer.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div")
+}
+var staticRenderFns = []
+render._withStripped = true
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ __webpack_exports__["a"] = (esExports);
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-13fbea98", esExports)
+  }
+}
+
+/***/ }),
+/* 35 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "app" },
+    [_c("p-header"), _c("p-content"), _c("p-footer")],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ __webpack_exports__["a"] = (esExports);
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-7ba5bd90", esExports)
   }
 }
 

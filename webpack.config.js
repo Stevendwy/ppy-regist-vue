@@ -2,7 +2,6 @@ module.exports = {
   entry: `./src/main.js`,
   output: {
       path: `${__dirname}/dist`,
-      publicPath: __dirname,
       filename: 'app.js'
   },
   module: {
@@ -20,7 +19,7 @@ module.exports = {
             loader: 'url-loader',
             query: {
               limit: 20000,
-              name: '../static/font/[name].[ext]'
+              name: '/static/font/[name].[ext]'
             }
           },
           {
@@ -31,8 +30,8 @@ module.exports = {
               test: /\.(png|gif|jpe?g)$/,
               loader: 'url-loader',
               query: {
-                  limit: 10,
-                  name: '../static/img/[name].[ext]'
+                  limit: 10000,
+                  name: '/static/img/[name].[ext]'
               }
           }
       ]
