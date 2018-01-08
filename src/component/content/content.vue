@@ -18,7 +18,7 @@
         input(type="text", :placeholder="placeholders.code")
       .name(v-if="isChina")
         input(type="text", :placeholder="placeholders.name")
-      .foreign-name
+      .foreign-name(v-else)
         input.first-name(type="text", :placeholder="placeholders.firstName")
         input.last-name(type="text", :placeholder="placeholders.lastName")
       .password

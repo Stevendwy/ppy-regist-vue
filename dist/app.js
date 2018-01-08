@@ -11561,17 +11561,16 @@ var render = function() {
               attrs: { type: "text", placeholder: _vm.placeholders.name }
             })
           ])
-        : _vm._e(),
-      _c("div", { staticClass: "foreign-name" }, [
-        _c("input", {
-          staticClass: "first-name",
-          attrs: { type: "text", placeholder: _vm.placeholders.firstName }
-        }),
-        _c("input", {
-          staticClass: "last-name",
-          attrs: { type: "text", placeholder: _vm.placeholders.lastName }
-        })
-      ]),
+        : _c("div", { staticClass: "foreign-name" }, [
+            _c("input", {
+              staticClass: "first-name",
+              attrs: { type: "text", placeholder: _vm.placeholders.firstName }
+            }),
+            _c("input", {
+              staticClass: "last-name",
+              attrs: { type: "text", placeholder: _vm.placeholders.lastName }
+            })
+          ]),
       _c("div", { staticClass: "password" }, [
         _c("input", {
           attrs: { type: "text", placeholder: _vm.placeholders.password }
