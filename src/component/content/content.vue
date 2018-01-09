@@ -16,7 +16,7 @@
         input(type="text", :placeholder="placeholders.email")
       .code
         input(type="text", :placeholder="placeholders.code")
-        z-countdown(class="z-countdown", :waitText="content.countdown", second="s", :time="60", :frequency="1", :min="0", @event="countdownClick")
+        c-countdown(class="c-countdown", :waitText="content.countdown", second="s", :time="60", :frequency="1", :min="0", @event="countdownClick")
       .name(v-if="isChina")
         input(type="text", :placeholder="placeholders.name")
       .foreign-name(v-else)
@@ -52,12 +52,12 @@
 <script>
 import Vuex from "vuex";
 import cSelector from "./selector.vue";
-import { zCountdown } from "koala-ui";
+import cCountdown from "./countdown.vue";
 
 export default {
   components: {
     cSelector,
-    zCountdown
+    cCountdown
   },
   data() {
     return {};
@@ -174,7 +174,7 @@ export default {
     .code {
       position: relative;
 
-      .z-countdown {
+      .c-countdown {
         position: absolute;
         right: 0;
         bottom: 0;
