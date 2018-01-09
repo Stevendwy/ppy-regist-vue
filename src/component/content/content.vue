@@ -15,12 +15,12 @@
           @itemClick="areaClick"
           :autoHidden="true")
         input.number(type="text", :placeholder="placeholders.mobile")
-      .email(v-else)
+      .email(v-else, key="email")
         input(type="text", :placeholder="placeholders.email")
       .code
         input(type="text", :placeholder="placeholders.code")
-        c-countdown(class="c-countdown", :waitText="content.countdown", second="s", :time="60", :frequency="1", :min="0", @event="countdownClick")
-      .name(v-if="isChina")
+        c-countdown(class="c-countdown", :waitText="content.countdown", second="s", :time="3", :frequency="1", :min="0", @event="countdownClick")
+      .name(v-if="isChina", key="name")
         input(type="text", :placeholder="placeholders.name")
       .foreign-name(v-else)
         input.first-name(type="text", :placeholder="placeholders.firstName")
@@ -101,8 +101,9 @@ export default {
   },
   methods: {
     ...Vuex.mapMutations(["updateRegistType"]),
-    countdownClick() {
+    countdownClick(start) {
       console.log("click");
+      start()
     },
     areaClick(area) {
       this.area = area

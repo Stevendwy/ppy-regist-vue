@@ -11655,8 +11655,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     }
   }),
   methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType"]), {
-    countdownClick: function countdownClick() {
+    countdownClick: function countdownClick(start) {
       console.log("click");
+      start();
     },
     areaClick: function areaClick(area) {
       this.area = area;
@@ -11712,10 +11713,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       var _this = this;
 
       this.toggle = true;
-      // this.$nextTick(() => {
-      //   this.toggle = false
-      // })
-      // 隐藏功能
       setTimeout(function () {
         _this.toggle = false;
       }, 200);
@@ -12761,7 +12758,7 @@ var render = function() {
             ],
             1
           )
-        : _c("div", { staticClass: "email" }, [
+        : _c("div", { key: "email", staticClass: "email" }, [
             _c("input", {
               attrs: { type: "text", placeholder: _vm.placeholders.email }
             })
@@ -12778,7 +12775,7 @@ var render = function() {
             attrs: {
               waitText: _vm.content.countdown,
               second: "s",
-              time: 60,
+              time: 3,
               frequency: 1,
               min: 0
             },
@@ -12788,7 +12785,7 @@ var render = function() {
         1
       ),
       _vm.isChina
-        ? _c("div", { staticClass: "name" }, [
+        ? _c("div", { key: "name", staticClass: "name" }, [
             _c("input", {
               attrs: { type: "text", placeholder: _vm.placeholders.name }
             })
@@ -13298,11 +13295,12 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       var _this = this;
 
       if (this.bouncing) return;else {
-        this.$emit('event');
-        this.bouncing = true;
-        this.timer = setInterval(function () {
-          _this.countdown();
-        }, ~~(1000 / this.frequency));
+        this.$emit('event', function () {
+          _this.bouncing = true;
+          _this.timer = setInterval(function () {
+            _this.countdown();
+          }, ~~(1000 / _this.frequency));
+        });
       }
     },
     countdown: function countdown() {

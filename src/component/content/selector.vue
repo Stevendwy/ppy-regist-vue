@@ -34,10 +34,6 @@ export default {
     },
     toggleClass() {
       this.toggle = true
-      // this.$nextTick(() => {
-      //   this.toggle = false
-      // })
-      // 隐藏功能
       setTimeout(() => {
         this.toggle = false
       }, 200);
@@ -53,12 +49,6 @@ export default {
   font-size: 12px;
   color: #475669;
   cursor: pointer;
-
-  // &:hover{
-  //   .items {
-  //     display: block;
-  //   }
-  // }
 
   .item {
     display: flex;

@@ -51,11 +51,12 @@ export default {
     click() {
       if (this.bouncing) return;
       else {
-        this.$emit('event')
-        this.bouncing = true;
-        this.timer = setInterval(() => {
-          this.countdown()
-        }, ~~(1000 / this.frequency))
+        this.$emit('event', () => {
+          this.bouncing = true;
+          this.timer = setInterval(() => {
+            this.countdown()
+          }, ~~(1000 / this.frequency))
+        })
       }
     },
     countdown() {
