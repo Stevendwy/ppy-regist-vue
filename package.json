@@ -1,6 +1,5 @@
 {
   "scripts": {
-    "install": "cnpm i -D pug pug-loader babel-core babel-loader babel-plugin-component babel-preset-env babel-preset-stage-0 babel-runtime css-loader file-loader less less-loader style-loader url-loader vue vue-loader vue-router vue-template-compiler vuex webpack",
     "start": "open regist.html"
   },
   "devDependencies": {
