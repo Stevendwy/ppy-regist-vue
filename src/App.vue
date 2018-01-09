@@ -59,6 +59,13 @@ html,body {
 
     button {
       cursor: pointer;
+
+      &.text {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 14px;
+      }
     }
 
     ul {

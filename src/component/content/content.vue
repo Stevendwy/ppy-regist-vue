@@ -45,7 +45,7 @@
         span {{content.loginRemind}}
         span {{content.login}}
     .brand-title {{languageData.brand.title}}
-    img.brands(src="#", alt="brands")
+    img.brands(src="https://007vin.com/img/img_logo2.png", alt="brands")
 </template>
 
 <script>
@@ -97,8 +97,12 @@ export default {
 
   @bColor: #4990e2;
 
-  .account {
+  .width {
     width: 320px;
+  }
+
+  .account {
+    .width;
 
     .title {
       line-height: 28px;
@@ -115,6 +119,7 @@ export default {
       font-size: 14px;
       color: #999999;
       margin-bottom: 10px;
+      white-space: nowrap;
     }
 
     .remindCompany {
@@ -135,7 +140,7 @@ export default {
 
     .input {
       height: 40px;
-      width: 320px;
+      .width;
       background: white;
       border: 1px solid #d8d8d8;
       border-radius: 4px;
@@ -211,7 +216,7 @@ export default {
   }
 
   .brands {
-    width: 320px;
+    .width;
     margin-bottom: 40px;
   }
 }

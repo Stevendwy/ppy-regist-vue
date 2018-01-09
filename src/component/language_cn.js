@@ -3,36 +3,41 @@ export default {
   signUp: "注册",
   content: {
     title: '创建新账户',
-    remindPersonal: '·Enter your Phone or Email & Create a Password',
-    remindCompany: '·Select your Business Location & Account Type',
-    selectType: 'Select Phone or Email',
-    types: ['Phone', 'Email'],
+    remindPersonal: '·输入你的手机号或邮箱地址并创建一个密码',
+    remindCompany: '·输入你的公司信息',
+    selectType: '选择注册方式',
+    types: ['手机号', '邮箱'],
     placeholders: {
-      mobile: 'Mobile phone number',
-      code: 'Code',
+      mobile: '手机号',
+      code: '验证码',
       firstName: 'First name',
       lastName: 'Last name',
       name: '姓名',
-      password: 'New Password',
-      confirmPassword: ' Repeat new password',
-      company: 'Company Name',
-      companyLocation: 'Business Location',
-      companyType: 'Select a role'
+      password: '密码',
+      confirmPassword: '重复密码',
+      company: '公司名称',
+      companyLocation: '公司地区',
+      companyType: '公司类型'
     },
     registRemind: {
-      l1: 'By signing up, you agree to our ',
-      t1: 'Terms ',
-      l2: 'and that you have read our ',
-      t2: 'Data Policy',
-      l3: ', including our ',
-      t3: 'Cookie Use',
-      l4: '. You may receive SMS Notifications from Facebook and can opt out at any time.',
+      l1: '点击注册即表示您同意我们的',
+      t1: '条款',
+      l2: '，并且您已阅读我们的',
+      t2: '数据政策',
+      l3: '，包括我们的',
+      t3: 'Cookie',
+      l4: '使用。您可能会收到来自零零汽的短信通知，并可以随时退出。'
     },
-    signUp: 'Sign up',
-    loginRemind: 'Already has account.',
-    login: 'Log In now'
+    signUp: '注册',
+    loginRemind: '已有账号',
+    login: '立即登录'
   },
   brand: {
-    title: '007 Current Covering Brand'
+    title: '当前覆盖品牌'
+  },
+  bottom: {
+    about: '关于我们',
+    delegate: '用户协议',
+    cooperation: '数据合作'
   }
 }

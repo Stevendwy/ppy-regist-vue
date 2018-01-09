@@ -15,7 +15,7 @@ export default {
       lastName: 'Last name',
       name: '姓名',
       password: 'New Password',
-      confirmPassword: ' Repeat new password',
+      confirmPassword: 'Repeat new password',
       company: 'Company Name',
       companyLocation: 'Business Location',
       companyType: 'Select a role'
@@ -35,5 +35,10 @@ export default {
   },
   brand: {
     title: '007 Current Covering Brand'
+  },
+  bottom: {
+    about: 'About Us',
+    delegate: 'User agreement',
+    cooperation: 'Cooperation'
   }
 }

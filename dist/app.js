@@ -705,12 +705,30 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(36);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
 //
 
-/* harmony default export */ __webpack_exports__["a"] = ({});
+
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "area", "isChina"]), {
+    bottom: function bottom() {
+      return this.languageData.bottom;
+    }
+  })
+});
 
 /***/ }),
 /* 9 */
@@ -11046,7 +11064,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app input,\nbody .app input,\nhtml .app button,\nbody .app button {\n  outline: none;\n  padding: 0;\n}\nhtml .app input[type=\"text\"],\nbody .app input[type=\"text\"] {\n  padding-left: 8px;\n}\nhtml .app button,\nbody .app button {\n  cursor: pointer;\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
+exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app input,\nbody .app input,\nhtml .app button,\nbody .app button {\n  outline: none;\n  padding: 0;\n}\nhtml .app input[type=\"text\"],\nbody .app input[type=\"text\"] {\n  padding-left: 8px;\n}\nhtml .app button,\nbody .app button {\n  cursor: pointer;\n}\nhtml .app button.text,\nbody .app button.text {\n  background: transparent;\n  border: none;\n  color: white;\n  font-size: 14px;\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
 
 // exports
 
@@ -11465,7 +11483,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 12px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 12px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
+exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 12px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 12px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
 
 // exports
 
@@ -11619,7 +11637,10 @@ var render = function() {
     _c("div", { staticClass: "brand-title" }, [
       _vm._v(_vm._s(_vm.languageData.brand.title))
     ]),
-    _c("img", { staticClass: "brands", attrs: { src: "#", alt: "brands" } })
+    _c("img", {
+      staticClass: "brands",
+      attrs: { src: "https://007vin.com/img/img_logo2.png", alt: "brands" }
+    })
   ])
 }
 var staticRenderFns = []
@@ -11724,7 +11745,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "", ""]);
+exports.push([module.i, "\n.bottom[data-v-13fbea98] {\n  width: 100%;\n  height: 72px;\n  padding: 0 calc(50% - 160px);\n  background: #3f424d;\n  color: white;\n  line-height: 32px;\n}\n.bottom a[data-v-13fbea98] {\n  text-decoration: none;\n  color: white;\n  cursor: pointer;\n}\n.bottom .ctrls[data-v-13fbea98] {\n  display: flex;\n  justify-content: space-between;\n  margin-top: 4px;\n  font-size: 14px;\n}\n.bottom .vertification[data-v-13fbea98] {\n  font-size: 12px;\n  font-weight: 200;\n  white-space: nowrap;\n}\n", ""]);
 
 // exports
 
@@ -11738,9 +11759,48 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div")
+  return _c("div", { staticClass: "bottom" }, [
+    _c("div", { staticClass: "ctrls" }, [
+      _c(
+        "a",
+        {
+          staticClass: "about",
+          attrs: { href: "http://www.peipeiyun.com/", target: "_blank" }
+        },
+        [_vm._v(_vm._s(_vm.bottom.about))]
+      ),
+      _c(
+        "button",
+        { staticClass: "text", on: { click: function($event) {} } },
+        [_vm._v(_vm._s(_vm.bottom.delegate))]
+      ),
+      _c(
+        "button",
+        { staticClass: "text", on: { click: function($event) {} } },
+        [_vm._v(_vm._s(_vm.bottom.cooperation))]
+      )
+    ]),
+    _vm._m(0)
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "vertification" }, [
+      _c("span", [_vm._v("© 2016-2017 007vin.com   ")]),
+      _c(
+        "a",
+        {
+          staticClass: "link",
+          attrs: { href: "http://www.miitbeian.gov.cn/", target: "_blank" }
+        },
+        [_vm._v("版权所有 ICP证：浙17026959号-2")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -12828,37 +12888,42 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
   signUp: "注册",
   content: {
     title: '创建新账户',
-    remindPersonal: '·Enter your Phone or Email & Create a Password',
-    remindCompany: '·Select your Business Location & Account Type',
-    selectType: 'Select Phone or Email',
-    types: ['Phone', 'Email'],
+    remindPersonal: '·输入你的手机号或邮箱地址并创建一个密码',
+    remindCompany: '·输入你的公司信息',
+    selectType: '选择注册方式',
+    types: ['手机号', '邮箱'],
     placeholders: {
-      mobile: 'Mobile phone number',
-      code: 'Code',
+      mobile: '手机号',
+      code: '验证码',
       firstName: 'First name',
       lastName: 'Last name',
       name: '姓名',
-      password: 'New Password',
-      confirmPassword: ' Repeat new password',
-      company: 'Company Name',
-      companyLocation: 'Business Location',
-      companyType: 'Select a role'
+      password: '密码',
+      confirmPassword: '重复密码',
+      company: '公司名称',
+      companyLocation: '公司地区',
+      companyType: '公司类型'
     },
     registRemind: {
-      l1: 'By signing up, you agree to our ',
-      t1: 'Terms ',
-      l2: 'and that you have read our ',
-      t2: 'Data Policy',
-      l3: ', including our ',
-      t3: 'Cookie Use',
-      l4: '. You may receive SMS Notifications from Facebook and can opt out at any time.'
+      l1: '点击注册即表示您同意我们的',
+      t1: '条款',
+      l2: '，并且您已阅读我们的',
+      t2: '数据政策',
+      l3: '，包括我们的',
+      t3: 'Cookie',
+      l4: '使用。您可能会收到来自零零汽的短信通知，并可以随时退出。'
     },
-    signUp: 'Sign up',
-    loginRemind: 'Already has account.',
-    login: 'Log In now'
+    signUp: '注册',
+    loginRemind: '已有账号',
+    login: '立即登录'
   },
   brand: {
-    title: '007 Current Covering Brand'
+    title: '当前覆盖品牌'
+  },
+  bottom: {
+    about: '关于我们',
+    delegate: '用户协议',
+    cooperation: '数据合作'
   }
 });
 
@@ -12884,7 +12949,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       lastName: 'Last name',
       name: '姓名',
       password: 'New Password',
-      confirmPassword: ' Repeat new password',
+      confirmPassword: 'Repeat new password',
       company: 'Company Name',
       companyLocation: 'Business Location',
       companyType: 'Select a role'
@@ -12904,6 +12969,11 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
   },
   brand: {
     title: '007 Current Covering Brand'
+  },
+  bottom: {
+    about: 'About Us',
+    delegate: 'User agreement',
+    cooperation: 'Cooperation'
   }
 });
 
