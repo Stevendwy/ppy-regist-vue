@@ -31,7 +31,7 @@ export default {
     },
     signUp: '注册',
     loginRemind: '已有账号',
-    login: '立即登录'
+    login: '立即登录',
   },
   brand: {
     title: '当前覆盖品牌'

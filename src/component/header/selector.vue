@@ -4,36 +4,37 @@
     span.language {{currentLanguage.name}}
     canvas.triangle(ref="triangle", width=12, height=6)
     ul.list
-      li.item(v-for="language of languages", :key="language.name" @click="updateLanguageType({languageType: language.type})")
+      li.item(v-for="language of languages", :key="language.name" @click="click(language.type)")
         img.icon(:src="language.img", alt="img")
         span.language {{language.name}}
 </template>
 
 <script>
-import Vuex from 'vuex'
+import Vuex from "vuex";
 
 export default {
   data() {
-    return {
-      
-    };
+    return {};
   },
   computed: {
-    ...Vuex.mapState(['languages']),
-    ...Vuex.mapGetters(['currentLanguage']),
+    ...Vuex.mapState(["languages"]),
+    ...Vuex.mapGetters(["currentLanguage"])
   },
   mounted() {
-    this.buildTriangle()
+    this.buildTriangle();
   },
   methods: {
-    ...Vuex.mapMutations(['updateLanguageType']),
+    ...Vuex.mapMutations(["updateLanguageType"]),
     buildTriangle() {
-      let ctx = this.$refs.triangle.getContext('2d')
-      ctx.moveTo(0, 0)
-      ctx.lineTo(6, 6)
-      ctx.lineTo(12, 0)
-      ctx.strokeColor = "#d8d8d8"
-      ctx.stroke()
+      let ctx = this.$refs.triangle.getContext("2d");
+      ctx.moveTo(0, 0);
+      ctx.lineTo(6, 6);
+      ctx.lineTo(12, 0);
+      ctx.strokeColor = "#d8d8d8";
+      ctx.stroke();
+    },
+    click(type) {
+      this.updateLanguageType({ languageType: type })
     }
   }
 };
@@ -61,7 +62,7 @@ export default {
 
   .triangle {
     margin-left: 4px;
-    transition: transform .3s;
+    transition: transform 0.3s;
   }
 
   &:hover {

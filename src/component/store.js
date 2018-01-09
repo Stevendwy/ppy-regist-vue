@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 import languageData_cn from './language_cn'
 import languageData_en from './language_en'
 Vue.use(Vuex)
@@ -21,24 +22,8 @@ export default new Vuex.Store({
       }
     ],
     registType: 'phone',
-    areas: [
-      {
-        title: 'China',
-        summary: '+86',
-      },
-      {
-        title: 'Taiwan',
-        summary: '+886',
-      },
-      {
-        title: 'Hong Kong',
-        summary: '+852',
-      },
-      {
-        title: 'Malaysia',
-        summary: '+60',
-      },
-    ],
+    types: [], // 注册公司类型
+    areas: [], // 地区手机数据
   },
   getters: {
     currentLanguage(state) {
@@ -63,6 +48,40 @@ export default new Vuex.Store({
     },
     updateRegistType(state, { registType }) {
       state.registType = registType
+    },
+    updateTypes(state, payload) {
+      state.types = payload.types
+    },
+    updateAreas(state, payload) {
+      state.areas = payload.areas
+    }
+  },
+  actions: {
+    aTypes({ state, commit }, payload) {
+      let language = 'en'
+      if (state.languageType === 0) language = 'cn'
+
+      return (
+        axios.get('http://127.0.0.1:10000/types', { params: { language } })
+          .then(res => {
+            let types = res.data.types
+            commit('updateTypes', { types })
+            return res
+          })
+      )
+    },
+    aAreas({ state, commit }, payload) {
+      let language = 'en'
+      if (state.languageType === 0) language = 'cn'
+
+      return (
+        axios.get('http://127.0.0.1:10000/areas', { params: { language } })
+          .then(res => {
+            let areas = res.data.areas
+            commit('updateAreas', { areas })
+            return res
+          })
+      )
     }
   }
 })

@@ -32,7 +32,7 @@ export default {
     },
     signUp: 'Sign up',
     loginRemind: 'Already has account.',
-    login: 'Log In now'
+    login: 'Log In now',
   },
   brand: {
     title: '007 Current Covering Brand'

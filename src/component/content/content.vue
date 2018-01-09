@@ -1,4 +1,4 @@
-<template lang="pug">
+<template lang='pug'>
   .content
     .account
       .title {{content.title}}
@@ -6,39 +6,40 @@
       .selectType {{content.selectType}}
       .radios
         label
-          input(type="radio", value="phone", v-model="registType")
+          input(type='radio' value='phone' v-model='registType')
           | {{content.types[0]}}
-        label #[input(type="radio", value="email", v-model="registType")] {{content.types[1]}}
-      .phone(v-if="isPhone")
-        c-selector(:items="areas",
-          :currentItem='area',
-          @itemClick="areaClick"
-          :autoHidden="true")
-        input.number(type="text", :placeholder="placeholders.mobile")
-      .email(v-else, key="email")
-        input(type="text", :placeholder="placeholders.email")
+        label #[input(type='radio' value='email' v-model='registType')] {{content.types[1]}}
+      .phone(v-if='isPhone')
+        c-selector(:items='areas'
+          :selected='true'
+          :currentItem='area'
+          @itemClick='areaClick'
+          :autoHidden='true')
+        input.number(type='text' :placeholder='placeholders.mobile')
+      .email(v-else key='email')
+        input(type='text' :placeholder='placeholders.email')
       .code
-        input(type="text", :placeholder="placeholders.code")
-        c-countdown(class="c-countdown", :waitText="content.countdown", second="s", :time="3", :frequency="1", :min="0", @event="countdownClick")
-      .name(v-if="isChina", key="name")
-        input(type="text", :placeholder="placeholders.name")
+        input(type='text' :placeholder='placeholders.code')
+        c-countdown(class='c-countdown' :waitText='content.countdown' second='s' :time='3' :frequency='1' :min='0' @event='countdownClick')
+      .name(v-if='isChina' key='name')
+        input(type='text' :placeholder='placeholders.name')
       .foreign-name(v-else)
-        input.first-name(type="text", :placeholder="placeholders.firstName")
-        input.last-name(type="text", :placeholder="placeholders.lastName")
+        input.first-name(type='text' :placeholder='placeholders.firstName')
+        input.last-name(type='text' :placeholder='placeholders.lastName')
       .password
-        input(type="text", :placeholder="placeholders.password")
+        input(type='text' :placeholder='placeholders.password')
       .password
-        input(type="text", :placeholder="placeholders.confirmPassword")
+        input(type='text' :placeholder='placeholders.confirmPassword')
       .remindCompany {{content.remindCompany}}
       .company
-        input(type="text", :placeholder="placeholders.company")
+        input(type='text' :placeholder='placeholders.company')
       .company-location
-        input(type="text", :placeholder="placeholders.companyLocation")
+        input(type='text' :placeholder='placeholders.companyLocation')
       .company-type
-        c-selector(:items="types",
-          :currentItem='type',
-          @itemClick="typeClick"
-          :autoHidden="true")
+        c-selector(:items='types'
+          :currentItem='type'
+          @itemClick='typeClick'
+          :autoHidden='true')
       .regist-remind
         span {{registRemind.l1}}
         span {{registRemind.t1}}
@@ -52,13 +53,13 @@
         span {{content.loginRemind}}
         span {{content.login}}
     .brand-title {{languageData.brand.title}}
-    img.brands(src="https://007vin.com/img/img_logo2.png", alt="brands")
+    img.brands(src='https://007vin.com/img/img_logo2.png', alt='brands')
 </template>
 
 <script>
-import Vuex from "vuex";
-import cSelector from "./selector.vue";
-import cCountdown from "./countdown.vue";
+import Vuex from 'vuex';
+import cSelector from './selector.vue';
+import cCountdown from './countdown.vue';
 
 export default {
   components: {
@@ -68,16 +69,16 @@ export default {
   data() {
     return {
       area: {},
-      types: ['修理厂', '4S店', '保险公司', '个人', '其他'],
-      type: '公司类型'
+      type: ''
     };
   },
   mounted() {
-    this.area = this.areas[0]
+    this.type = this.placeholders.companyType;
+    this.area = this.areas[0] || '';
   },
   computed: {
-    ...Vuex.mapState(["areas"]),
-    ...Vuex.mapGetters(["languageData", "isChina"]),
+    ...Vuex.mapState(['types', 'areas']),
+    ...Vuex.mapGetters(['languageData', 'isChina']),
     content() {
       return this.languageData.content;
     },
@@ -96,26 +97,29 @@ export default {
       }
     },
     isPhone() {
-      return this.registType === "phone";
+      return this.registType === 'phone';
     }
   },
+  watch: {
+    languageData(value) {}
+  },
   methods: {
-    ...Vuex.mapMutations(["updateRegistType"]),
+    ...Vuex.mapMutations(['updateRegistType']),
     countdownClick(start) {
-      console.log("click");
-      start()
+      console.log('click');
+      start();
     },
     areaClick(area) {
-      this.area = area
+      this.area = area;
     },
     typeClick(type) {
-      this.type = type
+      this.type = type;
     }
   }
 };
 </script>
 
-<style scoped lang="less">
+<style scoped lang='less'>
 .content {
   display: flex;
   flex-direction: column;
@@ -173,7 +177,7 @@ export default {
       margin-top: 10px;
     }
 
-    input[type="text"] {
+    input[type='text'] {
       .input;
     }
 
@@ -225,7 +229,7 @@ export default {
         width: 170px;
       }
     }
-    
+
     .company-type {
       .selector {
         .input;

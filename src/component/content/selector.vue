@@ -1,10 +1,12 @@
-<template lang="pug">
-  .selector(:class="{hover: !toggle}")
-    span(:style="initialColor") {{currentItem.title || currentItem}}
-    span {{currentItem.summary}}
+<template lang='pug'>
+  .selector(:class='{hover: !toggle}')
+    span(:style='!selected && initialColor') {{currentItem.title || currentItem}}
+    .selected
+      span {{currentItem.summary}}
+      canvas.triangle(ref='triangle', width='8', height='6')
     .items(ref='items')
-      .item(v-for="(item, index) of items", :key="index"
-        @click="click(item, index)")
+      .item(v-for='(item, index) of items', :key='index'
+        @click='click(item, index)')
         span {{item.title || item}}
         span {{item.summary}}
 </template>
@@ -16,33 +18,47 @@ export default {
       type: Array,
       required: true
     },
+    selected: Boolean, // 是否有初始选中
     currentItem: null,
     autoHidden: Boolean
   },
   data() {
     return {
       initialColor: { color: '#999' },
-      toggle: false,
-    }
+      toggle: false
+    };
+  },
+  mounted(){
+    this.buildTriangle()
   },
   methods: {
+    buildTriangle() {
+      let ctx = this.$refs.triangle.getContext('2d')
+      ctx.moveTo(0, 0)
+      ctx.lineTo(8, 0)
+      ctx.lineTo(4, 6)
+      ctx.closePath()
+      ctx.stroke()
+      ctx.fillStyle = '#333'
+      ctx.fill()
+    },
     click(item, index) {
-      this.initialColor = null
-      this.$emit('itemClick', item, index)
+      this.initialColor = null;
+      this.$emit('itemClick', item, index);
 
-      if(this.autoHidden) this.toggleClass()
+      if (this.autoHidden) this.toggleClass();
     },
     toggleClass() {
-      this.toggle = true
+      this.toggle = true;
       setTimeout(() => {
-        this.toggle = false
+        this.toggle = false;
       }, 200);
     }
   }
 };
 </script>
 
-<style lang="less" scoped>
+<style lang='less' scoped>
 .selector {
   .item;
   position: relative;
@@ -56,6 +72,17 @@ export default {
     align-items: center;
     height: 40px;
     padding: 0 8px;
+  }
+
+  .selected {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 40px;
+
+    .triangle {
+      transition: transform .3s;
+    }
   }
 
   .items {
@@ -75,7 +102,7 @@ export default {
       width: 100%;
 
       &:hover {
-        background: #0076FF;
+        background: #0076ff;
         color: white;
       }
     }
@@ -83,6 +110,10 @@ export default {
 }
 
 .hover:hover {
+  .triangle {
+    transform: rotateZ(180deg);
+  }
+
   .items {
     display: block;
   }

@@ -9,6 +9,7 @@
 import pHeader from './component/header/header.vue'
 import pContent from './component/content/content.vue'
 import pFooter from './component/footer/footer.vue'
+import Vuex from 'vuex'
 
 export default {
   components: {
@@ -22,6 +23,12 @@ export default {
         
       }
     )
+  },
+  mounted() {
+    this.$axios.all([this.aTypes(), this.aAreas()])
+  },
+  methods: {
+    ...Vuex.mapActions(["aTypes", "aAreas"]),    
   }
 }
 </script>
