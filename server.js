@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+// 跨域处理
 app.all('*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
@@ -23,8 +24,7 @@ app.get('*', (req, res) => {
       else res.send({ areas: [{ title: 'China_cn', summary: '+86', }, { title: 'Taiwan_cn', summary: '+886', }, { title: 'Hong Kong_cn', summary: '+852', }, { title: 'Malaysia_cn', summary: '+60', }] })
       break
     default:
-    // console.log(req.path)
-    // console.log(req.query)
+    console.log('其他 GET')
   }
 })
 
@@ -33,5 +33,5 @@ app.post('*', (req, res) => {
 })
 
 app.listen(10000, 'localhost', () => {
-  console.log('server in local:10000')
+  console.log('server in localhost:10000')
 })
