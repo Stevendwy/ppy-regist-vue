@@ -1,7 +1,7 @@
 <template lang="pug">
   .header
     .left
-      img.logo(src="../../../static/img/p_007vin.png", alt="logo")
+      img.logo(:src="languageData.logo", alt="logo")
       span {{languageData.signUp}}
     .right
       l-selector
