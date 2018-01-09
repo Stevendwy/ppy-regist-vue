@@ -23,7 +23,9 @@ export default new Vuex.Store({
     ],
     registType: 'phone',
     types: [], // 注册公司类型
+    typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据
+    areaIndex: 0, // 默认选中地区索引
   },
   getters: {
     currentLanguage(state) {
@@ -40,7 +42,14 @@ export default new Vuex.Store({
     },
     isChina(state) {
       return state.languageType === 0
-    }
+    },
+    type(state, getters) {
+      let languageData = getters.languageData
+      return state.types[state.typeIndex] || (languageData && languageData.content.placeholders.companyType)
+    },
+    area(state) {
+      return state.areas[state.areaIndex] || ''
+    },
   },
   mutations: {
     updateLanguageType(state, { languageType }) {
@@ -52,8 +61,14 @@ export default new Vuex.Store({
     updateTypes(state, payload) {
       state.types = payload.types
     },
+    updateTypeIndex(state, payload) {
+      state.typeIndex = payload.index
+    },
     updateAreas(state, payload) {
       state.areas = payload.areas
+    },
+    updateAreaIndex(state, payload) {
+      state.areaIndex = payload.index
     }
   },
   actions: {

@@ -57,9 +57,9 @@
 </template>
 
 <script>
-import Vuex from 'vuex';
-import cSelector from './selector.vue';
-import cCountdown from './countdown.vue';
+import Vuex from "vuex";
+import cSelector from "./selector.vue";
+import cCountdown from "./countdown.vue";
 
 export default {
   components: {
@@ -67,18 +67,12 @@ export default {
     cCountdown
   },
   data() {
-    return {
-      area: {},
-      type: ''
-    };
+    return {};
   },
-  mounted() {
-    this.type = this.placeholders.companyType;
-    this.area = this.areas[0] || '';
-  },
+  mounted() {},
   computed: {
-    ...Vuex.mapState(['types', 'areas']),
-    ...Vuex.mapGetters(['languageData', 'isChina']),
+    ...Vuex.mapState(["types", "areas"]),
+    ...Vuex.mapGetters(["languageData", "isChina", "area", "type"]),
     content() {
       return this.languageData.content;
     },
@@ -97,23 +91,29 @@ export default {
       }
     },
     isPhone() {
-      return this.registType === 'phone';
+      return this.registType === "phone";
     }
   },
   watch: {
     languageData(value) {}
   },
   methods: {
-    ...Vuex.mapMutations(['updateRegistType']),
+    ...Vuex.mapMutations([
+      "updateRegistType",
+      "updateTypeIndex",
+      "updateAreaIndex"
+    ]),
     countdownClick(start) {
-      console.log('click');
+      console.log("click");
       start();
     },
-    areaClick(area) {
-      this.area = area;
+    areaClick(area, index) {
+      this.updateAreaIndex({ index });
+      // this.area = area;
     },
-    typeClick(type) {
-      this.type = type;
+    typeClick(type, index) {
+      this.updateTypeIndex({ index });
+      // this.type = type;
     }
   }
 };
@@ -177,7 +177,7 @@ export default {
       margin-top: 10px;
     }
 
-    input[type='text'] {
+    input[type="text"] {
       .input;
     }
 

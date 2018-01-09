@@ -11540,7 +11540,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     this.buildTriangle();
   },
 
-  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateLanguageType"]), {
+  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateLanguageType"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapActions(["aTypes", "aAreas"]), {
     buildTriangle: function buildTriangle() {
       var ctx = this.$refs.triangle.getContext("2d");
       ctx.moveTo(0, 0);
@@ -11551,6 +11551,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     },
     click: function click(type) {
       this.updateLanguageType({ languageType: type });
+      this.$axios.all([this.aTypes(), this.aAreas()]);
     }
   })
 });
@@ -11634,17 +11635,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     cCountdown: __WEBPACK_IMPORTED_MODULE_2__countdown_vue__["a" /* default */]
   },
   data: function data() {
-    return {
-      area: {},
-      type: ''
-    };
+    return {};
   },
-  mounted: function mounted() {
-    this.type = this.placeholders.companyType;
-    this.area = this.areas[0] || '';
-  },
+  mounted: function mounted() {},
 
-  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(['types', 'areas']), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(['languageData', 'isChina']), {
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["types", "areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "isChina", "area", "type"]), {
     content: function content() {
       return this.languageData.content;
     },
@@ -11664,22 +11659,24 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       }
     },
     isPhone: function isPhone() {
-      return this.registType === 'phone';
+      return this.registType === "phone";
     }
   }),
   watch: {
     languageData: function languageData(value) {}
   },
-  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(['updateRegistType']), {
+  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType", "updateTypeIndex", "updateAreaIndex"]), {
     countdownClick: function countdownClick(start) {
-      console.log('click');
+      console.log("click");
       start();
     },
-    areaClick: function areaClick(area) {
-      this.area = area;
+    areaClick: function areaClick(area, index) {
+      this.updateAreaIndex({ index: index });
+      // this.area = area;
     },
-    typeClick: function typeClick(type) {
-      this.type = type;
+    typeClick: function typeClick(type, index) {
+      this.updateTypeIndex({ index: index });
+      // this.type = type;
     }
   })
 });
@@ -12556,7 +12553,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type='text'][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
+exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
 
 // exports
 
@@ -13138,7 +13135,9 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     }],
     registType: 'phone',
     types: [], // 注册公司类型
-    areas: [] // 地区手机数据
+    typeIndex: -1, // 默认选中类型索引
+    areas: [], // 地区手机数据
+    areaIndex: 0 // 默认选中地区索引
   },
   getters: {
     currentLanguage: function currentLanguage(state) {
@@ -13155,6 +13154,13 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     },
     isChina: function isChina(state) {
       return state.languageType === 0;
+    },
+    type: function type(state, getters) {
+      var languageData = getters.languageData;
+      return state.types[state.typeIndex] || languageData && languageData.content.placeholders.companyType;
+    },
+    area: function area(state) {
+      return state.areas[state.areaIndex] || '';
     }
   },
   mutations: {
@@ -13171,8 +13177,14 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     updateTypes: function updateTypes(state, payload) {
       state.types = payload.types;
     },
+    updateTypeIndex: function updateTypeIndex(state, payload) {
+      state.typeIndex = payload.index;
+    },
     updateAreas: function updateAreas(state, payload) {
       state.areas = payload.areas;
+    },
+    updateAreaIndex: function updateAreaIndex(state, payload) {
+      state.areaIndex = payload.index;
     }
   },
   actions: {
