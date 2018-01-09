@@ -47,9 +47,6 @@ export default new Vuex.Store({
     languageData(state) {
       return state.languageType === 0 ? languageData_cn : languageData_en
     },
-    area(state) {
-      return state.areas[0]
-    },
     registRequest(state) {
       return {
         area: state.areas[0],

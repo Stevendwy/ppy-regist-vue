@@ -10,7 +10,10 @@
           | {{content.types[0]}}
         label #[input(type="radio", value="email", v-model="registType")] {{content.types[1]}}
       .phone(v-if="isPhone")
-        c-selector(:items="areas", :currentItem='area')
+        c-selector(:items="areas",
+          :currentItem='area',
+          @itemClick="areaClick"
+          :autoHidden="true")
         input.number(type="text", :placeholder="placeholders.mobile")
       .email(v-else)
         input(type="text", :placeholder="placeholders.email")
@@ -29,10 +32,13 @@
       .remindCompany {{content.remindCompany}}
       .company
         input(type="text", :placeholder="placeholders.company")
-      .company
+      .company-location
         input(type="text", :placeholder="placeholders.companyLocation")
-      .company
-        input(type="text", :placeholder="placeholders.companyType")
+      .company-type
+        c-selector(:items="types",
+          :currentItem='type',
+          @itemClick="typeClick"
+          :autoHidden="true")
       .regist-remind
         span {{registRemind.l1}}
         span {{registRemind.t1}}
@@ -60,11 +66,18 @@ export default {
     cCountdown
   },
   data() {
-    return {};
+    return {
+      area: {},
+      types: ['修理厂', '4S店', '保险公司', '个人', '其他'],
+      type: '公司类型'
+    };
+  },
+  mounted() {
+    this.area = this.areas[0]
   },
   computed: {
     ...Vuex.mapState(["areas"]),
-    ...Vuex.mapGetters(["languageData", "area", "isChina"]),
+    ...Vuex.mapGetters(["languageData", "isChina"]),
     content() {
       return this.languageData.content;
     },
@@ -90,6 +103,12 @@ export default {
     ...Vuex.mapMutations(["updateRegistType"]),
     countdownClick() {
       console.log("click");
+    },
+    areaClick(area) {
+      this.area = area
+    },
+    typeClick(type) {
+      this.type = type
     }
   }
 };
@@ -157,6 +176,14 @@ export default {
       .input;
     }
 
+    ::-moz-placeholder {
+      color: #999;
+    }
+
+    ::-webkit-input-placeholder {
+      color: #999;
+    }
+
     .phone {
       display: flex;
       justify-content: space-between;
@@ -195,6 +222,12 @@ export default {
 
       .last-name {
         width: 170px;
+      }
+    }
+    
+    .company-type {
+      .selector {
+        .input;
       }
     }
 

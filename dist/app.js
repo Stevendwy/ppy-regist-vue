@@ -11604,6 +11604,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -11615,10 +11621,17 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     cCountdown: __WEBPACK_IMPORTED_MODULE_2__countdown_vue__["a" /* default */]
   },
   data: function data() {
-    return {};
+    return {
+      area: {},
+      types: ['修理厂', '4S店', '保险公司', '个人', '其他'],
+      type: '公司类型'
+    };
+  },
+  mounted: function mounted() {
+    this.area = this.areas[0];
   },
 
-  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "area", "isChina"]), {
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "isChina"]), {
     content: function content() {
       return this.languageData.content;
     },
@@ -11644,6 +11657,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
   methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType"]), {
     countdownClick: function countdownClick() {
       console.log("click");
+    },
+    areaClick: function areaClick(area) {
+      this.area = area;
+    },
+    typeClick: function typeClick(type) {
+      this.type = type;
     }
   })
 });
@@ -11664,9 +11683,44 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["a"] = ({
-  props: ["items", "currentItem"]
+  props: {
+    items: {
+      type: Array,
+      required: true
+    },
+    currentItem: null,
+    autoHidden: Boolean
+  },
+  data: function data() {
+    return {
+      initialColor: { color: '#999' },
+      toggle: false
+    };
+  },
+
+  methods: {
+    click: function click(item, index) {
+      this.initialColor = null;
+      this.$emit('itemClick', item, index);
+
+      if (this.autoHidden) this.toggleClass();
+    },
+    toggleClass: function toggleClass() {
+      var _this = this;
+
+      this.toggle = true;
+      // this.$nextTick(() => {
+      //   this.toggle = false
+      // })
+      // 隐藏功能
+      setTimeout(function () {
+        _this.toggle = false;
+      }, 200);
+    }
+  }
 });
 
 /***/ }),
@@ -12468,7 +12522,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
+exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
 
 // exports
 
@@ -12573,7 +12627,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 40px;\n  left: 0;\n  display: none;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076FF;\n  color: white;\n}\n", ""]);
+exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 36px;\n  left: 0;\n  display: none;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n  z-index: 1;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076FF;\n  color: white;\n}\n.hover:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n", ""]);
 
 // exports
 
@@ -12587,17 +12641,31 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "selector" }, [
-    _c("span", [_vm._v(_vm._s(_vm.currentItem.title || _vm.currentItem))]),
+  return _c("div", { staticClass: "selector", class: { hover: !_vm.toggle } }, [
+    _c("span", { style: _vm.initialColor }, [
+      _vm._v(_vm._s(_vm.currentItem.title || _vm.currentItem))
+    ]),
     _c("span", [_vm._v(_vm._s(_vm.currentItem.summary))]),
     _c(
       "div",
-      { staticClass: "items" },
+      { ref: "items", staticClass: "items" },
       _vm._l(_vm.items, function(item, index) {
-        return _c("div", { key: index, staticClass: "item" }, [
-          _c("span", [_vm._v(_vm._s(item.title || item))]),
-          _c("span", [_vm._v(_vm._s(item.summary))])
-        ])
+        return _c(
+          "div",
+          {
+            key: index,
+            staticClass: "item",
+            on: {
+              click: function($event) {
+                _vm.click(item, index)
+              }
+            }
+          },
+          [
+            _c("span", [_vm._v(_vm._s(item.title || item))]),
+            _c("span", [_vm._v(_vm._s(item.summary))])
+          ]
+        )
       })
     )
   ])
@@ -12679,7 +12747,12 @@ var render = function() {
             { staticClass: "phone" },
             [
               _c("c-selector", {
-                attrs: { items: _vm.areas, currentItem: _vm.area }
+                attrs: {
+                  items: _vm.areas,
+                  currentItem: _vm.area,
+                  autoHidden: true
+                },
+                on: { itemClick: _vm.areaClick }
               }),
               _c("input", {
                 staticClass: "number",
@@ -12748,16 +12821,26 @@ var render = function() {
           attrs: { type: "text", placeholder: _vm.placeholders.company }
         })
       ]),
-      _c("div", { staticClass: "company" }, [
+      _c("div", { staticClass: "company-location" }, [
         _c("input", {
           attrs: { type: "text", placeholder: _vm.placeholders.companyLocation }
         })
       ]),
-      _c("div", { staticClass: "company" }, [
-        _c("input", {
-          attrs: { type: "text", placeholder: _vm.placeholders.companyType }
-        })
-      ]),
+      _c(
+        "div",
+        { staticClass: "company-type" },
+        [
+          _c("c-selector", {
+            attrs: {
+              items: _vm.types,
+              currentItem: _vm.type,
+              autoHidden: true
+            },
+            on: { itemClick: _vm.typeClick }
+          })
+        ],
+        1
+      ),
       _c("div", { staticClass: "regist-remind" }, [
         _c("span", [_vm._v(_vm._s(_vm.registRemind.l1))]),
         _c("span", [_vm._v(_vm._s(_vm.registRemind.t1))]),
@@ -13029,9 +13112,6 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     },
     languageData: function languageData(state) {
       return state.languageType === 0 ? __WEBPACK_IMPORTED_MODULE_2__language_cn__["a" /* default */] : __WEBPACK_IMPORTED_MODULE_3__language_en__["a" /* default */];
-    },
-    area: function area(state) {
-      return state.areas[0];
     },
     registRequest: function registRequest(state) {
       return {
