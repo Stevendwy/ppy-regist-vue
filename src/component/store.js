@@ -26,6 +26,8 @@ export default new Vuex.Store({
     typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据
     areaIndex: 0, // 默认选中地区索引
+    messageShow: false, // 显示消息
+    message: '', // 消息
   },
   getters: {
     currentLanguage(state) {
@@ -69,6 +71,13 @@ export default new Vuex.Store({
     },
     updateAreaIndex(state, payload) {
       state.areaIndex = payload.index
+    },
+    openMessage(state, payload) {
+      state.message = payload.message
+      state.messageShow = true
+    },
+    closeMessage(state) {
+      state.messageShow = false
     }
   },
   actions: {

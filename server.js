@@ -23,6 +23,9 @@ app.get('*', (req, res) => {
       if (req.query.language === 'en') res.send({ areas: [{ title: 'China', summary: '+86', }, { title: 'Taiwan', summary: '+886', }, { title: 'Hong Kong', summary: '+852', }, { title: 'Malaysia', summary: '+60', }] })
       else res.send({ areas: [{ title: 'China_cn', summary: '+86', }, { title: 'Taiwan_cn', summary: '+886', }, { title: 'Hong Kong_cn', summary: '+852', }, { title: 'Malaysia_cn', summary: '+60', }] })
       break
+    case '/vertification_code':
+      res.send({vCode: 123456})
+      break
     default:
     console.log('其他 GET')
   }

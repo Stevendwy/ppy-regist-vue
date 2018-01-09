@@ -3,12 +3,16 @@
     p-header
     p-content
     p-footer
+    p-message(:show='messageShow'
+      @close='closeMessage'
+      :message='message')
 </template>
 
 <script>
 import pHeader from './component/header/header.vue'
 import pContent from './component/content/content.vue'
 import pFooter from './component/footer/footer.vue'
+import pMessage from './component/common/message.vue'
 import Vuex from 'vuex'
 
 export default {
@@ -16,6 +20,7 @@ export default {
     pHeader,
     pContent,
     pFooter,
+    pMessage,
   },
   data() {
     return (
@@ -24,10 +29,14 @@ export default {
       }
     )
   },
+  computed: {
+    ...Vuex.mapState(['messageShow', 'message']),
+  },
   mounted() {
     this.$axios.all([this.aTypes(), this.aAreas()])
   },
   methods: {
+    ...Vuex.mapMutations(['closeMessage']),
     ...Vuex.mapActions(["aTypes", "aAreas"]),    
   }
 }

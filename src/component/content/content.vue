@@ -15,7 +15,7 @@
           :currentItem='area'
           @itemClick='areaClick'
           :autoHidden='true')
-        input.number(type='text' :placeholder='placeholders.mobile')
+        input.number(type='text' :placeholder='placeholders.mobile' v-model="mobile")
       .email(v-else key='email')
         input(type='text' :placeholder='placeholders.email')
       .code
@@ -67,7 +67,9 @@ export default {
     cCountdown
   },
   data() {
-    return {};
+    return {
+      mobile: "" // 手机号
+    };
   },
   mounted() {},
   computed: {
@@ -101,19 +103,24 @@ export default {
     ...Vuex.mapMutations([
       "updateRegistType",
       "updateTypeIndex",
-      "updateAreaIndex"
+      "updateAreaIndex",
+      "openMessage"
     ]),
     countdownClick(start) {
-      console.log("click");
-      start();
+      if (this.mobile.length < 1) {
+        this.openMessage({ message: "手机号长度不足" });
+        return;
+      }
+      this.$axios.get("http://127.0.0.1:10000/vertification_code").then(res => {
+        if (res.data.vCode === 123456) start();
+        else alert("错误");
+      });
     },
     areaClick(area, index) {
       this.updateAreaIndex({ index });
-      // this.area = area;
     },
     typeClick(type, index) {
       this.updateTypeIndex({ index });
-      // this.type = type;
     }
   }
 };
