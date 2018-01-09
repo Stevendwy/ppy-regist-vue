@@ -180,7 +180,7 @@ export default {
     }
 
     .regist-remind {
-      font-size: 12px;
+      font-size: 14px;
       color: #333;
       margin-top: 20px;
 
@@ -198,7 +198,7 @@ export default {
     }
 
     .login {
-      font-size: 12px;
+      font-size: 14px;
       color: #333;
 
       span:nth-child(2) {
