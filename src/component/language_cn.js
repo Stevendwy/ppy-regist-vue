@@ -7,6 +7,7 @@ export default {
     remindCompany: '·输入你的公司信息',
     selectType: '选择注册方式',
     types: ['手机号', '邮箱'],
+    countdown: '发送验证码',
     placeholders: {
       mobile: '手机号',
       code: '验证码',

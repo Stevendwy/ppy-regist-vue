@@ -16,6 +16,7 @@
         input(type="text", :placeholder="placeholders.email")
       .code
         input(type="text", :placeholder="placeholders.code")
+        z-countdown(class="z-countdown", :waitText="content.countdown", second="s", :time="60", :frequency="1", :min="0", @event="countdownClick")
       .name(v-if="isChina")
         input(type="text", :placeholder="placeholders.name")
       .foreign-name(v-else)
@@ -51,25 +52,27 @@
 <script>
 import Vuex from "vuex";
 import cSelector from "./selector.vue";
+import { zCountdown } from "koala-ui";
 
 export default {
   components: {
-    cSelector
+    cSelector,
+    zCountdown
   },
   data() {
     return {};
   },
   computed: {
     ...Vuex.mapState(["areas"]),
-    ...Vuex.mapGetters(["languageData", "area", 'isChina']),
+    ...Vuex.mapGetters(["languageData", "area", "isChina"]),
     content() {
       return this.languageData.content;
     },
     placeholders() {
-      return this.content.placeholders
+      return this.content.placeholders;
     },
     registRemind() {
-      return this.content.registRemind
+      return this.content.registRemind;
     },
     registType: {
       get() {
@@ -84,7 +87,10 @@ export default {
     }
   },
   methods: {
-    ...Vuex.mapMutations(["updateRegistType"])
+    ...Vuex.mapMutations(["updateRegistType"]),
+    countdownClick() {
+      console.log("click");
+    }
   }
 };
 </script>
@@ -162,6 +168,19 @@ export default {
 
       .number {
         width: 170px;
+      }
+    }
+
+    .code {
+      position: relative;
+
+      .z-countdown {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        height: 40px;
+        width: 100px;
+        color: @bColor;
       }
     }
 

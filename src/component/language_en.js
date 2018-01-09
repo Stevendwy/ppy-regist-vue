@@ -7,6 +7,7 @@ export default {
     remindCompany: '·Select your Business Location & Account Type',
     selectType: 'Select Phone or Email',
     types: ['Phone', 'Email'],
+    countdown: 'Get code',
     placeholders: {
       mobile: 'Mobile phone number',
       email: 'Email address',
