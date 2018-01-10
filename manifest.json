@@ -1,6 +1,6 @@
 {
   "name": "regist",
-  "short-name": "注册",
+  "short_name": "注册",
   "display": "standalone",
   "start_url": "/",
   "theme_color": "#4990e2",
