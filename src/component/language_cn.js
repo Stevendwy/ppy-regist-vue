@@ -1,5 +1,5 @@
 export default {
-  logo: 'https://cdns.007vin.com/img/p_007.png',
+  logo: './static/img/p_007.png',
   signUp: "注册",
   content: {
     title: '创建新账户',
