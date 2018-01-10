@@ -1,4 +1,4 @@
-var cacheName = 'ppy-regist-01'
+var cacheName = 'ppy-regist-0'
 var cacheList = [
   '/',
   'index.html',
@@ -17,14 +17,14 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     Promise.all(
-      caches.keys().then(keys => (
-        keys.map(key => {
-          if(key !== cacheName) {
-            return caches.delete(key)
-          }
-        })
-      ))
-    ).then(() => self.clients.claim())
+      caches.keys().then(keys => keys.map(key => {
+        if(key !== cacheName) {
+          return caches.delete(key)
+        }
+      }))
+    ).then(() => {
+      self.clients.claim()
+    })
   )
 })
 
