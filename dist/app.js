@@ -11975,7 +11975,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__selector_vue__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__countdown_vue__ = __webpack_require__(45);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__u__ = __webpack_require__(80);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__cascade_selector_vue__ = __webpack_require__(82);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__u__ = __webpack_require__(80);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 //
@@ -12036,6 +12037,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -12046,7 +12057,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* harmony default export */ __webpack_exports__["a"] = ({
   components: {
     cSelector: __WEBPACK_IMPORTED_MODULE_2__selector_vue__["a" /* default */],
-    cCountdown: __WEBPACK_IMPORTED_MODULE_3__countdown_vue__["a" /* default */]
+    cCountdown: __WEBPACK_IMPORTED_MODULE_3__countdown_vue__["a" /* default */],
+    cCascadeSelector: __WEBPACK_IMPORTED_MODULE_4__cascade_selector_vue__["a" /* default */]
   },
   data: function data() {
     return {
@@ -12059,10 +12071,19 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       password: "",
       confirmPassword: "",
       company: "",
-      companyLocation: ""
+      companyLocation: "",
+      currentFloor: 0, // 当前层级
+      lists: [], // 数据组
+      currentCityCode: 0, // 初始城市代码（国家地区统称城市）
+      currentCity: "",
+      pwd1: '',
+      pwd2: ''
     };
   },
-  mounted: function mounted() {},
+  mounted: function mounted() {
+    this.getCitys();
+    this.buildData();
+  },
 
   computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["types", "areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "languageType", "isChina", "area", "type"]), {
     content: function content() {
@@ -12091,9 +12112,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     }
   }),
   watch: {
-    languageData: function languageData(value) {}
+    // languageData(value) {}
   },
   methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType", "updateTypeIndex", "updateAreaIndex", "openMessage"]), {
+    buildData: function buildData() {
+      if (this.isChina) this.currentCityCode = 86;
+    },
     countdownClick: function countdownClick(start) {
       if (this.mobile.length < 1) {
         this.openMessage({ message: "手机号长度不足" });
@@ -12103,7 +12127,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         mobile: this.mobile,
         type: "1"
       };
-      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post(__WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].link("/smscode", req), req, {
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link("/smscode", req), req, {
         headers: { sys_Language: this.languageType }
       }).then(function (res) {
         if (!res) return;
@@ -12125,9 +12149,37 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         real_name: this.real_name || this.realName,
         company: this.company,
         reg_type: this.registType,
-        city: -1
+        city: this.currentCityCode,
+        pwd1: this.pwd1,
+        pwd2: this.pwd2
       };
       this.$store.dispatch("regist", req);
+    },
+    getCitys: function getCitys() {
+      var _this = this;
+
+      return __WEBPACK_IMPORTED_MODULE_1_axios___default.a.get("/city_list", {
+        params: { city_code: this.currentCityCode },
+        headers: { sys_Language: this.languageType }
+      }).then(function (res) {
+        if (!res.data) return;
+
+        if (res.data.data.length < 1) {
+          return;
+        } // 没有后续数据了
+
+        _this.lists.push(res.data.data);
+        Promise.resolve();
+      });
+    },
+    itemClick: function itemClick(floorIndex, item) {
+      var _this2 = this;
+
+      this.currentCityCode = item.code;
+      this.currentCity = item.name;
+      this.getCitys().then(function (res) {
+        _this2.currentFloor = floorIndex + 1;
+      });
     }
   })
 });
@@ -12159,7 +12211,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     },
     selected: Boolean, // 是否有初始选中
     currentItem: null,
-    autoHidden: Boolean
+    autoHidden: Boolean,
+    lKey: String,
+    rKey: String
   },
   data: function data() {
     return {
@@ -12984,7 +13038,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app input,\nbody .app input,\nhtml .app button,\nbody .app button {\n  outline: none;\n  padding: 0;\n}\nhtml .app input[type=\"text\"],\nbody .app input[type=\"text\"] {\n  padding-left: 8px;\n}\nhtml .app button,\nbody .app button {\n  cursor: pointer;\n}\nhtml .app button.text,\nbody .app button.text {\n  background: transparent;\n  border: none;\n  color: white;\n  font-size: 14px;\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
+exports.push([module.i, "\nhtml,\nbody {\n  margin: 0;\n  height: 100%;\n}\nhtml *,\nbody * {\n  box-sizing: border-box;\n}\nhtml .app,\nbody .app {\n  height: 100%;\n}\n@media screen and (min-width: 600px) {\nhtml .app > div,\n  body .app > div {\n    padding: 0 calc(50% - 512px);\n}\n}\nhtml .app input,\nbody .app input,\nhtml .app button,\nbody .app button {\n  outline: none;\n  padding: 0;\n}\nhtml .app input[type=\"text\"],\nbody .app input[type=\"text\"] {\n  padding-left: 8px;\n}\nhtml .app input[type=\"password\"],\nbody .app input[type=\"password\"] {\n  padding-left: 8px;\n}\nhtml .app button,\nbody .app button {\n  cursor: pointer;\n}\nhtml .app button.text,\nbody .app button.text {\n  background: transparent;\n  border: none;\n  color: white;\n  font-size: 14px;\n}\nhtml .app ul,\nbody .app ul {\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n", ""]);
 
 // exports
 
@@ -13397,7 +13451,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n", ""]);
+exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"password\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n.content .cascade[data-v-3dd7e1c8] {\n  width: 320px;\n  height: 40px;\n  border: 1px solid #d8d8d8;\n  margin-top: 10px;\n  border-radius: 4px;\n}\n", ""]);
 
 // exports
 
@@ -13493,7 +13547,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .selected[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  width: 40px;\n}\n.selector .selected .triangle[data-v-111ab2c0] {\n  transition: transform .3s;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 36px;\n  left: 0;\n  display: none;\n  max-height: 300px;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n  z-index: 1;\n  overflow-y: scroll;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076ff;\n  color: white;\n}\n.hover:hover .triangle[data-v-111ab2c0] {\n  transform: rotateZ(180deg);\n}\n.hover:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n", ""]);
+exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .selected[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  width: 40px;\n}\n.selector .selected .triangle[data-v-111ab2c0] {\n  transition: transform .3s ease;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 36px;\n  left: 0;\n  display: none;\n  max-height: 300px;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n  z-index: 1;\n  overflow-y: scroll;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076ff;\n  color: white;\n}\n.hover:hover .triangle[data-v-111ab2c0] {\n  transform: rotateZ(180deg);\n}\n.hover:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n", ""]);
 
 // exports
 
@@ -13509,12 +13563,10 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "selector", class: { hover: !_vm.toggle } }, [
     _c("span", { style: !_vm.selected && _vm.initialColor }, [
-      _vm._v(
-        _vm._s(_vm.currentItem.name || _vm.currentItem.value || _vm.currentItem)
-      )
+      _vm._v(_vm._s(_vm.currentItem[_vm.lKey] || _vm.currentItem))
     ]),
     _c("div", { staticClass: "selected" }, [
-      _c("span", [_vm._v(_vm._s(_vm.currentItem.code))]),
+      _c("span", [_vm._v(_vm._s(_vm.currentItem[_vm.rKey]))]),
       _c("canvas", {
         ref: "triangle",
         staticClass: "triangle",
@@ -13537,8 +13589,8 @@ var render = function() {
             }
           },
           [
-            _c("span", [_vm._v(_vm._s(item.name || item.value))]),
-            _c("span", [_vm._v(_vm._s(item.code))])
+            _c("span", [_vm._v(_vm._s(item[_vm.lKey]))]),
+            _c("span", [_vm._v(_vm._s(item[_vm.rKey]))])
           ]
         )
       })
@@ -13686,350 +13738,353 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "content" }, [
-    _c("div", { staticClass: "account" }, [
-      _c("div", { staticClass: "title" }, [_vm._v(_vm._s(_vm.content.title))]),
-      _c("div", { staticClass: "remindPersonal" }, [
-        _vm._v(_vm._s(_vm.content.remindPersonal))
-      ]),
-      _c("div", { staticClass: "selectType" }, [
-        _vm._v(_vm._s(_vm.content.selectType))
-      ]),
-      _c("div", { staticClass: "radios" }, [
-        _c("label", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.registType,
-                expression: "registType"
-              }
-            ],
-            attrs: { type: "radio", value: "phone" },
-            domProps: { checked: _vm._q(_vm.registType, "phone") },
-            on: {
-              change: function($event) {
-                _vm.registType = "phone"
-              }
-            }
-          }),
-          _vm._v(_vm._s(_vm.content.types[0]))
+    _c(
+      "div",
+      { staticClass: "account" },
+      [
+        _c("div", { staticClass: "title" }, [
+          _vm._v(_vm._s(_vm.content.title))
         ]),
-        _c("label", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.registType,
-                expression: "registType"
+        _c("div", { staticClass: "remindPersonal" }, [
+          _vm._v(_vm._s(_vm.content.remindPersonal))
+        ]),
+        _c("div", { staticClass: "selectType" }, [
+          _vm._v(_vm._s(_vm.content.selectType))
+        ]),
+        _c("div", { staticClass: "radios" }, [
+          _c("label", [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.registType,
+                  expression: "registType"
+                }
+              ],
+              attrs: { type: "radio", value: "phone" },
+              domProps: { checked: _vm._q(_vm.registType, "phone") },
+              on: {
+                change: function($event) {
+                  _vm.registType = "phone"
+                }
               }
-            ],
-            attrs: { type: "radio", value: "email" },
-            domProps: { checked: _vm._q(_vm.registType, "email") },
-            on: {
-              change: function($event) {
-                _vm.registType = "email"
+            }),
+            _vm._v(_vm._s(_vm.content.types[0]))
+          ]),
+          _c("label", [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.registType,
+                  expression: "registType"
+                }
+              ],
+              attrs: { type: "radio", value: "email" },
+              domProps: { checked: _vm._q(_vm.registType, "email") },
+              on: {
+                change: function($event) {
+                  _vm.registType = "email"
+                }
               }
-            }
-          }),
-          _vm._v(" " + _vm._s(_vm.content.types[1]))
-        ])
-      ]),
-      _vm.isPhone
-        ? _c(
-            "div",
-            { staticClass: "phone" },
-            [
-              _c("c-selector", {
+            }),
+            _vm._v(" " + _vm._s(_vm.content.types[1]))
+          ])
+        ]),
+        _vm.isPhone
+          ? _c(
+              "div",
+              { staticClass: "phone" },
+              [
+                _c("c-selector", {
+                  attrs: {
+                    items: _vm.areas,
+                    selected: true,
+                    currentItem: _vm.area,
+                    autoHidden: true,
+                    lKey: "name",
+                    rKey: "code"
+                  },
+                  on: { itemClick: _vm.areaClick }
+                }),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.mobile,
+                      expression: "mobile"
+                    }
+                  ],
+                  staticClass: "number",
+                  attrs: { type: "text", placeholder: _vm.placeholders.mobile },
+                  domProps: { value: _vm.mobile },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.mobile = $event.target.value
+                    }
+                  }
+                })
+              ],
+              1
+            )
+          : _c("div", { key: "email", staticClass: "email" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.email,
+                    expression: "email"
+                  }
+                ],
+                attrs: { type: "text", placeholder: _vm.placeholders.email },
+                domProps: { value: _vm.email },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.email = $event.target.value
+                  }
+                }
+              })
+            ]),
+        _c(
+          "div",
+          { staticClass: "code" },
+          [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.sms_code,
+                  expression: "sms_code"
+                }
+              ],
+              attrs: { type: "text", placeholder: _vm.placeholders.code },
+              domProps: { value: _vm.sms_code },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.sms_code = $event.target.value
+                }
+              }
+            }),
+            _c("c-countdown", {
+              staticClass: "c-countdown",
+              attrs: {
+                waitText: _vm.content.countdown,
+                second: "s",
+                time: 3,
+                frequency: 1,
+                min: 0
+              },
+              on: { event: _vm.countdownClick }
+            })
+          ],
+          1
+        ),
+        _vm.isChina
+          ? _c("div", { key: "name", staticClass: "name" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.real_name,
+                    expression: "real_name"
+                  }
+                ],
+                attrs: { type: "text", placeholder: _vm.placeholders.name },
+                domProps: { value: _vm.real_name },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.real_name = $event.target.value
+                  }
+                }
+              })
+            ])
+          : _c("div", { staticClass: "foreign-name" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.firstName,
+                    expression: "firstName"
+                  }
+                ],
+                staticClass: "first-name",
                 attrs: {
-                  items: _vm.areas,
-                  selected: true,
-                  currentItem: _vm.area,
-                  autoHidden: true
+                  type: "text",
+                  placeholder: _vm.placeholders.firstName
                 },
-                on: { itemClick: _vm.areaClick }
+                domProps: { value: _vm.firstName },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.firstName = $event.target.value
+                  }
+                }
               }),
               _c("input", {
                 directives: [
                   {
                     name: "model",
                     rawName: "v-model",
-                    value: _vm.mobile,
-                    expression: "mobile"
+                    value: _vm.lastName,
+                    expression: "lastName"
                   }
                 ],
-                staticClass: "number",
-                attrs: { type: "text", placeholder: _vm.placeholders.mobile },
-                domProps: { value: _vm.mobile },
+                staticClass: "last-name",
+                attrs: { type: "text", placeholder: _vm.placeholders.lastName },
+                domProps: { value: _vm.lastName },
                 on: {
                   input: function($event) {
                     if ($event.target.composing) {
                       return
                     }
-                    _vm.mobile = $event.target.value
+                    _vm.lastName = $event.target.value
                   }
                 }
               })
-            ],
-            1
-          )
-        : _c("div", { key: "email", staticClass: "email" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.email,
-                  expression: "email"
-                }
-              ],
-              attrs: { type: "text", placeholder: _vm.placeholders.email },
-              domProps: { value: _vm.email },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.email = $event.target.value
-                }
-              }
-            })
-          ]),
-      _c(
-        "div",
-        { staticClass: "code" },
-        [
+            ]),
+        _c("div", { staticClass: "password" }, [
           _c("input", {
             directives: [
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.sms_code,
-                expression: "sms_code"
+                value: _vm.pwd1,
+                expression: "pwd1"
               }
             ],
-            attrs: { type: "text", placeholder: _vm.placeholders.code },
-            domProps: { value: _vm.sms_code },
+            attrs: { type: "text", placeholder: _vm.placeholders.password },
+            domProps: { value: _vm.pwd1 },
             on: {
               input: function($event) {
                 if ($event.target.composing) {
                   return
                 }
-                _vm.sms_code = $event.target.value
+                _vm.pwd1 = $event.target.value
               }
             }
-          }),
-          _c("c-countdown", {
-            staticClass: "c-countdown",
-            attrs: {
-              waitText: _vm.content.countdown,
-              second: "s",
-              time: 3,
-              frequency: 1,
-              min: 0
-            },
-            on: { event: _vm.countdownClick }
           })
-        ],
-        1
-      ),
-      _vm.isChina
-        ? _c("div", { key: "name", staticClass: "name" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.real_name,
-                  expression: "real_name"
-                }
-              ],
-              attrs: { type: "text", placeholder: _vm.placeholders.name },
-              domProps: { value: _vm.real_name },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.real_name = $event.target.value
-                }
+        ]),
+        _c("div", { staticClass: "password" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.pwd2,
+                expression: "pwd2"
               }
-            })
-          ])
-        : _c("div", { staticClass: "foreign-name" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.firstName,
-                  expression: "firstName"
-                }
-              ],
-              staticClass: "first-name",
-              attrs: { type: "text", placeholder: _vm.placeholders.firstName },
-              domProps: { value: _vm.firstName },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.firstName = $event.target.value
-                }
-              }
-            }),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.lastName,
-                  expression: "lastName"
-                }
-              ],
-              staticClass: "last-name",
-              attrs: { type: "text", placeholder: _vm.placeholders.lastName },
-              domProps: { value: _vm.lastName },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.lastName = $event.target.value
-                }
-              }
-            })
-          ]),
-      _c("div", { staticClass: "password" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.password,
-              expression: "password"
-            }
-          ],
-          attrs: { type: "text", placeholder: _vm.placeholders.password },
-          domProps: { value: _vm.password },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.password = $event.target.value
-            }
-          }
-        })
-      ]),
-      _c("div", { staticClass: "password" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.confirmPassword,
-              expression: "confirmPassword"
-            }
-          ],
-          attrs: {
-            type: "text",
-            placeholder: _vm.placeholders.confirmPassword
-          },
-          domProps: { value: _vm.confirmPassword },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.confirmPassword = $event.target.value
-            }
-          }
-        })
-      ]),
-      _c("div", { staticClass: "remindCompany" }, [
-        _vm._v(_vm._s(_vm.content.remindCompany))
-      ]),
-      _c("div", { staticClass: "company" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.company,
-              expression: "company"
-            }
-          ],
-          attrs: { type: "text", placeholder: _vm.placeholders.company },
-          domProps: { value: _vm.company },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.company = $event.target.value
-            }
-          }
-        })
-      ]),
-      _c("div", { staticClass: "company-location" }, [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.companyLocation,
-              expression: "companyLocation"
-            }
-          ],
-          attrs: {
-            type: "text",
-            placeholder: _vm.placeholders.companyLocation
-          },
-          domProps: { value: _vm.companyLocation },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.companyLocation = $event.target.value
-            }
-          }
-        })
-      ]),
-      _c(
-        "div",
-        { staticClass: "company-type" },
-        [
-          _c("c-selector", {
+            ],
             attrs: {
-              items: _vm.types,
-              currentItem: _vm.placeholders.companyType,
-              autoHidden: true
+              type: "password",
+              placeholder: _vm.placeholders.confirmPassword
             },
-            on: { itemClick: _vm.typeClick }
+            domProps: { value: _vm.pwd2 },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.pwd2 = $event.target.value
+              }
+            }
           })
-        ],
-        1
-      ),
-      _c("div", { staticClass: "regist-remind" }, [
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.l1))]),
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.t1))]),
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.l2))]),
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.t2))]),
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.l3))]),
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.t3))]),
-        _c("span", [_vm._v(_vm._s(_vm.registRemind.l4))])
-      ]),
-      _c("button", { staticClass: "regist", on: { click: _vm.registClick } }, [
-        _vm._v(_vm._s(_vm.content.signUp))
-      ]),
-      _c("div", { staticClass: "login" }, [
-        _c("span", [_vm._v(_vm._s(_vm.content.loginRemind))]),
-        _c("span", [_vm._v(_vm._s(_vm.content.login))])
-      ])
-    ]),
+        ]),
+        _c("div", { staticClass: "remindCompany" }, [
+          _vm._v(_vm._s(_vm.content.remindCompany))
+        ]),
+        _c("div", { staticClass: "company" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.company,
+                expression: "company"
+              }
+            ],
+            attrs: { type: "text", placeholder: _vm.placeholders.company },
+            domProps: { value: _vm.company },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.company = $event.target.value
+              }
+            }
+          })
+        ]),
+        _c("c-cascade-selector", {
+          staticClass: "cascade",
+          attrs: {
+            lists: _vm.lists,
+            placeholder: _vm.placeholders.companyLocation,
+            currentShow: _vm.currentCity,
+            showKey: "name",
+            valueKey: "code",
+            autoHidden: true,
+            floor: _vm.currentFloor,
+            itemClick: _vm.itemClick
+          }
+        }),
+        _c(
+          "div",
+          { staticClass: "company-type" },
+          [
+            _c("c-selector", {
+              attrs: {
+                items: _vm.types,
+                currentItem: _vm.type,
+                autoHidden: true,
+                lKey: "value"
+              },
+              on: { itemClick: _vm.typeClick }
+            })
+          ],
+          1
+        ),
+        _c("div", { staticClass: "regist-remind" }, [
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.l1))]),
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.t1))]),
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.l2))]),
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.t2))]),
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.l3))]),
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.t3))]),
+          _c("span", [_vm._v(_vm._s(_vm.registRemind.l4))])
+        ]),
+        _c(
+          "button",
+          { staticClass: "regist", on: { click: _vm.registClick } },
+          [_vm._v(_vm._s(_vm.content.signUp))]
+        ),
+        _c("div", { staticClass: "login" }, [
+          _c("span", [_vm._v(_vm._s(_vm.content.loginRemind))]),
+          _c("span", [_vm._v(_vm._s(_vm.content.login))])
+        ])
+      ],
+      1
+    ),
     _c("div", { staticClass: "brand-title" }, [
       _vm._v(_vm._s(_vm.languageData.brand.title))
     ]),
@@ -14470,10 +14525,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
           getters = _ref3.getters,
           commit = _ref3.commit;
 
-      var language = 'en';
-      if (state.languageType === 0) language = 'cn';
-
-      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/base/company/type', { params: { language: language }, headers: { sys_Language: getters.languageType } }).then(function (res) {
+      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/base/company/type', { headers: { sys_Language: getters.languageType } }).then(function (res) {
         var types = res.data.data;
         commit('updateTypes', { types: types });
         return res;
@@ -14484,10 +14536,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
           getters = _ref4.getters,
           commit = _ref4.commit;
 
-      var language = 'en';
-      if (state.languageType === 0) language = 'cn';
-
-      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/mobile/area/code', { params: { language: language }, headers: { sys_Language: getters.languageType } }).then(function (res) {
+      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/mobile/area/code', { headers: { sys_Language: getters.languageType } }).then(function (res) {
         var areas = res.data.data;
         commit('updateAreas', { areas: areas });
         return res;
@@ -15456,6 +15505,265 @@ module.exports = function spread(callback) {
     return result;
   }
 });
+
+/***/ }),
+/* 81 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  props: {
+    currentShow: {
+      type: String
+    },
+    lists: {
+      type: Array,
+      required: true
+    },
+    showKey: {
+      type: String,
+      required: true
+    },
+    valueKey: {
+      type: String,
+      required: true
+    },
+    floor: {
+      type: Number,
+      required: true
+    },
+    itemClick: {
+      type: Function,
+      requires: true
+    },
+    autoHidden: {
+      type: Boolean,
+      default: false
+    },
+    placeholder: {
+      type: String
+    }
+  },
+  data: function data() {
+    return {
+      selected: false, // 是否点击过
+      toggle: false // 控制自动隐藏
+    };
+  },
+
+  computed: {
+    showLists: function showLists() {
+      var lists = this.lists;
+      var showLists = [];
+      for (var i = 0, j = lists.length; i < j; i++) {
+        if (i <= this.floor) showLists.push(lists[i]);else break;
+      }
+      return showLists;
+    }
+  },
+  mounted: function mounted() {
+    this.buildTriangle();
+  },
+
+  methods: {
+    buildTriangle: function buildTriangle() {
+      var ctx = this.$refs.triangle.getContext("2d");
+      ctx.moveTo(0, 0);
+      ctx.lineTo(8, 0);
+      ctx.lineTo(4, 6);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fillStyle = "#333";
+      ctx.fill();
+    },
+    click: function click(floorIndex, item) {
+      this.selected = true;
+      this.itemClick(floorIndex, item);
+      if (this.autoHidden) this.toggleClass();
+    },
+    toggleClass: function toggleClass() {
+      var _this = this;
+
+      this.toggle = true;
+      setTimeout(function () {
+        _this.toggle = false;
+      }, 200);
+    }
+  }
+});
+
+/***/ }),
+/* 82 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_cascade_selector_vue__ = __webpack_require__(81);
+/* unused harmony namespace reexport */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_faeadfce_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_cascade_selector_vue__ = __webpack_require__(85);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(83)
+}
+var normalizeComponent = __webpack_require__(3)
+/* script */
+
+
+/* template */
+
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-faeadfce"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_script_index_0_cascade_selector_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_index_id_data_v_faeadfce_hasScoped_true_buble_transforms_node_modules_vue_loader_13_6_2_vue_loader_lib_template_compiler_preprocessor_engine_pug_node_modules_vue_loader_13_6_2_vue_loader_lib_selector_type_template_index_0_cascade_selector_vue__["a" /* default */],
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "src/component/content/cascade-selector.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-loader/node_modules/vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-faeadfce", Component.options)
+  } else {
+    hotAPI.reload("data-v-faeadfce", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+/* harmony default export */ __webpack_exports__["a"] = (Component.exports);
+
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(84);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("718e1426", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-faeadfce\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./cascade-selector.vue", function() {
+     var newContent = require("!!../../../node_modules/._css-loader@0.28.8@css-loader/index.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-faeadfce\",\"scoped\":true,\"hasInlineConfig\":false}!../../../node_modules/._less-loader@4.0.5@less-loader/dist/cjs.js!../../../node_modules/._vue-loader@13.6.2@vue-loader/lib/selector.js?type=styles&index=0!./cascade-selector.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.cascade-selector[data-v-faeadfce] {\n  position: relative;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  box-sizing: border-box;\n  padding: 0 8px;\n}\n.cascade-selector .show[data-v-faeadfce] {\n  color: #333;\n  font-size: 12px;\n}\n.cascade-selector .placeholder[data-v-faeadfce] {\n  font-size: 12px;\n  color: #999;\n}\n.cascade-selector .triangle[data-v-faeadfce] {\n  transition: transform 0.3s ease;\n}\n.cascade-selector .lists[data-v-faeadfce] {\n  position: absolute;\n  left: 0;\n  top: 100%;\n  display: none;\n  border: 1px solid #d8d8d8;\n  border-right: 0;\n  z-index: 999;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n}\n.cascade-selector .lists .list[data-v-faeadfce] {\n  min-width: 80px;\n  max-height: 300px;\n  border-right: 1px solid #d8d8d8;\n  background: white;\n  overflow: scroll;\n}\n.cascade-selector .lists .list .item[data-v-faeadfce] {\n  width: 100%;\n  line-height: 32px;\n  padding-left: 8px;\n  box-sizing: border-box;\n  cursor: pointer;\n  font-size: 12px;\n  color: #333;\n}\n.hover:hover .triangle[data-v-faeadfce] {\n  transform: rotateZ(180deg);\n}\n.hover:hover .lists[data-v-faeadfce] {\n  display: flex;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 85 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "cascade-selector", class: { hover: !_vm.toggle } },
+    [
+      _vm.selected
+        ? _c("span", { staticClass: "show" }, [_vm._v(_vm._s(_vm.currentShow))])
+        : _c("span", { staticClass: "placeholder" }, [
+            _vm._v(_vm._s(_vm.placeholder))
+          ]),
+      _c("canvas", {
+        ref: "triangle",
+        staticClass: "triangle",
+        attrs: { width: "8", height: "6" }
+      }),
+      _c(
+        "div",
+        { staticClass: "lists" },
+        _vm._l(_vm.lists, function(list, floorIndex) {
+          return floorIndex <= _vm.floor
+            ? _c(
+                "div",
+                { key: floorIndex, staticClass: "list" },
+                _vm._l(list, function(item, index) {
+                  return _c(
+                    "div",
+                    {
+                      key: index,
+                      staticClass: "item",
+                      on: {
+                        click: function($event) {
+                          _vm.click(floorIndex, item)
+                        }
+                      }
+                    },
+                    [_vm._v(_vm._s(item[_vm.showKey]))]
+                  )
+                })
+              )
+            : _vm._e()
+        })
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+var esExports = { render: render, staticRenderFns: staticRenderFns }
+/* harmony default export */ __webpack_exports__["a"] = (esExports);
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-loader/node_modules/vue-hot-reload-api")      .rerender("data-v-faeadfce", esExports)
+  }
+}
 
 /***/ })
 /******/ ]);

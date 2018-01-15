@@ -1,14 +1,14 @@
 <template lang='pug'>
   .selector(:class='{hover: !toggle}')
-    span(:style='!selected && initialColor') {{currentItem.name || currentItem.value || currentItem}}
+    span(:style='!selected && initialColor') {{currentItem[lKey] || currentItem}}
     .selected
-      span {{currentItem.code}}
+      span {{currentItem[rKey]}}
       canvas.triangle(ref='triangle', width='8', height='6')
     .items(ref='items')
       .item(v-for='(item, index) of items', :key='index'
         @click='click(item, index)')
-        span {{item.name || item.value}}
-        span {{item.code}}
+        span {{item[lKey]}}
+        span {{item[rKey]}}
 </template>
 
 <script>
@@ -20,7 +20,9 @@ export default {
     },
     selected: Boolean, // 是否有初始选中
     currentItem: null,
-    autoHidden: Boolean
+    autoHidden: Boolean,
+    lKey: String,
+    rKey: String
   },
   data() {
     return {
@@ -82,7 +84,7 @@ export default {
     width: 40px;
 
     .triangle {
-      transition: transform .3s;
+      transition: transform .3s ease;
     }
   }
 

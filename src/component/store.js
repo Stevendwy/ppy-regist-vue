@@ -86,11 +86,8 @@ export default new Vuex.Store({
   },
   actions: {
     aTypes({ state, getters, commit }, payload) {
-      let language = 'en'
-      if (state.languageType === 0) language = 'cn'
-
       return (
-        axios.get('/base/company/type', { params: { language }, headers: { sys_Language: getters.languageType } })
+        axios.get('/base/company/type', { headers: { sys_Language: getters.languageType } })
           .then(res => {
             let types = res.data.data
             commit('updateTypes', { types })
@@ -99,11 +96,8 @@ export default new Vuex.Store({
       )
     },
     aAreas({ state, getters, commit }, payload) {
-      let language = 'en'
-      if (state.languageType === 0) language = 'cn'
-
       return (
-        axios.get('/mobile/area/code', { params: { language }, headers: { sys_Language: getters.languageType } })
+        axios.get('/mobile/area/code', { headers: { sys_Language: getters.languageType } })
           .then(res => {
             let areas = res.data.data
             commit('updateAreas', { areas })

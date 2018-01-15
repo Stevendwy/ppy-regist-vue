@@ -73,6 +73,10 @@ html,body {
       padding-left: 8px;
     }
 
+    input[type="password"] {
+      padding-left: 8px;
+    }
+
     button {
       cursor: pointer;
 

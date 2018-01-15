@@ -14,7 +14,9 @@
           :selected='true'
           :currentItem='area'
           @itemClick='areaClick'
-          :autoHidden='true')
+          :autoHidden='true'
+          lKey="name"
+          rKey="code")
         input.number(type='text' :placeholder='placeholders.mobile' v-model="mobile")
       .email(v-else key='email')
         input(type='text' :placeholder='placeholders.email' v-model="email")
@@ -27,19 +29,26 @@
         input.first-name(type='text' :placeholder='placeholders.firstName' v-model="firstName")
         input.last-name(type='text' :placeholder='placeholders.lastName' v-model="lastName")
       .password
-        input(type='text' :placeholder='placeholders.password' v-model='password')
+        input(type='text' :placeholder='placeholders.password' v-model='pwd1')
       .password
-        input(type='text' :placeholder='placeholders.confirmPassword' v-model="confirmPassword")
+        input(type='password' :placeholder='placeholders.confirmPassword' v-model="pwd2")
       .remindCompany {{content.remindCompany}}
       .company
         input(type='text' :placeholder='placeholders.company' v-model="company")
-      .company-location
-        input(type='text' :placeholder='placeholders.companyLocation' v-model="companyLocation")
+      c-cascade-selector.cascade(:lists="lists"
+        :placeholder="placeholders.companyLocation"
+        :currentShow="currentCity"
+        showKey="name"
+        valueKey="code"
+        :autoHidden='true'
+        :floor="currentFloor"
+        :itemClick="itemClick")
       .company-type
         c-selector(:items='types'
-          :currentItem='placeholders.companyType'
+          :currentItem='type'
           @itemClick='typeClick'
-          :autoHidden='true')
+          :autoHidden='true'
+          lKey="value")
       .regist-remind
         span {{registRemind.l1}}
         span {{registRemind.t1}}
@@ -61,12 +70,14 @@ import Vuex from "vuex";
 import axios from "axios";
 import cSelector from "./selector.vue";
 import cCountdown from "./countdown.vue";
+import cCascadeSelector from "./cascade-selector.vue";
 import u from "../u";
 
 export default {
   components: {
     cSelector,
-    cCountdown
+    cCountdown,
+    cCascadeSelector
   },
   data() {
     return {
@@ -79,13 +90,28 @@ export default {
       password: "",
       confirmPassword: "",
       company: "",
-      companyLocation: ""
+      companyLocation: "",
+      currentFloor: 0, // 当前层级
+      lists: [], // 数据组
+      currentCityCode: 0, // 初始城市代码（国家地区统称城市）
+      currentCity: "",
+      pwd1: '',
+      pwd2: '',
     };
   },
-  mounted() {},
+  mounted() {
+    this.getCitys();
+    this.buildData();
+  },
   computed: {
     ...Vuex.mapState(["types", "areas"]),
-    ...Vuex.mapGetters(["languageData", "languageType", "isChina", "area", "type"]),
+    ...Vuex.mapGetters([
+      "languageData",
+      "languageType",
+      "isChina",
+      "area",
+      "type"
+    ]),
     content() {
       return this.languageData.content;
     },
@@ -111,7 +137,7 @@ export default {
     }
   },
   watch: {
-    languageData(value) {}
+    // languageData(value) {}
   },
   methods: {
     ...Vuex.mapMutations([
@@ -120,6 +146,9 @@ export default {
       "updateAreaIndex",
       "openMessage"
     ]),
+    buildData() {
+      if (this.isChina) this.currentCityCode = 86;
+    },
     countdownClick(start) {
       if (this.mobile.length < 1) {
         this.openMessage({ message: "手机号长度不足" });
@@ -153,9 +182,35 @@ export default {
         real_name: this.real_name || this.realName,
         company: this.company,
         reg_type: this.registType,
-        city: -1
+        city: this.currentCityCode,
+        pwd1: this.pwd1,
+        pwd2: this.pwd2,
       };
       this.$store.dispatch("regist", req);
+    },
+    getCitys() {
+      return axios
+        .get("/city_list", {
+          params: { city_code: this.currentCityCode },
+          headers: { sys_Language: this.languageType }
+        })
+        .then(res => {
+          if (!res.data) return;
+
+          if (res.data.data.length < 1) {
+            return;
+          } // 没有后续数据了
+
+          this.lists.push(res.data.data);
+          Promise.resolve();
+        });
+    },
+    itemClick(floorIndex, item) {
+      this.currentCityCode = item.code;
+      this.currentCity = item.name;
+      this.getCitys().then(res => {
+        this.currentFloor = floorIndex + 1;
+      });
     }
   }
 };
@@ -220,6 +275,10 @@ export default {
     }
 
     input[type="text"] {
+      .input;
+    }
+    
+    input[type="password"] {
       .input;
     }
 
@@ -317,6 +376,14 @@ export default {
   .brands {
     .width;
     margin-bottom: 40px;
+  }
+
+  .cascade {
+    .width;
+    height: 40px;
+    border: 1px solid #d8d8d8;
+    margin-top: 10px;
+    border-radius: 4px;
   }
 }
 </style>
