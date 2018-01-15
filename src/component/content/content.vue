@@ -17,27 +17,27 @@
           :autoHidden='true')
         input.number(type='text' :placeholder='placeholders.mobile' v-model="mobile")
       .email(v-else key='email')
-        input(type='text' :placeholder='placeholders.email')
+        input(type='text' :placeholder='placeholders.email' v-model="email")
       .code
-        input(type='text' :placeholder='placeholders.code')
+        input(type='text' :placeholder='placeholders.code' v-model="sms_code")
         c-countdown(class='c-countdown' :waitText='content.countdown' second='s' :time='3' :frequency='1' :min='0' @event='countdownClick')
       .name(v-if='isChina' key='name')
-        input(type='text' :placeholder='placeholders.name')
+        input(type='text' :placeholder='placeholders.name' v-model="real_name")
       .foreign-name(v-else)
-        input.first-name(type='text' :placeholder='placeholders.firstName')
-        input.last-name(type='text' :placeholder='placeholders.lastName')
+        input.first-name(type='text' :placeholder='placeholders.firstName' v-model="firstName")
+        input.last-name(type='text' :placeholder='placeholders.lastName' v-model="lastName")
       .password
-        input(type='text' :placeholder='placeholders.password')
+        input(type='text' :placeholder='placeholders.password' v-model='password')
       .password
-        input(type='text' :placeholder='placeholders.confirmPassword')
+        input(type='text' :placeholder='placeholders.confirmPassword' v-model="confirmPassword")
       .remindCompany {{content.remindCompany}}
       .company
-        input(type='text' :placeholder='placeholders.company')
+        input(type='text' :placeholder='placeholders.company' v-model="company")
       .company-location
-        input(type='text' :placeholder='placeholders.companyLocation')
+        input(type='text' :placeholder='placeholders.companyLocation' v-model="companyLocation")
       .company-type
         c-selector(:items='types'
-          :currentItem='type'
+          :currentItem='placeholders.companyType'
           @itemClick='typeClick'
           :autoHidden='true')
       .regist-remind
@@ -48,7 +48,7 @@
         span {{registRemind.l3}}
         span {{registRemind.t3}}
         span {{registRemind.l4}}
-      button.regist {{content.signUp}}
+      button.regist(@click="registClick") {{content.signUp}}
       .login
         span {{content.loginRemind}}
         span {{content.login}}
@@ -58,8 +58,10 @@
 
 <script>
 import Vuex from "vuex";
+import axios from "axios";
 import cSelector from "./selector.vue";
 import cCountdown from "./countdown.vue";
+import u from "../u";
 
 export default {
   components: {
@@ -68,13 +70,22 @@ export default {
   },
   data() {
     return {
-      mobile: "" // 手机号
+      mobile: "", // 手机号
+      email: "", // email
+      sms_code: "", // 验证码
+      country_code: "", // 国家地区代码
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
+      company: "",
+      companyLocation: ""
     };
   },
   mounted() {},
   computed: {
     ...Vuex.mapState(["types", "areas"]),
-    ...Vuex.mapGetters(["languageData", "isChina", "area", "type"]),
+    ...Vuex.mapGetters(["languageData", "languageType", "isChina", "area", "type"]),
     content() {
       return this.languageData.content;
     },
@@ -94,6 +105,9 @@ export default {
     },
     isPhone() {
       return this.registType === "phone";
+    },
+    realName() {
+      return this.firstName + this.lastName;
     }
   },
   watch: {
@@ -111,16 +125,37 @@ export default {
         this.openMessage({ message: "手机号长度不足" });
         return;
       }
-      this.$axios.get("http://127.0.0.1:10000/vertification_code").then(res => {
-        if (res.data.vCode === 123456) start();
-        else alert("错误");
-      });
+      let req = {
+        mobile: this.mobile,
+        type: "1"
+      };
+      axios
+        .post(u.link("/smscode", req), req, {
+          headers: { sys_Language: this.languageType }
+        })
+        .then(res => {
+          if (!res) return;
+
+          start();
+        });
     },
     areaClick(area, index) {
       this.updateAreaIndex({ index });
     },
     typeClick(type, index) {
       this.updateTypeIndex({ index });
+    },
+    registClick() {
+      let req = {
+        mobile: this.mobile,
+        email: this.email,
+        sms_code: this.sms_code,
+        real_name: this.real_name || this.realName,
+        company: this.company,
+        reg_type: this.registType,
+        city: -1
+      };
+      this.$store.dispatch("regist", req);
     }
   }
 };

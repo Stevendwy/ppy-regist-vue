@@ -11971,8 +11971,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__selector_vue__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__countdown_vue__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__selector_vue__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__countdown_vue__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__u__ = __webpack_require__(80);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 //
@@ -12038,19 +12041,30 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
+
+
 /* harmony default export */ __webpack_exports__["a"] = ({
   components: {
-    cSelector: __WEBPACK_IMPORTED_MODULE_1__selector_vue__["a" /* default */],
-    cCountdown: __WEBPACK_IMPORTED_MODULE_2__countdown_vue__["a" /* default */]
+    cSelector: __WEBPACK_IMPORTED_MODULE_2__selector_vue__["a" /* default */],
+    cCountdown: __WEBPACK_IMPORTED_MODULE_3__countdown_vue__["a" /* default */]
   },
   data: function data() {
     return {
-      mobile: "" // 手机号
+      mobile: "", // 手机号
+      email: "", // email
+      sms_code: "", // 验证码
+      country_code: "", // 国家地区代码
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
+      company: "",
+      companyLocation: ""
     };
   },
   mounted: function mounted() {},
 
-  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["types", "areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "isChina", "area", "type"]), {
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["types", "areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "languageType", "isChina", "area", "type"]), {
     content: function content() {
       return this.languageData.content;
     },
@@ -12071,6 +12085,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     },
     isPhone: function isPhone() {
       return this.registType === "phone";
+    },
+    realName: function realName() {
+      return this.firstName + this.lastName;
     }
   }),
   watch: {
@@ -12082,8 +12099,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         this.openMessage({ message: "手机号长度不足" });
         return;
       }
-      this.$axios.get("http://127.0.0.1:10000/vertification_code").then(function (res) {
-        if (res.data.vCode === 123456) start();else alert("错误");
+      var req = {
+        mobile: this.mobile,
+        type: "1"
+      };
+      __WEBPACK_IMPORTED_MODULE_1_axios___default.a.post(__WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].link("/smscode", req), req, {
+        headers: { sys_Language: this.languageType }
+      }).then(function (res) {
+        if (!res) return;
+
+        start();
       });
     },
     areaClick: function areaClick(area, index) {
@@ -12091,6 +12116,18 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     },
     typeClick: function typeClick(type, index) {
       this.updateTypeIndex({ index: index });
+    },
+    registClick: function registClick() {
+      var req = {
+        mobile: this.mobile,
+        email: this.email,
+        sms_code: this.sms_code,
+        real_name: this.real_name || this.realName,
+        company: this.company,
+        reg_type: this.registType,
+        city: -1
+      };
+      this.$store.dispatch("regist", req);
     }
   })
 });
@@ -13456,7 +13493,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .selected[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  width: 40px;\n}\n.selector .selected .triangle[data-v-111ab2c0] {\n  transition: transform .3s;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 36px;\n  left: 0;\n  display: none;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n  z-index: 1;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076ff;\n  color: white;\n}\n.hover:hover .triangle[data-v-111ab2c0] {\n  transform: rotateZ(180deg);\n}\n.hover:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n", ""]);
+exports.push([module.i, "\n.selector[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  position: relative;\n  font-size: 12px;\n  color: #475669;\n  cursor: pointer;\n}\n.selector .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n}\n.selector .selected[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  width: 40px;\n}\n.selector .selected .triangle[data-v-111ab2c0] {\n  transition: transform .3s;\n}\n.selector .items[data-v-111ab2c0] {\n  position: absolute;\n  top: 36px;\n  left: 0;\n  display: none;\n  max-height: 300px;\n  width: 100%;\n  background: white;\n  border: 1px solid #d3dce6;\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);\n  border-radius: 2px;\n  z-index: 1;\n  overflow-y: scroll;\n}\n.selector .items .item[data-v-111ab2c0] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 40px;\n  padding: 0 8px;\n  width: 100%;\n}\n.selector .items .item[data-v-111ab2c0]:hover {\n  background: #0076ff;\n  color: white;\n}\n.hover:hover .triangle[data-v-111ab2c0] {\n  transform: rotateZ(180deg);\n}\n.hover:hover .items[data-v-111ab2c0] {\n  display: block;\n}\n", ""]);
 
 // exports
 
@@ -13472,10 +13509,12 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "selector", class: { hover: !_vm.toggle } }, [
     _c("span", { style: !_vm.selected && _vm.initialColor }, [
-      _vm._v(_vm._s(_vm.currentItem.title || _vm.currentItem))
+      _vm._v(
+        _vm._s(_vm.currentItem.name || _vm.currentItem.value || _vm.currentItem)
+      )
     ]),
     _c("div", { staticClass: "selected" }, [
-      _c("span", [_vm._v(_vm._s(_vm.currentItem.summary))]),
+      _c("span", [_vm._v(_vm._s(_vm.currentItem.code))]),
       _c("canvas", {
         ref: "triangle",
         staticClass: "triangle",
@@ -13498,8 +13537,8 @@ var render = function() {
             }
           },
           [
-            _c("span", [_vm._v(_vm._s(item.title || item))]),
-            _c("span", [_vm._v(_vm._s(item.summary))])
+            _c("span", [_vm._v(_vm._s(item.name || item.value))]),
+            _c("span", [_vm._v(_vm._s(item.code))])
           ]
         )
       })
@@ -13737,7 +13776,24 @@ var render = function() {
           )
         : _c("div", { key: "email", staticClass: "email" }, [
             _c("input", {
-              attrs: { type: "text", placeholder: _vm.placeholders.email }
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.email,
+                  expression: "email"
+                }
+              ],
+              attrs: { type: "text", placeholder: _vm.placeholders.email },
+              domProps: { value: _vm.email },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.email = $event.target.value
+                }
+              }
             })
           ]),
       _c(
@@ -13745,7 +13801,24 @@ var render = function() {
         { staticClass: "code" },
         [
           _c("input", {
-            attrs: { type: "text", placeholder: _vm.placeholders.code }
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.sms_code,
+                expression: "sms_code"
+              }
+            ],
+            attrs: { type: "text", placeholder: _vm.placeholders.code },
+            domProps: { value: _vm.sms_code },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.sms_code = $event.target.value
+              }
+            }
           }),
           _c("c-countdown", {
             staticClass: "c-countdown",
@@ -13764,27 +13837,115 @@ var render = function() {
       _vm.isChina
         ? _c("div", { key: "name", staticClass: "name" }, [
             _c("input", {
-              attrs: { type: "text", placeholder: _vm.placeholders.name }
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.real_name,
+                  expression: "real_name"
+                }
+              ],
+              attrs: { type: "text", placeholder: _vm.placeholders.name },
+              domProps: { value: _vm.real_name },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.real_name = $event.target.value
+                }
+              }
             })
           ])
         : _c("div", { staticClass: "foreign-name" }, [
             _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.firstName,
+                  expression: "firstName"
+                }
+              ],
               staticClass: "first-name",
-              attrs: { type: "text", placeholder: _vm.placeholders.firstName }
+              attrs: { type: "text", placeholder: _vm.placeholders.firstName },
+              domProps: { value: _vm.firstName },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.firstName = $event.target.value
+                }
+              }
             }),
             _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.lastName,
+                  expression: "lastName"
+                }
+              ],
               staticClass: "last-name",
-              attrs: { type: "text", placeholder: _vm.placeholders.lastName }
+              attrs: { type: "text", placeholder: _vm.placeholders.lastName },
+              domProps: { value: _vm.lastName },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.lastName = $event.target.value
+                }
+              }
             })
           ]),
       _c("div", { staticClass: "password" }, [
         _c("input", {
-          attrs: { type: "text", placeholder: _vm.placeholders.password }
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.password,
+              expression: "password"
+            }
+          ],
+          attrs: { type: "text", placeholder: _vm.placeholders.password },
+          domProps: { value: _vm.password },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.password = $event.target.value
+            }
+          }
         })
       ]),
       _c("div", { staticClass: "password" }, [
         _c("input", {
-          attrs: { type: "text", placeholder: _vm.placeholders.confirmPassword }
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.confirmPassword,
+              expression: "confirmPassword"
+            }
+          ],
+          attrs: {
+            type: "text",
+            placeholder: _vm.placeholders.confirmPassword
+          },
+          domProps: { value: _vm.confirmPassword },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.confirmPassword = $event.target.value
+            }
+          }
         })
       ]),
       _c("div", { staticClass: "remindCompany" }, [
@@ -13792,12 +13953,49 @@ var render = function() {
       ]),
       _c("div", { staticClass: "company" }, [
         _c("input", {
-          attrs: { type: "text", placeholder: _vm.placeholders.company }
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.company,
+              expression: "company"
+            }
+          ],
+          attrs: { type: "text", placeholder: _vm.placeholders.company },
+          domProps: { value: _vm.company },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.company = $event.target.value
+            }
+          }
         })
       ]),
       _c("div", { staticClass: "company-location" }, [
         _c("input", {
-          attrs: { type: "text", placeholder: _vm.placeholders.companyLocation }
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.companyLocation,
+              expression: "companyLocation"
+            }
+          ],
+          attrs: {
+            type: "text",
+            placeholder: _vm.placeholders.companyLocation
+          },
+          domProps: { value: _vm.companyLocation },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.companyLocation = $event.target.value
+            }
+          }
         })
       ]),
       _c(
@@ -13807,7 +14005,7 @@ var render = function() {
           _c("c-selector", {
             attrs: {
               items: _vm.types,
-              currentItem: _vm.type,
+              currentItem: _vm.placeholders.companyType,
               autoHidden: true
             },
             on: { itemClick: _vm.typeClick }
@@ -13824,7 +14022,7 @@ var render = function() {
         _c("span", [_vm._v(_vm._s(_vm.registRemind.t3))]),
         _c("span", [_vm._v(_vm._s(_vm.registRemind.l4))])
       ]),
-      _c("button", { staticClass: "regist" }, [
+      _c("button", { staticClass: "regist", on: { click: _vm.registClick } }, [
         _vm._v(_vm._s(_vm.content.signUp))
       ]),
       _c("div", { staticClass: "login" }, [
@@ -14176,6 +14374,10 @@ if (false) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__language_cn__ = __webpack_require__(78);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__language_en__ = __webpack_require__(79);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__u__ = __webpack_require__(80);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+
 
 
 
@@ -14210,6 +14412,9 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     },
     languageData: function languageData(state) {
       return state.languageType === 0 ? __WEBPACK_IMPORTED_MODULE_3__language_cn__["a" /* default */] : __WEBPACK_IMPORTED_MODULE_4__language_en__["a" /* default */];
+    },
+    languageType: function languageType(state) {
+      return state.languageType === 0 ? 'cn' : 'en';
     },
     registRequest: function registRequest(state) {
       return {
@@ -14262,28 +14467,47 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
   actions: {
     aTypes: function aTypes(_ref3, payload) {
       var state = _ref3.state,
+          getters = _ref3.getters,
           commit = _ref3.commit;
 
       var language = 'en';
       if (state.languageType === 0) language = 'cn';
 
-      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('http://127.0.0.1:10000/types', { params: { language: language } }).then(function (res) {
-        var types = res.data.types;
+      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/base/company/type', { params: { language: language }, headers: { sys_Language: getters.languageType } }).then(function (res) {
+        var types = res.data.data;
         commit('updateTypes', { types: types });
         return res;
       });
     },
     aAreas: function aAreas(_ref4, payload) {
       var state = _ref4.state,
+          getters = _ref4.getters,
           commit = _ref4.commit;
 
       var language = 'en';
       if (state.languageType === 0) language = 'cn';
 
-      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('http://127.0.0.1:10000/areas', { params: { language: language } }).then(function (res) {
-        var areas = res.data.areas;
+      return __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/mobile/area/code', { params: { language: language }, headers: { sys_Language: getters.languageType } }).then(function (res) {
+        var areas = res.data.data;
         commit('updateAreas', { areas: areas });
         return res;
+      });
+    },
+    regist: function regist(_ref5, payload) {
+      var state = _ref5.state,
+          getters = _ref5.getters;
+
+      var req = payload;
+      var customReq = {
+        company_type: getters.type.value,
+        country_code: getters.area.code
+      };
+      req = _extends({}, req, customReq);
+      __WEBPACK_IMPORTED_MODULE_2_axios___default.a.post(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } }).then(function (res) {
+        console.log(res);
+        debugger;
+      }).catch(function (err) {
+        console.log(err);
       });
     }
   }
@@ -15215,6 +15439,21 @@ module.exports = function spread(callback) {
     about: 'About Us',
     delegate: 'User agreement',
     cooperation: 'Cooperation'
+  }
+});
+
+/***/ }),
+/* 80 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  link: function link(path, body) {
+    var result = path + '?';
+    for (var key in body) {
+      result += key + '=' + body[key] + '&';
+    }
+    return result;
   }
 });
 

@@ -1,14 +1,14 @@
 <template lang='pug'>
   .selector(:class='{hover: !toggle}')
-    span(:style='!selected && initialColor') {{currentItem.title || currentItem}}
+    span(:style='!selected && initialColor') {{currentItem.name || currentItem.value || currentItem}}
     .selected
-      span {{currentItem.summary}}
+      span {{currentItem.code}}
       canvas.triangle(ref='triangle', width='8', height='6')
     .items(ref='items')
       .item(v-for='(item, index) of items', :key='index'
         @click='click(item, index)')
-        span {{item.title || item}}
-        span {{item.summary}}
+        span {{item.name || item.value}}
+        span {{item.code}}
 </template>
 
 <script>
@@ -60,6 +60,7 @@ export default {
 
 <style lang='less' scoped>
 .selector {
+  
   .item;
   position: relative;
   font-size: 12px;
@@ -90,12 +91,14 @@ export default {
     top: 36px;
     left: 0;
     display: none;
+    max-height: 300px;
     width: 100%;
     background: white;
     border: 1px solid #d3dce6;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);
     border-radius: 2px;
     z-index: 1;
+    overflow-y: scroll;
 
     .item {
       .item;

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import languageData_cn from './language_cn'
 import languageData_en from './language_en'
+import u from './u'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -35,6 +36,9 @@ export default new Vuex.Store({
     },
     languageData(state) {
       return state.languageType === 0 ? languageData_cn : languageData_en
+    },
+    languageType(state) {
+      return state.languageType === 0 ? 'cn' : 'en'
     },
     registRequest(state) {
       return {
@@ -78,34 +82,50 @@ export default new Vuex.Store({
     },
     closeMessage(state) {
       state.messageShow = false
-    }
+    },
   },
   actions: {
-    aTypes({ state, commit }, payload) {
+    aTypes({ state, getters, commit }, payload) {
       let language = 'en'
       if (state.languageType === 0) language = 'cn'
 
       return (
-        axios.get('http://127.0.0.1:10000/types', { params: { language } })
+        axios.get('/base/company/type', { params: { language }, headers: { sys_Language: getters.languageType } })
           .then(res => {
-            let types = res.data.types
+            let types = res.data.data
             commit('updateTypes', { types })
             return res
           })
       )
     },
-    aAreas({ state, commit }, payload) {
+    aAreas({ state, getters, commit }, payload) {
       let language = 'en'
       if (state.languageType === 0) language = 'cn'
 
       return (
-        axios.get('http://127.0.0.1:10000/areas', { params: { language } })
+        axios.get('/mobile/area/code', { params: { language }, headers: { sys_Language: getters.languageType } })
           .then(res => {
-            let areas = res.data.areas
+            let areas = res.data.data
             commit('updateAreas', { areas })
             return res
           })
       )
+    },
+    regist({ state, getters }, payload) {
+      let req = payload
+      let customReq = {
+        company_type: getters.type.value,
+        country_code: getters.area.code,
+      }
+      req = { ...req, ...customReq }
+      axios.post(u.link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } })
+        .then(res => {
+          console.log(res)
+          debugger
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   }
 })
