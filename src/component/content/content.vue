@@ -10,14 +10,15 @@
           | {{content.types[0]}}
         label #[input(type='radio' value='email' v-model='registType')] {{content.types[1]}}
       .phone(v-if='isPhone')
-        c-selector(:items='areas'
+        c-selector(v-if="!isChina"
+          :items='areas'
           :selected='true'
           :currentItem='area'
           @itemClick='areaClick'
           :autoHidden='true'
           lKey="name"
           rKey="code")
-        input.number(type='text' :placeholder='placeholders.mobile' v-model="mobile")
+        input.number(:class="{full: isChina}" type='text' :placeholder='placeholders.mobile' v-model="mobile")
       .email(v-else key='email')
         input(type='text' :placeholder='placeholders.email' v-model="email")
       .code
@@ -277,7 +278,7 @@ export default {
     input[type="text"] {
       .input;
     }
-    
+
     input[type="password"] {
       .input;
     }
@@ -301,6 +302,10 @@ export default {
 
       .number {
         width: 170px;
+      }
+
+      .full {
+        .width;
       }
     }
 
