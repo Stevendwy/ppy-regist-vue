@@ -13,12 +13,12 @@ export default new Vuex.Store({
     languages: [
       {
         type: 0,
-        img: "./static/img/icon_cn.png",
+        img: "static/img/icon_cn.png",
         name: "中文"
       },
       {
         type: 1,
-        img: "./static/img/icon_en.png",
+        img: "static/img/icon_en.png",
         name: "English"
       }
     ],

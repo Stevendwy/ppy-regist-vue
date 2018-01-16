@@ -1,5 +1,5 @@
 export default {
-  logo: './static/img/p_007.png',
+  logo: 'static/img/p_007.png',
   signUp: "Sign up",
   content: {
     title: 'Create a New Account',

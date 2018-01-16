@@ -63,7 +63,7 @@
         span {{content.loginRemind}}
         span {{content.login}}
     .brand-title {{languageData.brand.title}}
-    img.brands(src='/static/img/img_logo.png', alt='brands')
+    img.brands(src='static/img/img_logo.png', alt='brands')
 </template>
 
 <script>

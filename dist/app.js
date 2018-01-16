@@ -15334,7 +15334,7 @@ var render = function() {
     ]),
     _c("img", {
       staticClass: "brands",
-      attrs: { src: "/static/img/img_logo.png", alt: "brands" }
+      attrs: { src: "static/img/img_logo.png", alt: "brands" }
     })
   ])
 }
@@ -15690,11 +15690,11 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     languageType: 1,
     languages: [{
       type: 0,
-      img: "./static/img/icon_cn.png",
+      img: "static/img/icon_cn.png",
       name: "中文"
     }, {
       type: 1,
-      img: "./static/img/icon_en.png",
+      img: "static/img/icon_en.png",
       name: "English"
     }],
     registType: 'email',
@@ -15818,7 +15818,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
-  logo: './static/img/p_007.png',
+  logo: 'static/img/p_007.png',
   signUp: "注册",
   content: {
     title: '创建新账户',
@@ -15869,7 +15869,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
-  logo: './static/img/p_007.png',
+  logo: 'static/img/p_007.png',
   signUp: "Sign up",
   content: {
     title: 'Create a New Account',
