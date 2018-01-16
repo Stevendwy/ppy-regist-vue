@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "start": "open regist.html"
+    "start": "open regist.html",
+    "pregp": "cp -r static dist index.html build/",
+    "gp": "npm run pregp && git push"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
