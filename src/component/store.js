@@ -27,6 +27,7 @@ export default new Vuex.Store({
     typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据
     areaIndex: 0, // 默认选中地区索引
+    lists: [],
     messageShow: false, // 显示消息
     message: '', // 消息
   },
@@ -76,6 +77,9 @@ export default new Vuex.Store({
     updateAreaIndex(state, payload) {
       state.areaIndex = payload.index
     },
+    updateLists(state, payload) {
+      state.lists.push(payload.list)
+    },
     openMessage(state, payload) {
       state.message = payload.message
       state.messageShow = true
@@ -105,6 +109,27 @@ export default new Vuex.Store({
           })
       )
     },
+    aCitys({ state, getters, commit }, payload) {
+      let city_code = payload && payload.currentCityCode
+      
+      return (
+        u.axiosGet(
+          "/city_list",
+          { headers: { "Sys-Language": getters.languageType } },
+          { city_code }
+        )
+          .then(res => {
+            if (!res) return;
+
+            let data = res.data;
+            if (data.length < 1) return // 没有后续数据了
+
+            commit('updateLists', { list: data })
+
+            return true
+          })
+      )
+    },
     regist({ state, getters, commit }, payload) {
       let req = payload
       let customReq = {
@@ -112,19 +137,19 @@ export default new Vuex.Store({
         country_code: getters.isChina ? '86' : getters.area.code,
       }
       req = { ...req, ...customReq }
-      
+
       u.formCheck(req, ['username', 'sms_code', 'real_name', 'pwd1', 'pwd2', 'city', 'company', 'company_type'])
         .catch(err => {
-          commit('openMessage', {message: `缺少${err}字段`})
+          commit('openMessage', { message: `缺少${err}字段` })
         })
         .then(res => {
-          if(!res) return
+          if (!res) return
           u.axiosPost(u.link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } })
             .then(res => {
               location.href = "/"
             })
             .catch(err => {
-              commit('openMessage', {message: err})
+              commit('openMessage', { message: err })
             })
         })
     }

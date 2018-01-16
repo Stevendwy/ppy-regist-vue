@@ -37,11 +37,11 @@
       .company
         input(type='text' :placeholder='placeholders.company' v-model="company")
       c-cascade-selector.cascade(:lists="lists"
+        :autoHidden="true"
         :placeholder="placeholders.companyLocation"
         :currentShow="currentCity"
         showKey="name"
         valueKey="code"
-        :autoHidden='true'
         :floor="currentFloor"
         :itemClick="itemClick")
       .company-type
@@ -92,7 +92,6 @@ export default {
       company: "",
       companyLocation: "",
       currentFloor: 0, // 当前层级
-      lists: [], // 数据组
       currentCityCode: 0, // 初始城市代码（国家地区统称城市）
       currentCity: "",
       pwd1: "",
@@ -101,11 +100,11 @@ export default {
     };
   },
   mounted() {
-    this.getCitys();
+    this.aCitys();
     this.buildData();
   },
   computed: {
-    ...Vuex.mapState(["types", "areas"]),
+    ...Vuex.mapState(["types", "areas", "lists"]),
     ...Vuex.mapGetters([
       "languageData",
       "languageType",
@@ -137,9 +136,6 @@ export default {
       return this.firstName + this.lastName;
     }
   },
-  watch: {
-    // languageData(value) {}
-  },
   methods: {
     ...Vuex.mapMutations([
       "updateRegistType",
@@ -147,6 +143,7 @@ export default {
       "updateAreaIndex",
       "openMessage"
     ]),
+    ...Vuex.mapActions(["aCitys"]),
     buildData() {
       if (this.isChina) this.currentCityCode = 86;
     },
@@ -204,31 +201,15 @@ export default {
 
       this.$store.dispatch("regist", req);
     },
-    getCitys() {
-      return u
-        .axiosGet(
-          "/city_list",
-          { headers: { "Sys-Language": this.languageType } },
-          { city_code: this.currentCityCode }
-        )
-        .then(res => {
-          if (!res) return;
-
-          let data = res.data;
-
-          if (data.length < 1) {
-            return;
-          } // 没有后续数据了
-
-          this.lists.push(data);
-          Promise.resolve();
-        });
-    },
-    itemClick(floorIndex, item) {
+    itemClick(floorIndex, item, close) {
       this.currentCityCode = item.code;
       this.currentCity = item.name;
-      this.getCitys().then(res => {
-        this.currentFloor = floorIndex + 1;
+      this.aCitys({ currentCityCode: this.currentCityCode }).then(res => {
+        if(res) this.currentFloor = floorIndex + 1;
+        else {
+          this.currentFloor = floorIndex
+          close()
+        }
       });
     }
   }

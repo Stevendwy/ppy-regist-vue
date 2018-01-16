@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     ...Vuex.mapMutations(["updateLanguageType"]),
-    ...Vuex.mapActions(["aTypes", "aAreas"]),
+    ...Vuex.mapActions(["aTypes", "aAreas", "aCitys"]),
     buildTriangle() {
       let ctx = this.$refs.triangle.getContext("2d");
       ctx.moveTo(0, 0);
@@ -36,7 +36,7 @@ export default {
     },
     click(type) {
       this.updateLanguageType({ languageType: type })
-      this.$axios.all([this.aTypes(), this.aAreas()])
+      this.$axios.all([this.aTypes(), this.aAreas(), this.aCitys()])
     }
   }
 };

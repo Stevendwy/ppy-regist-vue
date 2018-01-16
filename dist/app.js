@@ -11955,7 +11955,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     this.buildTriangle();
   },
 
-  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateLanguageType"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapActions(["aTypes", "aAreas"]), {
+  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateLanguageType"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapActions(["aTypes", "aAreas", "aCitys"]), {
     buildTriangle: function buildTriangle() {
       var ctx = this.$refs.triangle.getContext("2d");
       ctx.moveTo(0, 0);
@@ -11966,7 +11966,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     },
     click: function click(type) {
       this.updateLanguageType({ languageType: type });
-      this.$axios.all([this.aTypes(), this.aAreas()]);
+      this.$axios.all([this.aTypes(), this.aAreas(), this.aCitys()]);
     }
   })
 });
@@ -12077,7 +12077,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       company: "",
       companyLocation: "",
       currentFloor: 0, // 当前层级
-      lists: [], // 数据组
       currentCityCode: 0, // 初始城市代码（国家地区统称城市）
       currentCity: "",
       pwd1: "",
@@ -12086,11 +12085,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     };
   },
   mounted: function mounted() {
-    this.getCitys();
+    this.aCitys();
     this.buildData();
   },
 
-  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["types", "areas"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "languageType", "isChina", "area", "type"]), {
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapState(["types", "areas", "lists"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapGetters(["languageData", "languageType", "isChina", "area", "type"]), {
     content: function content() {
       return this.languageData.content;
     },
@@ -12116,10 +12115,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       return this.firstName + this.lastName;
     }
   }),
-  watch: {
-    // languageData(value) {}
-  },
-  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType", "updateTypeIndex", "updateAreaIndex", "openMessage"]), {
+  methods: _extends({}, __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapMutations(["updateRegistType", "updateTypeIndex", "updateAreaIndex", "openMessage"]), __WEBPACK_IMPORTED_MODULE_0_vuex__["a" /* default */].mapActions(["aCitys"]), {
     buildData: function buildData() {
       if (this.isChina) this.currentCityCode = 86;
     },
@@ -12175,29 +12171,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
       this.$store.dispatch("regist", req);
     },
-    getCitys: function getCitys() {
+    itemClick: function itemClick(floorIndex, item, close) {
       var _this = this;
-
-      return __WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].axiosGet("/city_list", { headers: { "Sys-Language": this.languageType } }, { city_code: this.currentCityCode }).then(function (res) {
-        if (!res) return;
-
-        var data = res.data;
-
-        if (data.length < 1) {
-          return;
-        } // 没有后续数据了
-
-        _this.lists.push(data);
-        Promise.resolve();
-      });
-    },
-    itemClick: function itemClick(floorIndex, item) {
-      var _this2 = this;
 
       this.currentCityCode = item.code;
       this.currentCity = item.name;
-      this.getCitys().then(function (res) {
-        _this2.currentFloor = floorIndex + 1;
+      this.aCitys({ currentCityCode: this.currentCityCode }).then(function (res) {
+        if (res) _this.currentFloor = floorIndex + 1;else {
+          _this.currentFloor = floorIndex;
+          close();
+        }
       });
     }
   })
@@ -12435,16 +12418,19 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       ctx.fill();
     },
     click: function click(floorIndex, item) {
+      var _this = this;
+
       this.selected = true;
-      this.itemClick(floorIndex, item);
-      if (this.autoHidden) this.toggleClass();
+      this.itemClick(floorIndex, item, function () {
+        if (_this.autoHidden) _this.toggleClass();
+      });
     },
     toggleClass: function toggleClass() {
-      var _this = this;
+      var _this2 = this;
 
       this.toggle = true;
       setTimeout(function () {
-        _this.toggle = false;
+        _this2.toggle = false;
       }, 200);
     }
   }
@@ -15283,11 +15269,11 @@ var render = function() {
           staticClass: "cascade",
           attrs: {
             lists: _vm.lists,
+            autoHidden: true,
             placeholder: _vm.placeholders.companyLocation,
             currentShow: _vm.currentCity,
             showKey: "name",
             valueKey: "code",
-            autoHidden: true,
             floor: _vm.currentFloor,
             itemClick: _vm.itemClick
           }
@@ -15702,6 +15688,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据
     areaIndex: 0, // 默认选中地区索引
+    lists: [],
     messageShow: false, // 显示消息
     message: '' // 消息
   },
@@ -15755,6 +15742,9 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     updateAreaIndex: function updateAreaIndex(state, payload) {
       state.areaIndex = payload.index;
     },
+    updateLists: function updateLists(state, payload) {
+      state.lists.push(payload.list);
+    },
     openMessage: function openMessage(state, payload) {
       state.message = payload.message;
       state.messageShow = true;
@@ -15786,10 +15776,28 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         return res;
       });
     },
-    regist: function regist(_ref5, payload) {
+    aCitys: function aCitys(_ref5, payload) {
       var state = _ref5.state,
           getters = _ref5.getters,
           commit = _ref5.commit;
+
+      var city_code = payload && payload.currentCityCode;
+
+      return __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosGet("/city_list", { headers: { "Sys-Language": getters.languageType } }, { city_code: city_code }).then(function (res) {
+        if (!res) return;
+
+        var data = res.data;
+        if (data.length < 1) return; // 没有后续数据了
+
+        commit('updateLists', { list: data });
+
+        return true;
+      });
+    },
+    regist: function regist(_ref6, payload) {
+      var state = _ref6.state,
+          getters = _ref6.getters,
+          commit = _ref6.commit;
 
       var req = payload;
       var customReq = {

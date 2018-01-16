@@ -77,8 +77,9 @@ export default {
     },
     click(floorIndex, item) {
       this.selected = true
-      this.itemClick(floorIndex, item)
-      if (this.autoHidden) this.toggleClass();
+      this.itemClick(floorIndex, item, () => {
+        if (this.autoHidden) this.toggleClass();
+      })
     },
     toggleClass() {
       this.toggle = true;
