@@ -12124,15 +12124,26 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       if (this.isChina) this.currentCityCode = 86;
     },
     countdownClick: function countdownClick(start) {
-      if (this.mobile.length < 1) {
+      if (this.isPhone && this.mobile.length < 1) {
         this.openMessage({ message: "手机号长度不足" });
         return;
+      } else if (!this.isPhone && this.email.length < 1) {
+        this.openMessage({ message: "邮箱长度不足" });
+        return;
       }
-      var req = {
-        mobile: this.mobile,
+
+      var req = { // 默认邮箱
+        email: this.email,
         type: "1"
       };
-      __WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].link("/smscode", req), req, {
+      var path = '/user/send_email_verification_code'; // 邮箱验证码
+
+      if (this.isPhone) {
+        req = _extends({}, req, { mobile: this.mobile });
+        path = '/smscode';
+      }
+
+      __WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].link(path, req), req, {
         headers: { sys_Language: this.languageType }
       }).then(function (res) {
         if (!res) return;
@@ -12147,9 +12158,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       this.updateTypeIndex({ index: index });
     },
     registClick: function registClick() {
+      var username = this.email;
+      if (this.isPhone) username = this.mobile;
+
       var req = {
-        username: this.mobile,
-        email: this.email,
+        username: username,
         sms_code: this.sms_code,
         real_name: this.real_name || this.realName,
         company: this.company,
@@ -12448,6 +12461,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
+/**
+ * 工具类
+ * @module u
+ * @see u.js
+ */
 /* harmony default export */ __webpack_exports__["a"] = ({
   /**
    * 把 body 拼接到 path 后面
@@ -12465,8 +12483,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
   /**
    * axios GET 封装
    * @param {String} path 请求路径
-   * @param {Object} data 请求携带的数据，params
    * @param {Object} options 其他配置
+   * @param {Object} data 请求携带的数据，params
    */
   axiosGet: function axiosGet(path, options, data) {
     return this.axiosRequest('GET', path, data || {}, options);
@@ -15736,10 +15754,8 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         country_code: getters.isChina ? '86' : getters.area.code
       };
       req = _extends({}, req, customReq);
-      debugger;
       __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } }).then(function (res) {
         console.log(res);
-        debugger;
       }).catch(function (err) {
         console.log(err);
       });

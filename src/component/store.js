@@ -112,11 +112,9 @@ export default new Vuex.Store({
         country_code: getters.isChina ? '86' : getters.area.code,
       }
       req = { ...req, ...customReq }
-      debugger
       u.axiosPost(u.link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } })
         .then(res => {
           console.log(res)
-          debugger
         })
         .catch(err => {
           console.log(err)

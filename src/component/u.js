@@ -1,5 +1,10 @@
 import axios from 'axios'
 
+/**
+ * 工具类
+ * @module u
+ * @see u.js
+ */
 export default {
   /**
    * 把 body 拼接到 path 后面
@@ -16,8 +21,8 @@ export default {
   /**
    * axios GET 封装
    * @param {String} path 请求路径
-   * @param {Object} data 请求携带的数据，params
    * @param {Object} options 其他配置
+   * @param {Object} data 请求携带的数据，params
    */
   axiosGet(path, options, data) {
     return this.axiosRequest('GET', path, data || {}, options)

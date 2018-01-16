@@ -151,16 +151,28 @@ export default {
       if (this.isChina) this.currentCityCode = 86;
     },
     countdownClick(start) {
-      if (this.mobile.length < 1) {
+      if (this.isPhone && this.mobile.length < 1) {
         this.openMessage({ message: "手机号长度不足" });
         return;
       }
-      let req = {
-        mobile: this.mobile,
+      else if(!this.isPhone && this.email.length < 1) {
+        this.openMessage({ message: "邮箱长度不足" });
+        return;
+      }
+
+      let req = { // 默认邮箱
+        email: this.email,
         type: "1"
       };
+      let path = '/user/send_email_verification_code' // 邮箱验证码
+
+      if(this.isPhone) {
+        req = {...req, mobile: this.mobile}
+        path = '/smscode'
+      }
+
       u
-        .axiosPost(u.link("/smscode", req), req, {
+        .axiosPost(u.link(path, req), req, {
           headers: { sys_Language: this.languageType }
         })
         .then(res => {
@@ -176,9 +188,11 @@ export default {
       this.updateTypeIndex({ index });
     },
     registClick() {
+      let username = this.email
+      if(this.isPhone) username = this.mobile
+
       let req = {
-        username: this.mobile,
-        email: this.email,
+        username,
         sms_code: this.sms_code,
         real_name: this.real_name || this.realName,
         company: this.company,
