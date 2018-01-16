@@ -15805,7 +15805,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } }).then(function (res) {
           location.href = "/";
         }).catch(function (err) {
-          console.log(err);
+          commit('openMessage', { message: err });
         });
       });
     }

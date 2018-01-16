@@ -124,7 +124,7 @@ export default new Vuex.Store({
               location.href = "/"
             })
             .catch(err => {
-              console.log(err)
+              commit('openMessage', {message: err})
             })
         })
     }
