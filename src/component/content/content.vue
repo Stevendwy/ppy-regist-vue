@@ -30,7 +30,7 @@
         input.first-name(type='text' :placeholder='placeholders.firstName' v-model="firstName")
         input.last-name(type='text' :placeholder='placeholders.lastName' v-model="lastName")
       .password
-        input(type='text' :placeholder='placeholders.password' v-model='pwd1')
+        input(type='password' :placeholder='placeholders.password' v-model='pwd1')
       .password
         input(type='password' :placeholder='placeholders.confirmPassword' v-model="pwd2")
       .remindCompany {{content.remindCompany}}
@@ -68,7 +68,6 @@
 
 <script>
 import Vuex from "vuex";
-import axios from "axios";
 import cSelector from "./selector.vue";
 import cCountdown from "./countdown.vue";
 import cCascadeSelector from "./cascade-selector.vue";
@@ -96,8 +95,9 @@ export default {
       lists: [], // 数据组
       currentCityCode: 0, // 初始城市代码（国家地区统称城市）
       currentCity: "",
-      pwd1: '',
-      pwd2: '',
+      pwd1: "",
+      pwd2: "",
+      real_name: '', // 中文名
     };
   },
   mounted() {
@@ -159,8 +159,8 @@ export default {
         mobile: this.mobile,
         type: "1"
       };
-      axios
-        .post(u.link("/smscode", req), req, {
+      u
+        .axiosPost(u.link("/smscode", req), req, {
           headers: { sys_Language: this.languageType }
         })
         .then(res => {
@@ -177,7 +177,7 @@ export default {
     },
     registClick() {
       let req = {
-        mobile: this.mobile,
+        username: this.mobile,
         email: this.email,
         sms_code: this.sms_code,
         real_name: this.real_name || this.realName,
@@ -185,24 +185,27 @@ export default {
         reg_type: this.registType,
         city: this.currentCityCode,
         pwd1: this.pwd1,
-        pwd2: this.pwd2,
+        pwd2: this.pwd2
       };
       this.$store.dispatch("regist", req);
     },
     getCitys() {
-      return axios
-        .get("/city_list", {
-          params: { city_code: this.currentCityCode },
-          headers: { sys_Language: this.languageType }
-        })
+      return u
+        .axiosGet(
+          "/city_list",
+          { headers: { sys_Language: this.languageType } },
+          { city_code: this.currentCityCode }
+        )
         .then(res => {
-          if (!res.data) return;
+          if (!res) return;
 
-          if (res.data.data.length < 1) {
+          let data = res.data;
+
+          if (data.length < 1) {
             return;
           } // 没有后续数据了
 
-          this.lists.push(res.data.data);
+          this.lists.push(data);
           Promise.resolve();
         });
     },

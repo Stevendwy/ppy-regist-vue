@@ -87,9 +87,9 @@ export default new Vuex.Store({
   actions: {
     aTypes({ state, getters, commit }, payload) {
       return (
-        axios.get('/base/company/type', { headers: { sys_Language: getters.languageType } })
+        u.axiosGet('/base/company/type', { headers: { sys_Language: getters.languageType } })
           .then(res => {
-            let types = res.data.data
+            let types = res.data
             commit('updateTypes', { types })
             return res
           })
@@ -97,9 +97,9 @@ export default new Vuex.Store({
     },
     aAreas({ state, getters, commit }, payload) {
       return (
-        axios.get('/mobile/area/code', { headers: { sys_Language: getters.languageType } })
+        u.axiosGet('/mobile/area/code', { headers: { sys_Language: getters.languageType } })
           .then(res => {
-            let areas = res.data.data
+            let areas = res.data
             commit('updateAreas', { areas })
             return res
           })
@@ -109,10 +109,11 @@ export default new Vuex.Store({
       let req = payload
       let customReq = {
         company_type: getters.type.value,
-        country_code: getters.area.code,
+        country_code: getters.isChina ? '86' : getters.area.code,
       }
       req = { ...req, ...customReq }
-      axios.post(u.link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } })
+      debugger
+      u.axiosPost(u.link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } })
         .then(res => {
           console.log(res)
           debugger
