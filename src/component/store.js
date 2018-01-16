@@ -22,7 +22,7 @@ export default new Vuex.Store({
         name: "English"
       }
     ],
-    registType: 'phone',
+    registType: 'email',
     types: [], // 注册公司类型
     typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据
@@ -87,7 +87,7 @@ export default new Vuex.Store({
   actions: {
     aTypes({ state, getters, commit }, payload) {
       return (
-        u.axiosGet('/base/company/type', { headers: { sys_Language: getters.languageType } })
+        u.axiosGet('/base/company/type', { headers: { "Sys-Language": getters.languageType } })
           .then(res => {
             let types = res.data
             commit('updateTypes', { types })
@@ -97,7 +97,7 @@ export default new Vuex.Store({
     },
     aAreas({ state, getters, commit }, payload) {
       return (
-        u.axiosGet('/mobile/area/code', { headers: { sys_Language: getters.languageType } })
+        u.axiosGet('/mobile/area/code', { headers: { "Sys-Language": getters.languageType } })
           .then(res => {
             let areas = res.data
             commit('updateAreas', { areas })
@@ -105,19 +105,27 @@ export default new Vuex.Store({
           })
       )
     },
-    regist({ state, getters }, payload) {
+    regist({ state, getters, commit }, payload) {
       let req = payload
       let customReq = {
         company_type: getters.type.value,
         country_code: getters.isChina ? '86' : getters.area.code,
       }
       req = { ...req, ...customReq }
-      u.axiosPost(u.link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } })
-        .then(res => {
-          console.log(res)
-        })
+      
+      u.formCheck(req, ['username', 'sms_code', 'real_name', 'pwd1', 'pwd2', 'city', 'company', 'company_type'])
         .catch(err => {
-          console.log(err)
+          commit('openMessage', {message: `缺少${err}字段`})
+        })
+        .then(res => {
+          if(!res) return
+          u.axiosPost(u.link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } })
+            .then(res => {
+              location.href = "/"
+            })
+            .catch(err => {
+              console.log(err)
+            })
         })
     }
   }

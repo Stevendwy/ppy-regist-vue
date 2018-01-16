@@ -35,10 +35,12 @@ app.delete('/*', (req, res) => {
 })
 
 function agentPost(req, res) {
+  let sl = req.headers["sys-language"]
   superagent
     .post(target + req.url)
     .set('Content-Type', 'application/json;charset=UTF-8')    
     .set('Cookie', cookie)
+    .set('sys-language', sl)
     .send(req.body)
     .end((err, sRes) => {
       if(sRes.body.code !== 1) console.log(sRes.body)
@@ -50,10 +52,12 @@ function agentPost(req, res) {
 }
 
 function agentGet(req, res) {
+  let sl = req.headers["sys-language"]
   superagent
     .get(target + req.url)
     .set('Content-Type', 'application/json;charset=UTF-8')    
     .set('Cookie', cookie)
+    .set('sys-language', sl)
     .send(req.query)
     .end((err, sRes) => {
       // console.log(sRes.body)
@@ -63,10 +67,12 @@ function agentGet(req, res) {
 }
 
 function agentDelete(req, res) {
+  let sl = req.headers["sys-language"]
   superagent
     .delete(target + req.url)
     .set('Content-Type', 'application/json;charset=UTF-8')    
     .set('Cookie', cookie)
+    .set('sys-language', sl)
     .send(req.body)
     .end((err, sRes) => {
       // console.log(sRes.body)

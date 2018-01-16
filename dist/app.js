@@ -12082,7 +12082,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       currentCity: "",
       pwd1: "",
       pwd2: "",
-      real_name: '' // 中文名
+      real_name: "" // 中文名
     };
   },
   mounted: function mounted() {
@@ -12132,19 +12132,20 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         return;
       }
 
-      var req = { // 默认邮箱
+      var req = {
+        // 默认邮箱
         email: this.email,
         type: "1"
       };
-      var path = '/user/send_email_verification_code'; // 邮箱验证码
+      var path = "/user/send_email_verification_code"; // 邮箱验证码
 
       if (this.isPhone) {
         req = _extends({}, req, { mobile: this.mobile });
-        path = '/smscode';
+        path = "/smscode";
       }
 
       __WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].link(path, req), req, {
-        headers: { sys_Language: this.languageType }
+        headers: { "Sys-Language": this.languageType }
       }).then(function (res) {
         if (!res) return;
 
@@ -12171,12 +12172,13 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         pwd1: this.pwd1,
         pwd2: this.pwd2
       };
+
       this.$store.dispatch("regist", req);
     },
     getCitys: function getCitys() {
       var _this = this;
 
-      return __WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].axiosGet("/city_list", { headers: { sys_Language: this.languageType } }, { city_code: this.currentCityCode }).then(function (res) {
+      return __WEBPACK_IMPORTED_MODULE_4__u__["a" /* default */].axiosGet("/city_list", { headers: { "Sys-Language": this.languageType } }, { city_code: this.currentCityCode }).then(function (res) {
         if (!res) return;
 
         var data = res.data;
@@ -12538,6 +12540,46 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       }
     }).catch(function (err) {
       alert(err);
+    });
+  },
+
+  /**
+   * 检查表单上传前的数据是否健全
+   * @param {Object} data 需要检测的数据
+   * @param {Array} keys 必要的 key 值列表
+   */
+  formCheck: function formCheck(data, keys) {
+    return new Promise(function (res, rej) {
+      var pass = true;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var key = _step.value;
+
+          if (!data[key]) {
+            rej(key);
+            return;
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      res(true);
     });
   }
 });
@@ -14961,11 +15003,11 @@ var render = function() {
                   expression: "registType"
                 }
               ],
-              attrs: { type: "radio", value: "phone" },
-              domProps: { checked: _vm._q(_vm.registType, "phone") },
+              attrs: { type: "radio", value: "email" },
+              domProps: { checked: _vm._q(_vm.registType, "email") },
               on: {
                 change: function($event) {
-                  _vm.registType = "phone"
+                  _vm.registType = "email"
                 }
               }
             }),
@@ -14981,11 +15023,11 @@ var render = function() {
                   expression: "registType"
                 }
               ],
-              attrs: { type: "radio", value: "email" },
-              domProps: { checked: _vm._q(_vm.registType, "email") },
+              attrs: { type: "radio", value: "phone" },
+              domProps: { checked: _vm._q(_vm.registType, "phone") },
               on: {
                 change: function($event) {
-                  _vm.registType = "email"
+                  _vm.registType = "phone"
                 }
               }
             }),
@@ -15086,7 +15128,7 @@ var render = function() {
               attrs: {
                 waitText: _vm.content.countdown,
                 second: "s",
-                time: 3,
+                time: 60,
                 frequency: 1,
                 min: 0
               },
@@ -15655,7 +15697,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       img: "./static/img/icon_en.png",
       name: "English"
     }],
-    registType: 'phone',
+    registType: 'email',
     types: [], // 注册公司类型
     typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据
@@ -15727,7 +15769,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
           getters = _ref3.getters,
           commit = _ref3.commit;
 
-      return __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosGet('/base/company/type', { headers: { sys_Language: getters.languageType } }).then(function (res) {
+      return __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosGet('/base/company/type', { headers: { "Sys-Language": getters.languageType } }).then(function (res) {
         var types = res.data;
         commit('updateTypes', { types: types });
         return res;
@@ -15738,7 +15780,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
           getters = _ref4.getters,
           commit = _ref4.commit;
 
-      return __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosGet('/mobile/area/code', { headers: { sys_Language: getters.languageType } }).then(function (res) {
+      return __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosGet('/mobile/area/code', { headers: { "Sys-Language": getters.languageType } }).then(function (res) {
         var areas = res.data;
         commit('updateAreas', { areas: areas });
         return res;
@@ -15746,7 +15788,8 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     },
     regist: function regist(_ref5, payload) {
       var state = _ref5.state,
-          getters = _ref5.getters;
+          getters = _ref5.getters,
+          commit = _ref5.commit;
 
       var req = payload;
       var customReq = {
@@ -15754,10 +15797,16 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         country_code: getters.isChina ? '86' : getters.area.code
       };
       req = _extends({}, req, customReq);
-      __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { sys_Language: getters.languageType } }).then(function (res) {
-        console.log(res);
-      }).catch(function (err) {
-        console.log(err);
+
+      __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].formCheck(req, ['username', 'sms_code', 'real_name', 'pwd1', 'pwd2', 'city', 'company', 'company_type']).catch(function (err) {
+        commit('openMessage', { message: '\u7F3A\u5C11' + err + '\u5B57\u6BB5' });
+      }).then(function (res) {
+        if (!res) return;
+        __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } }).then(function (res) {
+          location.href = "/";
+        }).catch(function (err) {
+          console.log(err);
+        });
       });
     }
   }
@@ -15776,10 +15825,11 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     remindPersonal: '·输入你的手机号或邮箱地址并创建一个密码',
     remindCompany: '·输入你的公司信息',
     selectType: '选择注册方式',
-    types: ['手机号', '邮箱'],
+    types: ['邮箱', '手机号'],
     countdown: '发送验证码',
     placeholders: {
       mobile: '手机号',
+      email: '邮箱地址',
       code: '验证码',
       firstName: 'First name',
       lastName: 'Last name',
@@ -15826,7 +15876,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
     remindPersonal: '·Enter your Phone or Email & Create a Password',
     remindCompany: '·Select your Business Location & Account Type',
     selectType: 'Select Phone or Email',
-    types: ['Phone', 'Email'],
+    types: ['Email', 'Phone'],
     countdown: 'Get code',
     placeholders: {
       mobile: 'Mobile phone number',

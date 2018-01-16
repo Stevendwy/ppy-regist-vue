@@ -81,5 +81,22 @@ export default {
           alert(err)
         })
     )
+  },
+  /**
+   * 检查表单上传前的数据是否健全
+   * @param {Object} data 需要检测的数据
+   * @param {Array} keys 必要的 key 值列表
+   */
+  formCheck(data, keys) {
+    return new Promise(function(res, rej) {
+      let pass = true
+      for(let key of keys) {
+        if(!data[key]) {
+          rej(key)
+          return
+        }
+      }
+      res(true)
+    })
   }
 }

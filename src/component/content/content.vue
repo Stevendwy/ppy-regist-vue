@@ -6,9 +6,9 @@
       .selectType {{content.selectType}}
       .radios
         label
-          input(type='radio' value='phone' v-model='registType')
+          input(type='radio' value='email' v-model='registType')
           | {{content.types[0]}}
-        label #[input(type='radio' value='email' v-model='registType')] {{content.types[1]}}
+        label #[input(type='radio' value='phone' v-model='registType')] {{content.types[1]}}
       .phone(v-if='isPhone')
         c-selector(v-if="!isChina"
           :items='areas'
@@ -23,7 +23,7 @@
         input(type='text' :placeholder='placeholders.email' v-model="email")
       .code
         input(type='text' :placeholder='placeholders.code' v-model="sms_code")
-        c-countdown(class='c-countdown' :waitText='content.countdown' second='s' :time='3' :frequency='1' :min='0' @event='countdownClick')
+        c-countdown(class='c-countdown' :waitText='content.countdown' second='s' :time='60' :frequency='1' :min='0' @event='countdownClick')
       .name(v-if='isChina' key='name')
         input(type='text' :placeholder='placeholders.name' v-model="real_name")
       .foreign-name(v-else)
@@ -97,7 +97,7 @@ export default {
       currentCity: "",
       pwd1: "",
       pwd2: "",
-      real_name: '', // 中文名
+      real_name: "" // 中文名
     };
   },
   mounted() {
@@ -154,26 +154,26 @@ export default {
       if (this.isPhone && this.mobile.length < 1) {
         this.openMessage({ message: "手机号长度不足" });
         return;
-      }
-      else if(!this.isPhone && this.email.length < 1) {
+      } else if (!this.isPhone && this.email.length < 1) {
         this.openMessage({ message: "邮箱长度不足" });
         return;
       }
 
-      let req = { // 默认邮箱
+      let req = {
+        // 默认邮箱
         email: this.email,
         type: "1"
       };
-      let path = '/user/send_email_verification_code' // 邮箱验证码
+      let path = "/user/send_email_verification_code"; // 邮箱验证码
 
-      if(this.isPhone) {
-        req = {...req, mobile: this.mobile}
-        path = '/smscode'
+      if (this.isPhone) {
+        req = { ...req, mobile: this.mobile };
+        path = "/smscode";
       }
 
       u
         .axiosPost(u.link(path, req), req, {
-          headers: { sys_Language: this.languageType }
+          headers: { "Sys-Language": this.languageType }
         })
         .then(res => {
           if (!res) return;
@@ -188,8 +188,8 @@ export default {
       this.updateTypeIndex({ index });
     },
     registClick() {
-      let username = this.email
-      if(this.isPhone) username = this.mobile
+      let username = this.email;
+      if (this.isPhone) username = this.mobile;
 
       let req = {
         username,
@@ -201,13 +201,14 @@ export default {
         pwd1: this.pwd1,
         pwd2: this.pwd2
       };
+
       this.$store.dispatch("regist", req);
     },
     getCitys() {
       return u
         .axiosGet(
           "/city_list",
-          { headers: { sys_Language: this.languageType } },
+          { headers: { "Sys-Language": this.languageType } },
           { city_code: this.currentCityCode }
         )
         .then(res => {

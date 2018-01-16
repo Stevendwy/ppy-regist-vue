@@ -6,10 +6,11 @@ export default {
     remindPersonal: '·输入你的手机号或邮箱地址并创建一个密码',
     remindCompany: '·输入你的公司信息',
     selectType: '选择注册方式',
-    types: ['手机号', '邮箱'],
+    types: ['邮箱', '手机号'],
     countdown: '发送验证码',
     placeholders: {
       mobile: '手机号',
+      email: '邮箱地址',
       code: '验证码',
       firstName: 'First name',
       lastName: 'Last name',
