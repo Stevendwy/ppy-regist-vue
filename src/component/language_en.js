@@ -3,23 +3,23 @@ export default {
   signUp: "Sign up",
   content: {
     title: 'Create a New Account',
-    remindPersonal: '·Enter your Phone or Email & Create a Password',
-    remindCompany: '·Select your Business Location & Account Type',
-    selectType: 'Select Phone or Email',
+    remindPersonal: '·Enter you phone or email & password',
+    remindCompany: '·Enter your company information',
+    selectType: 'Select registration method',
     types: ['Email', 'Phone'],
     countdown: 'Get code',
     placeholders: {
       mobile: 'Mobile phone number',
       email: 'Email address',
-      code: 'Code',
+      code: 'Verification-code',
       firstName: 'First name',
       lastName: 'Last name',
       name: '姓名',
-      password: 'New Password',
+      password: 'New password',
       confirmPassword: 'Repeat new password',
       company: 'Company Name',
-      companyLocation: 'Business Location',
-      companyType: 'Select a role'
+      companyLocation: 'Company location',
+      companyType: 'Company type'
     },
     registRemind: {
       l1: 'By signing up, you agree to our ',
@@ -32,7 +32,7 @@ export default {
     },
     signUp: 'Sign up',
     loginRemind: 'Already has account.',
-    login: 'Log In now',
+    login: 'Log in now',
   },
   brand: {
     title: '007 Current Covering Brand'
