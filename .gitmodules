@@ -1,3 +1,3 @@
-[submodule "build"]
-	path = build
+[submodule "build_new"]
+	path = build_new
 	url = https://zweizhao@bitbucket.org/Cloudautoparts/007international.git

@@ -52,11 +52,11 @@
           lKey="value")
       .regist-remind
         span {{registRemind.l1}}
-        span {{registRemind.t1}}
+        span(@click="agreeshow") {{registRemind.t1}}
         span {{registRemind.l2}}
-        span {{registRemind.t2}}
+        span(@click="agreeshow") {{registRemind.t2}}
         span {{registRemind.l3}}
-        span {{registRemind.t3}}
+        span(@click="agreeshow") {{registRemind.t3}}
         span {{registRemind.l4}}
       button.regist(@click="registClick") {{content.signUp}}
       .login
@@ -64,6 +64,10 @@
         span {{content.login}}
     .brand-title {{languageData.brand.title}}
     img.brands(src='static/img/img_logo.png', alt='brands')
+
+    c-agree-ment-en(v-if="!isChina && agreementshow ")
+    c-agree-ment-cn(v-if="isChina && agreementshow")
+    c-teamwork(v-if="teamwork") 
 </template>
 
 <script>
@@ -71,13 +75,19 @@ import Vuex from "vuex";
 import cSelector from "./selector.vue";
 import cCountdown from "./countdown.vue";
 import cCascadeSelector from "./cascade-selector.vue";
+import cAgreeMentEn from '../common/agreementen.vue';
+import cAgreeMentCn from '../common/agreementcn.vue';
+import cTeamwork from '../common/teamwork.vue'
 import u from "../u";
 
 export default {
   components: {
     cSelector,
     cCountdown,
-    cCascadeSelector
+    cCascadeSelector,
+    cAgreeMentEn,
+    cAgreeMentCn,
+    cTeamwork
   },
   data() {
     return {
@@ -96,7 +106,7 @@ export default {
       currentCity: "",
       pwd1: "",
       pwd2: "",
-      real_name: "" // 中文名
+      real_name: "", // 中文名
     };
   },
   mounted() {
@@ -104,13 +114,15 @@ export default {
     this.buildData();
   },
   computed: {
-    ...Vuex.mapState(["types", "areas", "lists"]),
+    ...Vuex.mapState(["types", "areas", "lists", "agreementshow", "teamwork"]),
     ...Vuex.mapGetters([
       "languageData",
       "languageType",
       "isChina",
       "area",
-      "type"
+      "type",
+      "getagreementShow",
+      "getteamworkShow"
     ]),
     content() {
       return this.languageData.content;
@@ -141,7 +153,8 @@ export default {
       "updateRegistType",
       "updateTypeIndex",
       "updateAreaIndex",
-      "openMessage"
+      "openMessage",
+      "agreeShow"
     ]),
     ...Vuex.mapActions(["aCitys"]),
     buildData() {
@@ -183,6 +196,10 @@ export default {
     },
     typeClick(type, index) {
       this.updateTypeIndex({ index });
+    },
+    agreeshow(){
+      let that = this
+      that.agreeShow()
     },
     registClick() {
       let username = this.email;

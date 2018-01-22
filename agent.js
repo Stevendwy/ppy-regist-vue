@@ -8,7 +8,7 @@ const target = 'https://test.007vin.com'
 let cookie = ''
 
 superagent
-  .post(target + '/login?username=18868432772&password=aa123456')
+  .post(target + '/login?username=18337125987&password=aa123456')
   .end((err, res) => {
     // console.log(res.body)
     if(res.body.code === 1) console.log('登录成功')

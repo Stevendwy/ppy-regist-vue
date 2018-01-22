@@ -2,8 +2,8 @@
   .bottom
     .ctrls
       a.about(href="http://www.peipeiyun.com/", target="_blank") {{bottom.about}}
-      button.text(@click="") {{bottom.delegate}}
-      button.text(@click="") {{bottom.cooperation}}
+      button.text(@click="agreeshow") {{bottom.delegate}}
+      button.text(@click="teamworkshow") {{bottom.cooperation}}
     .vertification
       span © 2016-2017 007vin.com   
       a.link(href="http://www.miitbeian.gov.cn/", target="_blank") 版权所有 ICP证：浙17026959号-2
@@ -18,7 +18,20 @@ export default {
     bottom() {
       return this.languageData.bottom;
     }
+  },
+  methods: {
+    ...Vuex.mapMutations([
+      "agreeShow",
+      "teamworkShow"
+    ]),
+    agreeshow(){
+      this.agreeShow()
+    },
+    teamworkshow(){
+      this.teamworkShow()
+    }
   }
+
 };
 </script>
 

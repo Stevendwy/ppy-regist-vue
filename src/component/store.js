@@ -30,6 +30,11 @@ export default new Vuex.Store({
     lists: [],
     messageShow: false, // 显示消息
     message: '', // 消息
+    agreementshow:false,  //用户协议显示
+    teamwork: false,      //数据合作图片展示
+    teamworkimg: {
+      hezuo:"static/img/p_hezuo.png"
+    }
   },
   getters: {
     currentLanguage(state) {
@@ -57,6 +62,15 @@ export default new Vuex.Store({
     area(state) {
       return state.areas[state.areaIndex] || ''
     },
+    getagreementShow(state){
+      return state.agreementshow
+    },
+    getteamworkShow(state){
+      return state.teamwork
+    },
+    getteamworkimg(state){
+      return state.teamworkimg
+    }
   },
   mutations: {
     updateLanguageType(state, { languageType }) {
@@ -87,6 +101,18 @@ export default new Vuex.Store({
     closeMessage(state) {
       state.messageShow = false
     },
+    agreeShow(state){
+      state.agreementshow = true
+    },
+    agreeHidden(state){
+      state.agreementshow = false
+    },
+    teamworkShow(state){
+      state.teamwork = true
+    },
+    teamworkHidden(state){
+      state.teamwork = false
+    }
   },
   actions: {
     aTypes({ state, getters, commit }, payload) {
