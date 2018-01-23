@@ -11941,7 +11941,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
   components: {
     lSelector: __WEBPACK_IMPORTED_MODULE_0__selector_vue__["a" /* default */]
   },
-  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].mapGetters(["languageData"]))
+  computed: _extends({}, __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].mapGetters(["languageData"])),
+  methods: {
+    backhome: function backhome() {
+      location.href = "/";
+    }
+  }
 });
 
 /***/ }),
@@ -13810,7 +13815,8 @@ var render = function() {
     _c("div", { staticClass: "left" }, [
       _c("img", {
         staticClass: "logo",
-        attrs: { src: _vm.languageData.logo, alt: "logo" }
+        attrs: { src: _vm.languageData.logo, alt: "logo" },
+        on: { click: _vm.backhome }
       }),
       _c("span", [_vm._v(_vm._s(_vm.languageData.signUp))])
     ]),

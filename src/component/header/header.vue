@@ -1,7 +1,7 @@
 <template lang="pug">
   .header
     .left
-      img.logo(:src="languageData.logo", alt="logo")
+      img.logo(:src="languageData.logo", alt="logo",@click="backhome")
       span {{languageData.signUp}}
     .right
       l-selector
@@ -17,6 +17,11 @@ export default {
   },
   computed: {
     ...Vuex.mapGetters(["languageData"]),
+  },
+  methods: {
+    backhome(){
+      location.href = "/"
+    }
   }
 }
 </script>
