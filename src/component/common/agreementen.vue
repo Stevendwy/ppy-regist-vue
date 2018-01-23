@@ -6,22 +6,22 @@
     .useragreecontent
         
         div
-            b 《Zero zero steam & trade; EPC query system user registration protocol.》
-        p   This agreement is for you and the 2000auto &trade; EPC query system (hereinafter referred to as "auto - trade;" (hereinafter referred to as "cloud auto distribution &trade;") ) between the two parties: Products and services and other related matters to enter into a contract, please read carefully the registration agreement, you click on the "I have read and accept the zero zero steam & trade; EPC query system user license agreement" button, after this agreement is a legal document binding upon both parties.
+            b 《007vin & trade; EPC query system user registration protocol.》
+        p   This agreement is for you and the 2000auto &trade; EPC query system (hereinafter referred to as "auto - trade;" (hereinafter referred to as "cloud auto distribution &trade;") ) between the two parties: Products and services and other related matters to enter into a contract, please read carefully the registration agreement, you click on the "I have read and accept the 007vin & trade; EPC query system user license agreement" button, after this agreement is a legal document binding upon both parties.
         
         div
-            b   Zero zero steam & trade; Confirmation and acceptance of service terms.
-        p  Zero zero steam & trade; The ownership and operation rights of the various data query services will be merged with the steam distribution &trade. All. Users agree to all the terms and conditions of the registration agreement and complete the registration and product activation procedures to become the 2004 auto &trade; Regular users. User confirmation: this agreement shall be governed by the contract of rights and obligations of the parties hereto, and shall remain in force, unless otherwise mandatory or otherwise agreed by the parties.
+            b   007vin & trade; Confirmation and acceptance of service terms.
+        p  007vin & trade; The ownership and operation rights of the various data query services will be merged with the steam distribution &trade. All. Users agree to all the terms and conditions of the registration agreement and complete the registration and product activation procedures to become the 2004 auto &trade; Regular users. User confirmation: this agreement shall be governed by the contract of rights and obligations of the parties hereto, and shall remain in force, unless otherwise mandatory or otherwise agreed by the parties.
         p  If the user agrees to this agreement, it shall be deemed as a user to confirm that he/she is enjoying the same. Data query service and other corresponding rights and behaviors, can independently assume legal responsibility.
         p  Cloud and steam distribution &trade; Reserves the right to independently decide on/offline brand, refuse service, close user account, clear or edit content within the scope of law permitted by the mainland of the People's Republic of China.
         
         div
-            b   Zero zero steam & trade; service
-        p   Zero zero steam & trade; The Internet provides users with Internet information and other services through the Internet, and users fully agree with this agreement and the auto industry. In the case of the relevant provisions, the party shall have the right to use the 2000ac &trade; Related services.
+            b   007vin & trade; service
+        p   007vin & trade; The Internet provides users with Internet information and other services through the Internet, and users fully agree with this agreement and the auto industry. In the case of the relevant provisions, the party shall have the right to use the 2000ac &trade; Related services.
         p   Users must prepare the following equipment and bear the expenses in the paper are as follows: (1) Internet equipment, including but not limited to computers or other Internet terminals, modems and other necessary Internet access device; (2) online expenditure, including not limited to network access fee, Internet equipment rental fee, mobile phone traffic fee, etc.
-        p   Zero zero steam & trade; It is currently supported in a variety of system environments and is recommended for firefox and Google Chrome.
-        p   Zero zero steam & trade; The data coverage supported by the query is subject to the official announcement.
-        p   In order to ensure the auto - trade; The healthy operation of the service environment. System has operation flow analysis and limit rules, on the user's operating frequency has a certain limit rules express, users must register clear recognition and comply with this constraint may register and buy zero zero steam & trade; .
+        p   007vin & trade; It is currently supported in a variety of system environments and is recommended for firefox and Google Chrome.
+        p   007vin & trade; The data coverage supported by the query is subject to the official announcement.
+        p   In order to ensure the auto - trade; The healthy operation of the service environment. System has operation flow analysis and limit rules, on the user's operating frequency has a certain limit rules express, users must register clear recognition and comply with this constraint may register and buy 007vin & trade; .
 
         div
             b   The user information

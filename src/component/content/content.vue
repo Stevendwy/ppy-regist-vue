@@ -61,7 +61,7 @@
       button.regist(@click="registClick") {{content.signUp}}
       .login
         span {{content.loginRemind}}
-        span {{content.login}}
+        span(@click="openvin") {{content.login}}
     .brand-title {{languageData.brand.title}}
     img.brands(src='static/img/img_logo.png', alt='brands')
 
@@ -200,6 +200,9 @@ export default {
     agreeshow(){
       let that = this
       that.agreeShow()
+    },
+    openvin(){
+        window.open("https://007vin.com/","_self")
     },
     registClick() {
       let username = this.email;

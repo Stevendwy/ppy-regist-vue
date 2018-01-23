@@ -28,7 +28,7 @@ export default {
       t2: 'Data Policy',
       l3: ', including our ',
       t3: 'Cookie Use',
-      l4: '. You may receive SMS Notifications from Facebook and can opt out at any time.',
+      l4: '. You may receive SMS Notifications from 007vin and can opt out at any time.',
     },
     signUp: 'Sign up',
     loginRemind: 'Already has account.',

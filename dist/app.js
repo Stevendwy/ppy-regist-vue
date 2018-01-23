@@ -12192,6 +12192,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       var that = this;
       that.agreeShow();
     },
+    openvin: function openvin() {
+      window.open("https://007vin.com/", "_self");
+    },
     registClick: function registClick() {
       var username = this.email;
       if (this.isPhone) username = this.mobile;
@@ -14479,25 +14482,25 @@ var staticRenderFns = [
       _c("div", [
         _c("b", [
           _vm._v(
-            "《Zero zero steam & trade; EPC query system user registration protocol.》"
+            "《007vin & trade; EPC query system user registration protocol.》"
           )
         ])
       ]),
       _c("p", [
         _vm._v(
-          '  This agreement is for you and the 2000auto ™ EPC query system (hereinafter referred to as "auto - trade;" (hereinafter referred to as "cloud auto distribution ™") ) between the two parties: Products and services and other related matters to enter into a contract, please read carefully the registration agreement, you click on the "I have read and accept the zero zero steam & trade; EPC query system user license agreement" button, after this agreement is a legal document binding upon both parties.'
+          '  This agreement is for you and the 2000auto ™ EPC query system (hereinafter referred to as "auto - trade;" (hereinafter referred to as "cloud auto distribution ™") ) between the two parties: Products and services and other related matters to enter into a contract, please read carefully the registration agreement, you click on the "I have read and accept the 007vin & trade; EPC query system user license agreement" button, after this agreement is a legal document binding upon both parties.'
         )
       ]),
       _c("div", [
         _c("b", [
           _vm._v(
-            "  Zero zero steam & trade; Confirmation and acceptance of service terms."
+            "  007vin & trade; Confirmation and acceptance of service terms."
           )
         ])
       ]),
       _c("p", [
         _vm._v(
-          " Zero zero steam & trade; The ownership and operation rights of the various data query services will be merged with the steam distribution &trade. All. Users agree to all the terms and conditions of the registration agreement and complete the registration and product activation procedures to become the 2004 auto ™ Regular users. User confirmation: this agreement shall be governed by the contract of rights and obligations of the parties hereto, and shall remain in force, unless otherwise mandatory or otherwise agreed by the parties."
+          " 007vin & trade; The ownership and operation rights of the various data query services will be merged with the steam distribution &trade. All. Users agree to all the terms and conditions of the registration agreement and complete the registration and product activation procedures to become the 2004 auto ™ Regular users. User confirmation: this agreement shall be governed by the contract of rights and obligations of the parties hereto, and shall remain in force, unless otherwise mandatory or otherwise agreed by the parties."
         )
       ]),
       _c("p", [
@@ -14510,10 +14513,10 @@ var staticRenderFns = [
           " Cloud and steam distribution ™ Reserves the right to independently decide on/offline brand, refuse service, close user account, clear or edit content within the scope of law permitted by the mainland of the People's Republic of China."
         )
       ]),
-      _c("div", [_c("b", [_vm._v("  Zero zero steam & trade; service")])]),
+      _c("div", [_c("b", [_vm._v("  007vin & trade; service")])]),
       _c("p", [
         _vm._v(
-          "  Zero zero steam & trade; The Internet provides users with Internet information and other services through the Internet, and users fully agree with this agreement and the auto industry. In the case of the relevant provisions, the party shall have the right to use the 2000ac ™ Related services."
+          "  007vin & trade; The Internet provides users with Internet information and other services through the Internet, and users fully agree with this agreement and the auto industry. In the case of the relevant provisions, the party shall have the right to use the 2000ac ™ Related services."
         )
       ]),
       _c("p", [
@@ -14523,17 +14526,17 @@ var staticRenderFns = [
       ]),
       _c("p", [
         _vm._v(
-          "  Zero zero steam & trade; It is currently supported in a variety of system environments and is recommended for firefox and Google Chrome."
+          "  007vin & trade; It is currently supported in a variety of system environments and is recommended for firefox and Google Chrome."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  Zero zero steam & trade; The data coverage supported by the query is subject to the official announcement."
+          "  007vin & trade; The data coverage supported by the query is subject to the official announcement."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  In order to ensure the auto - trade; The healthy operation of the service environment. System has operation flow analysis and limit rules, on the user's operating frequency has a certain limit rules express, users must register clear recognition and comply with this constraint may register and buy zero zero steam & trade; ."
+          "  In order to ensure the auto - trade; The healthy operation of the service environment. System has operation flow analysis and limit rules, on the user's operating frequency has a certain limit rules express, users must register clear recognition and comply with this constraint may register and buy 007vin & trade; ."
         )
       ]),
       _c("div", [_c("b", [_vm._v("  The user information")])]),
@@ -16217,7 +16220,9 @@ var render = function() {
           ),
           _c("div", { staticClass: "login" }, [
             _c("span", [_vm._v(_vm._s(_vm.content.loginRemind))]),
-            _c("span", [_vm._v(_vm._s(_vm.content.login))])
+            _c("span", { on: { click: _vm.openvin } }, [
+              _vm._v(_vm._s(_vm.content.login))
+            ])
           ])
         ],
         1
@@ -16840,7 +16845,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       t2: 'Data Policy',
       l3: ', including our ',
       t3: 'Cookie Use',
-      l4: '. You may receive SMS Notifications from Facebook and can opt out at any time.'
+      l4: '. You may receive SMS Notifications from 007vin and can opt out at any time.'
     },
     signUp: 'Sign up',
     loginRemind: 'Already has account.',
