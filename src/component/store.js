@@ -166,12 +166,14 @@ export default new Vuex.Store({
 
       u.formCheck(req, ['username', 'sms_code', 'real_name', 'pwd1', 'pwd2', 'city', 'company', 'company_type'])
         .catch(err => {
-          commit('openMessage', { message: `缺少${err}字段` })
+          commit('openMessage', { message: `Missing the ${err} field.` })
         })
         .then(res => {
           if (!res) return
           u.axiosPost(u.link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } })
             .then(res => {
+              commit('openMessage', { message: `Congratulations! You've successfully 
+              changed your password.` })
               location.href = "/"
             })
             .catch(err => {

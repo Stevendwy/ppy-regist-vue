@@ -11986,8 +11986,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       ctx.stroke();
     },
     click: function click(type) {
-      this.updateLanguageType({ languageType: type });
-      this.$axios.all([this.aTypes(), this.aAreas(), this.aCitys()]);
+      if (type === 0) {
+        window.open("https://007vin.com/user/register_web", "_self");
+      }
+      // this.updateLanguageType({ languageType: type })
+      // this.$axios.all([this.aTypes(), this.aAreas(), this.aCitys()])
     }
   })
 });
@@ -12155,10 +12158,12 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     },
     countdownClick: function countdownClick(start) {
       if (this.isPhone && this.mobile.length < 1) {
-        this.openMessage({ message: "手机号长度不足" });
+        // this.openMessage({ message: "手机号长度不足" });
+        this.openMessage({ message: "The phone number is short." });
         return;
       } else if (!this.isPhone && this.email.length < 1) {
-        this.openMessage({ message: "邮箱长度不足" });
+        // this.openMessage({ message: "邮箱长度不足" });
+        this.openMessage({ message: "Insufficient mailbox length" });
         return;
       }
 
@@ -12193,6 +12198,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       that.agreeShow();
     },
     openvin: function openvin() {
+      // location.href = "/"
       window.open("https://007vin.com/", "_self");
     },
     registClick: function registClick() {
@@ -16746,10 +16752,11 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       req = _extends({}, req, customReq);
 
       __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].formCheck(req, ['username', 'sms_code', 'real_name', 'pwd1', 'pwd2', 'city', 'company', 'company_type']).catch(function (err) {
-        commit('openMessage', { message: '\u7F3A\u5C11' + err + '\u5B57\u6BB5' });
+        commit('openMessage', { message: 'Missing the ' + err + ' field.' });
       }).then(function (res) {
         if (!res) return;
         __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } }).then(function (res) {
+          commit('openMessage', { message: 'Congratulations! You\'ve successfully \n              changed your password.' });
           location.href = "/";
         }).catch(function (err) {
           commit('openMessage', { message: err });

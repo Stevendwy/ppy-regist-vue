@@ -35,8 +35,11 @@ export default {
       ctx.stroke();
     },
     click(type) {
-      this.updateLanguageType({ languageType: type })
-      this.$axios.all([this.aTypes(), this.aAreas(), this.aCitys()])
+      if (type === 0) {
+        window.open("https://007vin.com/user/register_web","_self")
+      }
+      // this.updateLanguageType({ languageType: type })
+      // this.$axios.all([this.aTypes(), this.aAreas(), this.aCitys()])
     }
   }
 };

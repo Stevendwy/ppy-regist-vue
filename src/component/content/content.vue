@@ -162,10 +162,12 @@ export default {
     },
     countdownClick(start) {
       if (this.isPhone && this.mobile.length < 1) {
-        this.openMessage({ message: "手机号长度不足" });
+        // this.openMessage({ message: "手机号长度不足" });
+        this.openMessage({ message: "The phone number is short." });
         return;
       } else if (!this.isPhone && this.email.length < 1) {
-        this.openMessage({ message: "邮箱长度不足" });
+        // this.openMessage({ message: "邮箱长度不足" });
+        this.openMessage({ message: "Insufficient mailbox length" });
         return;
       }
 
@@ -202,6 +204,7 @@ export default {
       that.agreeShow()
     },
     openvin(){
+        // location.href = "/"
         window.open("https://007vin.com/","_self")
     },
     registClick() {
