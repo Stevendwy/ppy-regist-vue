@@ -12203,8 +12203,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       that.agreeShow();
     },
     openvin: function openvin() {
-      // location.href = "/"
-      window.open("https://007vin.com/", "_self");
+      location.href = "/";
+      // window.open("https://007vin.com/","_self")
     },
     registClick: function registClick() {
       var username = this.email;

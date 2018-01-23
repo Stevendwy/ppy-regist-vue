@@ -204,8 +204,8 @@ export default {
       that.agreeShow()
     },
     openvin(){
-        // location.href = "/"
-        window.open("https://007vin.com/","_self")
+        location.href = "/"
+        // window.open("https://007vin.com/","_self")
     },
     registClick() {
       let username = this.email;
