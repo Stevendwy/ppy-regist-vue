@@ -54,7 +54,7 @@ export default {
   cursor: pointer;
   font-size: 14px;
   color: #666;
-  // display: none;
+  display: none;
 
   .icon {
     position: relative;
