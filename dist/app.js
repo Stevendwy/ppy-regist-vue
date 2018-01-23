@@ -16823,7 +16823,7 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
-  logo: 'static/img/p_007.png',
+  logo: 'static/img/p_007vin.png',
   signUp: "Sign up",
   content: {
     title: 'Create a New Account',

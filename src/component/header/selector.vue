@@ -14,7 +14,8 @@ import Vuex from "vuex";
 
 export default {
   data() {
-    return {};
+    return {
+    };
   },
   computed: {
     ...Vuex.mapState(["languages"]),
@@ -53,6 +54,7 @@ export default {
   cursor: pointer;
   font-size: 14px;
   color: #666;
+  // display: none;
 
   .icon {
     position: relative;
