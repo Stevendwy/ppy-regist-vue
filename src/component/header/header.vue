@@ -43,8 +43,9 @@ export default {
     align-items: center;
 
     .logo {
-      height: 28px;
+      // height: 28px;
       margin-right: 20px;
+      height: 20px;
     }
   }
 }

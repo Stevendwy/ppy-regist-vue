@@ -12746,6 +12746,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
       if ((typeof rData === 'undefined' ? 'undefined' : _typeof(rData)) !== 'object') rData = JSON.parse(rData);
       if (rData.code === 1) return rData;else if (rData.code === 2) {
         location.href = "/login";
+      } else if (rData.code === 4) {
+        return rData;
       } else {
         if (rData.msg) alert(rData.msg, '提示');
       }
@@ -13639,7 +13641,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.header[data-v-3e0dd318] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 44px;\n  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);\n}\n.header .left[data-v-3e0dd318],\n.header .right[data-v-3e0dd318] {\n  height: 100%;\n}\n.header .left[data-v-3e0dd318] {\n  display: flex;\n  align-items: center;\n}\n.header .left .logo[data-v-3e0dd318] {\n  height: 28px;\n  margin-right: 20px;\n}\n", ""]);
+exports.push([module.i, "\n.header[data-v-3e0dd318] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 44px;\n  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);\n}\n.header .left[data-v-3e0dd318],\n.header .right[data-v-3e0dd318] {\n  height: 100%;\n}\n.header .left[data-v-3e0dd318] {\n  display: flex;\n  align-items: center;\n}\n.header .left .logo[data-v-3e0dd318] {\n  margin-right: 20px;\n  height: 20px;\n}\n", ""]);
 
 // exports
 
@@ -13925,7 +13927,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .radios .hiddenradio[data-v-3dd7e1c8] {\n  display: none;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"password\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .phone .full[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n.content .cascade[data-v-3dd7e1c8] {\n  width: 320px;\n  height: 40px;\n  border: 1px solid #d8d8d8;\n  margin-top: 10px;\n  border-radius: 4px;\n}\n", ""]);
+exports.push([module.i, "\n.content[data-v-3dd7e1c8] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.content .width[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .title[data-v-3dd7e1c8] {\n  line-height: 28px;\n  margin: 40px 0 20px 0;\n  font-size: 20px;\n  color: #4990e2;\n  letter-spacing: 0;\n  text-align: center;\n}\n.content .account .remindPersonal[data-v-3dd7e1c8],\n.content .account .selectType[data-v-3dd7e1c8],\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #999999;\n  margin-bottom: 10px;\n  white-space: nowrap;\n}\n.content .account .remindCompany[data-v-3dd7e1c8] {\n  margin-top: 10px;\n}\n.content .account .radios[data-v-3dd7e1c8] {\n  display: none;\n}\n.content .account .radios label[data-v-3dd7e1c8] {\n  margin-right: 40px;\n  font-size: 14px;\n  color: #333333;\n}\n.content .account .radios label input[data-v-3dd7e1c8] {\n  margin-right: 10px;\n}\n.content .account .input[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"text\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account input[type=\"password\"][data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account[data-v-3dd7e1c8] ::-moz-placeholder {\n  color: #999;\n}\n.content .account[data-v-3dd7e1c8] ::-webkit-input-placeholder {\n  color: #999;\n}\n.content .account .phone[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n}\n.content .account .phone .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  width: 140px;\n}\n.content .account .phone .number[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .phone .full[data-v-3dd7e1c8] {\n  width: 320px;\n}\n.content .account .code[data-v-3dd7e1c8] {\n  position: relative;\n}\n.content .account .code .c-countdown[data-v-3dd7e1c8] {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  height: 40px;\n  width: 100px;\n  color: #4990e2;\n}\n.content .account .foreign-name[data-v-3dd7e1c8] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.content .account .foreign-name .first-name[data-v-3dd7e1c8] {\n  width: 140px;\n}\n.content .account .foreign-name .last-name[data-v-3dd7e1c8] {\n  width: 170px;\n}\n.content .account .company-type .selector[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n}\n.content .account .regist-remind[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n  margin-top: 20px;\n}\n.content .account .regist-remind span[data-v-3dd7e1c8]:nth-child(2n) {\n  color: #4990e2;\n  cursor: pointer;\n}\n.content .account .regist[data-v-3dd7e1c8] {\n  height: 40px;\n  width: 320px;\n  background: white;\n  border: 1px solid #d8d8d8;\n  border-radius: 4px;\n  margin-top: 10px;\n  margin: 20px 0;\n  color: white;\n  background: #4990e2;\n}\n.content .account .login[data-v-3dd7e1c8] {\n  font-size: 14px;\n  color: #333;\n}\n.content .account .login span[data-v-3dd7e1c8]:nth-child(2) {\n  color: #4990e2;\n  cursor: pointer;\n  margin-left: 20px;\n}\n.content .brand-title[data-v-3dd7e1c8] {\n  font-size: 20px;\n  color: #999999;\n  margin: 40px 0 20px 0;\n}\n.content .brands[data-v-3dd7e1c8] {\n  width: 320px;\n  margin-bottom: 40px;\n}\n.content .cascade[data-v-3dd7e1c8] {\n  width: 320px;\n  height: 40px;\n  border: 1px solid #d8d8d8;\n  margin-top: 10px;\n  border-radius: 4px;\n}\n", ""]);
 
 // exports
 
@@ -14493,26 +14495,22 @@ var staticRenderFns = [
     return _c("div", { staticClass: "useragreecontent" }, [
       _c("div", [
         _c("b", [
-          _vm._v(
-            "《007vin & trade; EPC query system user registration protocol.》"
-          )
+          _vm._v("《007vin EPC query system user registration protocol.》")
         ])
       ]),
       _c("p", [
         _vm._v(
-          '  This agreement is for you and the 2000auto ™ EPC query system (hereinafter referred to as "auto - trade;" (hereinafter referred to as "cloud auto distribution ™") ) between the two parties: Products and services and other related matters to enter into a contract, please read carefully the registration agreement, you click on the "I have read and accept the 007vin & trade; EPC query system user license agreement" button, after this agreement is a legal document binding upon both parties.'
+          '  This agreement is for you and the 2000auto EPC query system (hereinafter referred to as "auto - trade;" (hereinafter referred to as "cloud auto distribution") ) between the two parties: Products and services and other related matters to enter into a contract, please read carefully the registration agreement, you click on the "I have read and accept the 007vin EPC query system user license agreement" button, after this agreement is a legal document binding upon both parties.'
         )
       ]),
       _c("div", [
         _c("b", [
-          _vm._v(
-            "  007vin & trade; Confirmation and acceptance of service terms."
-          )
+          _vm._v("  007vin Confirmation and acceptance of service terms.")
         ])
       ]),
       _c("p", [
         _vm._v(
-          " 007vin & trade; The ownership and operation rights of the various data query services will be merged with the steam distribution &trade. All. Users agree to all the terms and conditions of the registration agreement and complete the registration and product activation procedures to become the 2004 auto ™ Regular users. User confirmation: this agreement shall be governed by the contract of rights and obligations of the parties hereto, and shall remain in force, unless otherwise mandatory or otherwise agreed by the parties."
+          " 007vin The ownership and operation rights of the various data query services will be merged with the steam distribution &trade. All. Users agree to all the terms and conditions of the registration agreement and complete the registration and product activation procedures to become the 2004 auto Regular users. User confirmation: this agreement shall be governed by the contract of rights and obligations of the parties hereto, and shall remain in force, unless otherwise mandatory or otherwise agreed by the parties."
         )
       ]),
       _c("p", [
@@ -14522,13 +14520,13 @@ var staticRenderFns = [
       ]),
       _c("p", [
         _vm._v(
-          " Cloud and steam distribution ™ Reserves the right to independently decide on/offline brand, refuse service, close user account, clear or edit content within the scope of law permitted by the mainland of the People's Republic of China."
+          " Cloud and steam distribution Reserves the right to independently decide on/offline brand, refuse service, close user account, clear or edit content within the scope of law permitted by the mainland of the People's Republic of China."
         )
       ]),
-      _c("div", [_c("b", [_vm._v("  007vin & trade; service")])]),
+      _c("div", [_c("b", [_vm._v("  007vin service")])]),
       _c("p", [
         _vm._v(
-          "  007vin & trade; The Internet provides users with Internet information and other services through the Internet, and users fully agree with this agreement and the auto industry. In the case of the relevant provisions, the party shall have the right to use the 2000ac ™ Related services."
+          "  007vin The Internet provides users with Internet information and other services through the Internet, and users fully agree with this agreement and the auto industry. In the case of the relevant provisions, the party shall have the right to use the 2000ac Related services."
         )
       ]),
       _c("p", [
@@ -14538,43 +14536,43 @@ var staticRenderFns = [
       ]),
       _c("p", [
         _vm._v(
-          "  007vin & trade; It is currently supported in a variety of system environments and is recommended for firefox and Google Chrome."
+          "  007vin It is currently supported in a variety of system environments and is recommended for firefox and Google Chrome."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  007vin & trade; The data coverage supported by the query is subject to the official announcement."
+          "  007vin The data coverage supported by the query is subject to the official announcement."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  In order to ensure the auto - trade; The healthy operation of the service environment. System has operation flow analysis and limit rules, on the user's operating frequency has a certain limit rules express, users must register clear recognition and comply with this constraint may register and buy 007vin & trade; ."
+          "  In order to ensure the auto - trade; The healthy operation of the service environment. System has operation flow analysis and limit rules, on the user's operating frequency has a certain limit rules express, users must register clear recognition and comply with this constraint may register and buy 007vin ."
         )
       ]),
       _c("div", [_c("b", [_vm._v("  The user information")])]),
       _c("p", [
         _vm._v(
-          "  In order to guarantee your rights and interests, please ensure the authenticity, accuracy and completeness of the registration information, and the distribution &trade of the cloud. Have the right to review user data, if not, the registration data provided untrue, inaccurate, not exhaustive, users need to assume corresponding responsibility and the resulting consequences, and cloud auto parts distribution & trade; Retention of the termination of the user's use of the automobile ™ The right to services."
+          "  In order to guarantee your rights and interests, please ensure the authenticity, accuracy and completeness of the registration information, and the distribution &trade of the cloud. Have the right to review user data, if not, the registration data provided untrue, inaccurate, not exhaustive, users need to assume corresponding responsibility and the resulting consequences, and cloud auto parts distribution Retention of the termination of the user's use of the automobile The right to services."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  Cloud and steam distribution ™ Will fill out the registration information to the user, the user's real name/name, phone number, E-mail and other private information shall be strictly confidential, unless authorized by users or otherwise provided by law, cloud auto parts distribution will not disclose customer information to the outside world. "
+          "  Cloud and steam distribution Will fill out the registration information to the user, the user's real name/name, phone number, E-mail and other private information shall be strictly confidential, unless authorized by users or otherwise provided by law, cloud auto parts distribution will not disclose customer information to the outside world. "
         )
       ]),
       _c("p", [
         _vm._v(
-          "  User registration and successful activation of the 200 auto ™ After that, users should carefully and reasonably save, use their user name and password. If users find any unauthorized use of user accounts or any security breach, please contact the cloud auto distribution &trade immediately. Make the authentication information change."
+          "  User registration and successful activation of the 200 auto After that, users should carefully and reasonably save, use their user name and password. If users find any unauthorized use of user accounts or any security breach, please contact the cloud auto distribution &trade immediately. Make the authentication information change."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  Users agree that the cloud distribution ™ With the form of email, text message, telephone, etc., to the registered users of this site to send the auto ™ Relevant promotion activities and other information such as the right to inform."
+          "  Users agree that the cloud distribution With the form of email, text message, telephone, etc., to the registered users of this site to send the auto Relevant promotion activities and other information such as the right to inform."
         )
       ]),
       _c("p", [
         _vm._v(
-          "  Users agree that the cloud distribution ™ The user shall have the right to use the registration information of the user and the information of the accessory inquiry data, and log in to the user and other registered accounts for evidence preservation, including but not limited to notarization and witness."
+          "  Users agree that the cloud distribution The user shall have the right to use the registration information of the user and the information of the accessory inquiry data, and log in to the user and other registered accounts for evidence preservation, including but not limited to notarization and witness."
         )
       ]),
       _c("div", [
@@ -14612,7 +14610,7 @@ var staticRenderFns = [
       ]),
       _c("p", [
         _vm._v(
-          "  If the user fails to comply with the above provisions, the cloud automobile distribution ™ The right to make independent judgment and to suspend or close user account. Users must use the auto - trade; To undertake the legal liability for the conduct of the inquiry."
+          "  If the user fails to comply with the above provisions, the cloud automobile distribution The right to make independent judgment and to suspend or close user account. Users must use the auto - trade; To undertake the legal liability for the conduct of the inquiry."
         )
       ]),
       _c("div", [
@@ -14620,7 +14618,7 @@ var staticRenderFns = [
       ]),
       _c("p", [
         _vm._v(
-          "  According to the changes of national laws and regulations and the auto industry; The operation needs, the cloud steam distribution ™ Have the right to modify the terms of this agreement without timing, and the revised agreement shall be posted in the steam &trade. Or any official channel that takes effect and replaces the original agreement. Users can access the latest agreement at any time; Users are obligated to pay attention to and read the latest version of the agreement and any official announcements from time to time. If the user does not agree to the updated agreement, it can and should immediately cease to accept the auto trade. Services provided under this agreement; If the user continues to use the steam ™ The service provided is deemed to be an agreement to be updated. Cloud and steam distribution ™ It is recommended that you use the steam ™ Read this agreement and the announcement of this website. If any of this agreement is deemed to be invalidated, invalid or unenforceable for any reason, the article shall be deemed to be separable and shall not affect the validity and enforceability of any remaining provisions."
+          "  According to the changes of national laws and regulations and the auto industry; The operation needs, the cloud steam distribution Have the right to modify the terms of this agreement without timing, and the revised agreement shall be posted in the steam &trade. Or any official channel that takes effect and replaces the original agreement. Users can access the latest agreement at any time; Users are obligated to pay attention to and read the latest version of the agreement and any official announcements from time to time. If the user does not agree to the updated agreement, it can and should immediately cease to accept the auto trade. Services provided under this agreement; If the user continues to use the steam The service provided is deemed to be an agreement to be updated. Cloud and steam distribution It is recommended that you use the steam Read this agreement and the announcement of this website. If any of this agreement is deemed to be invalidated, invalid or unenforceable for any reason, the article shall be deemed to be separable and shall not affect the validity and enforceability of any remaining provisions."
         )
       ]),
       _c("div", [_c("b", [_vm._v("  Legal jurisdiction and application.")])]),
@@ -15886,7 +15884,7 @@ var render = function() {
             _vm._v(_vm._s(_vm.content.selectType))
           ]),
           _c("div", { staticClass: "radios" }, [
-            _c("label", { staticClass: "hiddenradio" }, [
+            _c("label", [
               _c("input", {
                 directives: [
                   {
@@ -16762,8 +16760,12 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
       }).then(function (res) {
         if (!res) return;
         __WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].axiosPost(__WEBPACK_IMPORTED_MODULE_5__u__["a" /* default */].link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } }).then(function (res) {
-          commit('openMessage', { message: 'Congratulations! You\'ve successfully \n              changed your password.' });
-          location.href = "/";
+          if (res.code !== 4) {
+            commit('openMessage', { message: 'Congratulations! You\'ve successfully \n                changed your password.' });
+            location.href = "/";
+          } else {
+            commit('openMessage', { message: '' + res.msg });
+          }
         }).catch(function (err) {
           commit('openMessage', { message: err });
         });

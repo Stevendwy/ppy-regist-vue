@@ -172,9 +172,13 @@ export default new Vuex.Store({
           if (!res) return
           u.axiosPost(u.link('/user/register_web', req), req, { headers: { "Sys-Language": getters.languageType } })
             .then(res => {
-              commit('openMessage', { message: `Congratulations! You've successfully 
-              changed your password.` })
-              location.href = "/"
+              if( res.code!== 4 ){
+                commit('openMessage', { message: `Congratulations! You've successfully 
+                changed your password.` })
+                location.href = "/"
+              }else{
+                commit('openMessage', { message: `${res.msg}` })
+              }
             })
             .catch(err => {
               commit('openMessage', { message: err })

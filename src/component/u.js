@@ -73,6 +73,9 @@ export default {
           else if (rData.code === 2) {
             location.href = "/login"
           }
+          else if (rData.code === 4) {
+            return rData
+          }
           else {
             if(rData.msg) alert(rData.msg, '提示')
           }
