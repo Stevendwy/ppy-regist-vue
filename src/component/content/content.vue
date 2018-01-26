@@ -5,7 +5,7 @@
       .remindPersonal {{content.remindPersonal}}
       .selectType {{content.selectType}}
       .radios
-        label
+        label.hiddenradio
           input(type='radio' value='email' v-model='registType')
           | {{content.types[0]}}
         label #[input(type='radio' value='phone' v-model='registType')] {{content.types[1]}}
@@ -285,6 +285,9 @@ export default {
         input {
           margin-right: 10px;
         }
+      }
+      .hiddenradio{
+        display: none
       }
     }
 

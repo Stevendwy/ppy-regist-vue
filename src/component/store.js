@@ -22,7 +22,7 @@ export default new Vuex.Store({
         name: "English"
       }
     ],
-    registType: 'email',
+    registType: 'phone',
     types: [], // 注册公司类型
     typeIndex: -1, // 默认选中类型索引
     areas: [], // 地区手机数据

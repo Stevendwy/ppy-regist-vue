@@ -35,6 +35,6 @@ app.post('*', (req, res) => {
   console.log(req.body)
 })
 
-app.listen(10000, 'localhost', () => {
-  console.log('server in localhost:10000')
+app.listen(8888, 'localhost', () => {
+  console.log('server in localhost:8888')
 })
